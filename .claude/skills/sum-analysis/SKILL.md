@@ -46,7 +46,7 @@ When the user invokes `/sum-analysis`, say:
 
 ---
 
-## Phase 2 — Session config
+<!-- ## Phase 2 — Session config (commented out — always uses 90% CI)
 
 Ask the researcher:
 
@@ -56,6 +56,8 @@ Ask the researcher:
 > - **99% CI** (alpha = 0.01)
 
 Default to 90% CI (alpha = 0.10) if they do not specify. Note that the satisfaction threshold is fixed at **4.0** (mid-point of "good" on the 1–5 scale).
+
+-->
 
 ---
 
@@ -81,7 +83,7 @@ After receiving data, confirm how many versions, tasks, and participants were pr
 Write the data to `/tmp/sum_analysis_data.csv`, then run:
 
 ```bash
-python3 /path/to/sum_calculator.py --csv /tmp/sum_analysis_data.csv --alpha <alpha>
+python3 /path/to/sum_calculator.py --csv /tmp/sum_analysis_data.csv --alpha 0.10
 ```
 
 Use the **absolute path** to `sum_calculator.py` in the project (resolve it with `find` if needed).
