@@ -65,19 +65,23 @@ def sample_stdev(values):
 def calc_completion(completions, z_crit):
     """
     Wilson score interval for completion rate.
+    The Wilson centre uses z=2.0 (matches SUMv5.xls methodology) regardless of
+    the alpha passed for satisfaction/time CIs. CI bounds are left uncapped so
+    the upper bound can exceed 1.0 when computing SUM_high (also matches spreadsheet).
     Returns observed %, Wilson centre, CI low, CI high (all as 0–1 fractions).
     """
     n = len(completions)
     x = sum(completions)
     observed = x / n
-    z2 = z_crit ** 2
+    z_wilson = 2.0          # fixed per SUM methodology (approximation of z_0.975)
+    z2 = z_wilson ** 2
     wilson = (x + z2 / 2) / (n + z2)
     se = math.sqrt(wilson * (1 - wilson) / n)
     return {
         "observed": observed,
         "pct": wilson,
-        "ci_low": max(0.0, wilson - z_crit * se),
-        "ci_high": min(1.0, wilson + z_crit * se),
+        "ci_low": wilson - z_wilson * se,   # uncapped — may be < 0 for very low n
+        "ci_high": wilson + z_wilson * se,  # uncapped — may exceed 1.0
     }
 
 
@@ -184,7 +188,9 @@ def calc_task_sum(rows, z_crit):
 
     time_result = calc_time(times, completions, comp_sats, z_crit)
 
-    pct = (comp_result["pct"] + sat_result["pct"] + time_result["pct"]) / 3.0
+    # SUM score uses the observed completion rate (x/n), not the Wilson-adjusted centre.
+    # The Wilson centre is used only for the CI bounds (matches SUMv5.xls).
+    pct = (comp_result["observed"] + sat_result["pct"] + time_result["pct"]) / 3.0
     ci_low = (comp_result["ci_low"] + sat_result["ci_low"] + time_result["ci_low"]) / 3.0
     ci_high = (comp_result["ci_high"] + sat_result["ci_high"] + time_result["ci_high"]) / 3.0
 
