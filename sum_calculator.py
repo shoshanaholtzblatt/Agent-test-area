@@ -58,6 +58,30 @@ def sample_stdev(values):
     return math.sqrt(sum((x - m) ** 2 for x in values) / (n - 1))
 
 
+def probit(p):
+    """Inverse normal CDF via Abramowitz & Stegun 26.2.16 rational approximation."""
+    if p >= 1.0:
+        return float("inf")
+    if p <= 0.0:
+        return float("-inf")
+    if p > 0.5:
+        return -probit(1.0 - p)
+    t = math.sqrt(-2.0 * math.log(p))
+    num = 2.515517 + 0.802853 * t + 0.010328 * t * t
+    den = 1.0 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t
+    return -(t - num / den)
+
+
+def t_inv(alpha, df):
+    """Two-tailed t-distribution inverse (matches Excel TINV) via Cornish-Fisher series."""
+    z = probit(1.0 - alpha / 2.0)
+    z2, z3, z5, z7 = z ** 2, z ** 3, z ** 5, z ** 7
+    return (z
+            + (z3 + z) / (4 * df)
+            + (5 * z5 + 16 * z3 + 3 * z) / (96 * df ** 2)
+            + (3 * z7 + 19 * z5 + 17 * z3 - 15 * z) / (384 * df ** 3))
+
+
 # ---------------------------------------------------------------------------
 # Dimension calculators
 # ---------------------------------------------------------------------------
@@ -85,11 +109,14 @@ def calc_completion(completions, z_crit):
     }
 
 
-def calc_satisfaction(ease_list, sat_list, perception_list, z_crit, sat_spec=4.0):
+def calc_satisfaction(ease_list, sat_list, perception_list, z_crit, alpha, sat_spec=4.0):
     """
     Log-normal-style Z-score for composite satisfaction.
     composite_i = mean(ease_i, sat_i, perception_i)
     Z = (mean_composite − sat_spec) / stdev_composite
+
+    displayed_pct uses the CI midpoint with t-distribution:
+      (Φ(Z + t/√n) + Φ(Z − t/√n)) / 2  where t = TINV(alpha, n-1), SE = 1/√n
     """
     n = len(ease_list)
     composites = [
@@ -106,12 +133,16 @@ def calc_satisfaction(ease_list, sat_list, perception_list, z_crit, sat_spec=4.0
     se_z = stdev_s / math.sqrt(n) if stdev_s > 0 else 0.0
     ci_high_z = z + z_crit * se_z
     ci_low_z = z - z_crit * se_z
+    t = t_inv(alpha, n - 1)
+    half = t / math.sqrt(n)
+    displayed_pct = (normal_cdf(z + half) + normal_cdf(z - half)) / 2.0
     return {
         "mean": mean_s,
         "stdev": stdev_s,
         "spec": sat_spec,
         "z": z,
         "pct": pct,
+        "displayed_pct": displayed_pct,
         "ci_low": normal_cdf(ci_low_z),
         "ci_high": normal_cdf(ci_high_z),
         "composites": composites,
@@ -137,12 +168,16 @@ def derive_time_spec(times, completions, comp_sats, p=0.95):
     return percentile_inc(accepted, p)
 
 
-def calc_time(times, completions, comp_sats, z_crit):
+def calc_time(times, completions, comp_sats, z_crit, alpha):
     """
     Log-normal Z-score for task time against the data-derived spec.
     Uses ALL participants' times (including non-completers).
+
+    displayed_pct uses the CI midpoint with t-distribution:
+      (Φ(Z + t/√n) + Φ(Z − t/√n)) / 2  where t = TINV(alpha, n-1), SE = 1/√n
     """
     time_spec = derive_time_spec(times, completions, comp_sats)
+    n = len(times)
     log_times = [math.log(t) for t in times]
     mean_log = sample_mean(log_times)
     stdev_log = sample_stdev(log_times)
@@ -152,15 +187,19 @@ def calc_time(times, completions, comp_sats, z_crit):
     else:
         z = (spec_log - mean_log) / stdev_log
     pct = normal_cdf(z)
-    se_z = stdev_log / math.sqrt(len(log_times)) if stdev_log > 0 else 0.0
+    se_z = stdev_log / math.sqrt(n) if stdev_log > 0 else 0.0
     ci_high_z = z + z_crit * se_z
     ci_low_z = z - z_crit * se_z
+    t = t_inv(alpha, n - 1)
+    half = t / math.sqrt(n)
+    displayed_pct = (normal_cdf(z + half) + normal_cdf(z - half)) / 2.0
     return {
         "time_spec": time_spec,
         "mean_log": mean_log,
         "stdev_log": stdev_log,
         "z": z,
         "pct": pct,
+        "displayed_pct": displayed_pct,
         "ci_low": normal_cdf(ci_low_z),
         "ci_high": normal_cdf(ci_high_z),
     }
@@ -170,7 +209,7 @@ def calc_time(times, completions, comp_sats, z_crit):
 # Task-level and overall aggregation
 # ---------------------------------------------------------------------------
 
-def calc_task_sum(rows, z_crit):
+def calc_task_sum(rows, z_crit, alpha):
     """
     rows: list of dicts with keys completion, ease, satisfaction, perception, time_s
     Returns a dict with all dimension results and the SUM score.
@@ -183,10 +222,10 @@ def calc_task_sum(rows, z_crit):
 
     comp_result = calc_completion(completions, z_crit)
 
-    sat_result = calc_satisfaction(ease, sat, perception, z_crit)
+    sat_result = calc_satisfaction(ease, sat, perception, z_crit, alpha)
     comp_sats = sat_result["composites"]
 
-    time_result = calc_time(times, completions, comp_sats, z_crit)
+    time_result = calc_time(times, completions, comp_sats, z_crit, alpha)
 
     # SUM score uses the observed completion rate (x/n), not the Wilson-adjusted centre.
     # The Wilson centre is used only for the CI bounds (matches SUMv5.xls).
@@ -235,8 +274,8 @@ def format_markdown_table(task_results, overall):
             f"| {pct(r['sum'])} "
             f"| {pct(r['ci_high'])} "
             f"| {pct(r['completion']['pct'])} "
-            f"| {pct(r['satisfaction']['pct'])} "
-            f"| {pct(r['time']['pct'])} |"
+            f"| {pct(r['satisfaction']['displayed_pct'])} "
+            f"| {pct(r['time']['displayed_pct'])} |"
         )
     rows.append(
         f"| **Overall** "
@@ -339,7 +378,7 @@ def main():
     task_results = {}
     for task_name, rows in task_rows.items():
         try:
-            task_results[task_name] = calc_task_sum(rows, z_crit)
+            task_results[task_name] = calc_task_sum(rows, z_crit, args.alpha)
         except ValueError as e:
             print(json.dumps({"error": f"Task '{task_name}': {e}"}))
             sys.exit(1)
