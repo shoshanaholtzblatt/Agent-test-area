@@ -2,8 +2,9 @@
 """
 SUM (Single Usability Metric) calculator — Jeff Sauro / MeasuringUsability.com methodology.
 
-Reads a CSV with columns: task, participant, completion, ease, satisfaction, perception, time_s
+Reads a CSV with columns: version, task, participant, completion, ease, satisfaction, perception, time_s
 Outputs JSON results followed by "---JSON-END---" then a markdown summary table.
+Results are grouped by version so multiple versions can be compared side-by-side.
 
 Usage:
     python3 sum_calculator.py --csv /path/to/data.csv [--alpha 0.10]
@@ -263,27 +264,31 @@ def pct(v, decimals=1):
     return f"{v * 100:.{decimals}f}%"
 
 
-def format_markdown_table(task_results, overall):
-    header = "| Task | SUM Low | SUM Score | SUM High | Completion | Satisfaction | Time |"
-    sep    = "|------|---------|-----------|----------|------------|--------------|------|"
+def format_markdown_table(version_results):
+    header = "| Version | Task | SUM Low | SUM Score | SUM High | Completion | Satisfaction | Time |"
+    sep    = "|---------|------|---------|-----------|----------|------------|--------------|------|"
     rows = [header, sep]
-    for task_name, r in task_results.items():
+    for version_name, vr in version_results.items():
+        for task_name, r in vr["tasks"].items():
+            rows.append(
+                f"| {version_name} "
+                f"| {task_name} "
+                f"| {pct(r['ci_low'])} "
+                f"| {pct(r['sum'])} "
+                f"| {pct(r['ci_high'])} "
+                f"| {pct(r['completion']['pct'])} "
+                f"| {pct(r['satisfaction']['displayed_pct'])} "
+                f"| {pct(r['time']['displayed_pct'])} |"
+            )
+        overall = vr["overall"]
         rows.append(
-            f"| {task_name} "
-            f"| {pct(r['ci_low'])} "
-            f"| {pct(r['sum'])} "
-            f"| {pct(r['ci_high'])} "
-            f"| {pct(r['completion']['pct'])} "
-            f"| {pct(r['satisfaction']['displayed_pct'])} "
-            f"| {pct(r['time']['displayed_pct'])} |"
+            f"| **{version_name}** "
+            f"| **Overall** "
+            f"| {pct(overall['ci_low'])} "
+            f"| {pct(overall['sum'])} "
+            f"| {pct(overall['ci_high'])} "
+            f"| — | — | — |"
         )
-    rows.append(
-        f"| **Overall** "
-        f"| {pct(overall['ci_low'])} "
-        f"| {pct(overall['sum'])} "
-        f"| {pct(overall['ci_high'])} "
-        f"| — | — | — |"
-    )
     return "\n".join(rows)
 
 
@@ -291,7 +296,7 @@ def format_markdown_table(task_results, overall):
 # Validation
 # ---------------------------------------------------------------------------
 
-REQUIRED_COLS = {"task", "participant", "completion", "ease", "satisfaction", "perception", "time_s"}
+REQUIRED_COLS = {"version", "task", "participant", "completion", "ease", "satisfaction", "perception", "time_s"}
 
 
 def validate_rows(rows):
@@ -361,41 +366,48 @@ def main():
         print(json.dumps({"error": "Validation failed", "details": errors}))
         sys.exit(1)
 
-    # Group by task (preserve insertion order)
-    task_rows = defaultdict(list)
+    # Group by version then task (preserve insertion order)
+    version_task_rows = defaultdict(lambda: defaultdict(list))
     for row in all_rows:
-        task_rows[row["task"].strip()].append(row)
+        version_task_rows[row["version"].strip()][row["task"].strip()].append(row)
 
-    # Check minimum participants per task
+    # Check minimum participants per (version, task)
     min_n = 15
-    under = {t: len(r) for t, r in task_rows.items() if len(r) < min_n}
+    under = {}
+    for version, task_rows in version_task_rows.items():
+        for task, rows in task_rows.items():
+            if len(rows) < min_n:
+                under[f"{version} / {task}"] = len(rows)
     if under:
-        msg = "; ".join(f"{t}: {n} participants (need {min_n})" for t, n in under.items())
+        msg = "; ".join(f"{k}: {n} participants (need {min_n})" for k, n in under.items())
         print(json.dumps({"error": f"Insufficient participants: {msg}"}))
         sys.exit(1)
 
-    # Compute SUM per task
-    task_results = {}
-    for task_name, rows in task_rows.items():
-        try:
-            task_results[task_name] = calc_task_sum(rows, z_crit, args.alpha)
-        except ValueError as e:
-            print(json.dumps({"error": f"Task '{task_name}': {e}"}))
-            sys.exit(1)
-
-    overall = calc_overall_sum(task_results)
+    # Compute SUM per version per task
+    version_results = {}
+    for version_name, task_rows in version_task_rows.items():
+        task_results = {}
+        for task_name, rows in task_rows.items():
+            try:
+                task_results[task_name] = calc_task_sum(rows, z_crit, args.alpha)
+            except ValueError as e:
+                print(json.dumps({"error": f"Version '{version_name}', Task '{task_name}': {e}"}))
+                sys.exit(1)
+        version_results[version_name] = {
+            "tasks": task_results,
+            "overall": calc_overall_sum(task_results),
+        }
 
     # Serialise (strip non-JSON-safe floats)
     output = {
         "alpha": args.alpha,
         "z_crit": z_crit,
-        "tasks": task_results,
-        "overall": overall,
+        "versions": version_results,
     }
     print(json.dumps(output, default=lambda x: round(x, 6) if isinstance(x, float) else x))
     print("---JSON-END---")
     print()
-    print(format_markdown_table(task_results, overall))
+    print(format_markdown_table(version_results))
 
 
 if __name__ == "__main__":
