@@ -15,10 +15,11 @@ Compute SUM scores from raw usability test data using the Jeff Sauro / Measuring
 
 ## Requirements before starting
 
-- **Minimum 15 participants per task** (the skill will reject smaller samples)
+- **Minimum 15 participants per version per task** (the skill will reject smaller samples)
 - **3 separate Likert ratings** per participant per task (ease, satisfaction, perception) on a **1–5 scale**
 - **Task completion** recorded as `1` (completed) or `0` (did not complete)
 - **Time in seconds** for every participant, including those who did not complete the task
+- **Version label** for every row — use the same label if only one version; use distinct labels (e.g. V1, V2) to compare versions side-by-side
 - Errors/mistakes are **not** part of the SUM calculation in this version
 
 ---
@@ -29,22 +30,23 @@ When the user invokes `/sum-analysis`, say:
 
 > I'll help you analyze your usability test data using the Single Usability Metric (SUM) methodology.
 >
-> I need one row per participant per task with these seven columns:
+> I need one row per participant per task with these eight columns:
+> - **version** — version label (e.g. "V1", "V2") — use the same label for all rows if comparing only one version
 > - **task** — task name (e.g. "Search", "Checkout")
 > - **participant** — participant ID (e.g. P01)
 > - **completion** — `1` if they completed the task, `0` if not
-> - **ease** — "How easy was this?" (1–5 Likert)
-> - **satisfaction** — "How satisfied were you?" (1–5 Likert)
-> - **perception** — "How well did it meet your needs?" (1–5 Likert)
+> - **ease** — "How difficult or easy was this task?" (1–5)
+> - **satisfaction** — "How dissatisfied or satisfied are you with this task?" (1–5)
+> - **perception** — "Did it take more or less time than you were expecting?" (1–5)
 > - **time_s** — time in seconds (record for ALL participants, even non-completers)
 >
-> **Minimum 15 participants per task.** Time benchmarks are derived automatically from your data — no spec needed.
+> **Minimum 15 participants per version per task.** Time benchmarks are derived automatically from your data — no spec needed. Multiple versions in the same CSV are compared side-by-side.
 >
 > You can paste CSV rows directly, share a file path, or use the template at `data/sum_template.csv`.
 
 ---
 
-## Phase 2 — Session config
+<!-- ## Phase 2 — Session config (commented out — always uses 90% CI)
 
 Ask the researcher:
 
@@ -54,6 +56,8 @@ Ask the researcher:
 > - **99% CI** (alpha = 0.01)
 
 Default to 90% CI (alpha = 0.10) if they do not specify. Note that the satisfaction threshold is fixed at **4.0** (mid-point of "good" on the 1–5 scale).
+
+-->
 
 ---
 
@@ -65,12 +69,12 @@ Ask the researcher to provide their data. Accept any of:
 
 If they paste CSV text without a header, prepend:
 ```
-task,participant,completion,ease,satisfaction,perception,time_s
+version,task,participant,completion,ease,satisfaction,perception,time_s
 ```
 
-If they have data for multiple tasks, all tasks can be in a single CSV — each task is identified by the `task` column value.
+All tasks and versions can be in a single CSV — each row is identified by its `version` and `task` values. Multiple versions will be shown side-by-side in the results table.
 
-After receiving data, confirm how many tasks and participants were provided before proceeding.
+After receiving data, confirm how many versions, tasks, and participants were provided before proceeding.
 
 ---
 
@@ -79,7 +83,7 @@ After receiving data, confirm how many tasks and participants were provided befo
 Write the data to `/tmp/sum_analysis_data.csv`, then run:
 
 ```bash
-python3 /path/to/sum_calculator.py --csv /tmp/sum_analysis_data.csv --alpha <alpha>
+python3 /path/to/sum_calculator.py --csv /tmp/sum_analysis_data.csv --alpha 0.10
 ```
 
 Use the **absolute path** to `sum_calculator.py` in the project (resolve it with `find` if needed).
@@ -102,20 +106,26 @@ The JSON structure is:
 {
   "alpha": 0.10,
   "z_crit": 1.645,
-  "tasks": {
-    "Task Name": {
-      "n": 15,
-      "completion": {"observed": 0.93, "pct": 0.88, "ci_low": 0.71, "ci_high": 0.96},
-      "satisfaction": {"pct": 0.73, "ci_low": 0.58, "ci_high": 0.84, "mean": 4.2, "spec": 4.0},
-      "time": {"pct": 0.88, "ci_low": 0.74, "ci_high": 0.95, "time_spec": 90.2},
-      "sum": 0.83,
-      "ci_low": 0.68,
-      "ci_high": 0.92
+  "versions": {
+    "V1": {
+      "tasks": {
+        "Task Name": {
+          "n": 15,
+          "completion": {"observed": 0.93, "pct": 0.88, "ci_low": 0.71, "ci_high": 0.96},
+          "satisfaction": {"displayed_pct": 0.64, "pct": 0.65, "ci_low": 0.53, "ci_high": 0.77, "mean": 4.3, "spec": 4.0},
+          "time": {"displayed_pct": 0.86, "pct": 0.89, "ci_low": 0.83, "ci_high": 0.93, "time_spec": 143.5},
+          "sum": 0.85,
+          "ci_low": 0.70,
+          "ci_high": 0.92
+        }
+      },
+      "overall": {"sum": 0.85, "ci_low": 0.70, "ci_high": 0.92}
     }
-  },
-  "overall": {"sum": 0.83, "ci_low": 0.68, "ci_high": 0.92}
+  }
 }
 ```
+
+Use `displayed_pct` (not `pct`) for the satisfaction and time dimension scores shown in the table and narrative. `pct` is used internally to compute the SUM score.
 
 ---
 
@@ -125,13 +135,13 @@ Present the markdown table produced by the script, then provide:
 
 ### Narrative summary
 
-Write 2–4 sentences interpreting the overall SUM score:
+Write 2–4 sentences interpreting the overall SUM score(s):
 - SUM ≥ 80%: generally good usability, minor improvements needed
 - SUM 60–79%: moderate usability, significant improvements warranted
 - SUM 40–59%: poor usability, redesign recommended for weak areas
 - SUM < 40%: critical usability failures
 
-Highlight which task(s) scored lowest and which dimension(s) drove the low score.
+If multiple versions are present, highlight the direction and magnitude of change between versions (e.g. "V2 improved overall SUM by X points"). Highlight which task(s) scored lowest and which dimension(s) drove the low score.
 
 ### Prioritized UX recommendations
 
