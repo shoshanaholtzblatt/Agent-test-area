@@ -26,17 +26,17 @@ def normal_cdf(z):
     return 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
 
 
-def percentile_exc(values, p):
+def percentile_inc(values, p):
     """
-    Excel PERCENTILE.EXC equivalent (exclusive method).
-    rank = p * (n + 1), 1-based, linearly interpolated.
-    Requires 1/(n+1) < p < n/(n+1).
+    Excel PERCENTILE / PERCENTILE.INC equivalent (inclusive method).
+    rank = 1 + p * (n - 1), 1-based, linearly interpolated.
+    Matches the formula =PERCENTILE(range, p) used in SUMv5.xls.
     """
     n = len(values)
     if n == 0:
         raise ValueError("Cannot compute percentile of empty list.")
     sorted_v = sorted(values)
-    rank = p * (n + 1)  # 1-based
+    rank = 1 + p * (n - 1)  # 1-based
     lo = int(math.floor(rank))
     hi = lo + 1
     frac = rank - lo
@@ -114,11 +114,12 @@ def calc_satisfaction(ease_list, sat_list, perception_list, z_crit, sat_spec=4.0
     }
 
 
-def derive_time_spec(times, completions, comp_sats, p=0.85):
+def derive_time_spec(times, completions, comp_sats, p=0.95):
     """
-    85th percentile (PERCENTILE.EXC) of times from participants who:
+    95th percentile (Excel PERCENTILE.INC) of times from participants who:
       - completed the task (completion == 1)
       - have composite satisfaction >= 4.0
+    Matches =PERCENTILE(R37:R86, F34) in SUMv5.xls where F34=95%.
     """
     accepted = [
         t for t, c, s in zip(times, completions, comp_sats)
@@ -129,7 +130,7 @@ def derive_time_spec(times, completions, comp_sats, p=0.85):
             f"Need at least 2 accepted participants (completed + sat≥4) to derive time spec; "
             f"got {len(accepted)}."
         )
-    return percentile_exc(accepted, p)
+    return percentile_inc(accepted, p)
 
 
 def calc_time(times, completions, comp_sats, z_crit):
