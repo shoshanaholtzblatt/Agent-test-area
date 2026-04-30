@@ -265,20 +265,37 @@ def pct(v, decimals=1):
 
 
 def format_markdown_table(version_results):
-    header = "| Version | Task | SUM Low | SUM Score | SUM High | Completion | Satisfaction | Time |"
-    sep    = "|---------|------|---------|-----------|----------|------------|--------------|------|"
+    header = ("| Version | Task "
+              "| SUM Low | SUM Score | SUM High "
+              "| Comp Low | Completion | Comp High "
+              "| Sat Low | Satisfaction | Sat High "
+              "| Time Low | Time | Time High |")
+    sep    = ("|---------|------"
+              "|---------|-----------|----------"
+              "|----------|------------|----------"
+              "|---------|--------------|----------"
+              "|----------|------|-----------|")
     rows = [header, sep]
     for version_name, vr in version_results.items():
         for task_name, r in vr["tasks"].items():
+            c = r["completion"]
+            s = r["satisfaction"]
+            t = r["time"]
             rows.append(
                 f"| {version_name} "
                 f"| {task_name} "
                 f"| {pct(r['ci_low'])} "
                 f"| {pct(r['sum'])} "
                 f"| {pct(r['ci_high'])} "
-                f"| {pct(r['completion']['pct'])} "
-                f"| {pct(r['satisfaction']['displayed_pct'])} "
-                f"| {pct(r['time']['displayed_pct'])} |"
+                f"| {pct(c['ci_low'])} "
+                f"| {pct(c['pct'])} "
+                f"| {pct(c['ci_high'])} "
+                f"| {pct(s['ci_low'])} "
+                f"| {pct(s['displayed_pct'])} "
+                f"| {pct(s['ci_high'])} "
+                f"| {pct(t['ci_low'])} "
+                f"| {pct(t['displayed_pct'])} "
+                f"| {pct(t['ci_high'])} |"
             )
         overall = vr["overall"]
         rows.append(
@@ -287,7 +304,7 @@ def format_markdown_table(version_results):
             f"| {pct(overall['ci_low'])} "
             f"| {pct(overall['sum'])} "
             f"| {pct(overall['ci_high'])} "
-            f"| — | — | — |"
+            f"| — | — | — | — | — | — | — | — | — |"
         )
     return "\n".join(rows)
 
