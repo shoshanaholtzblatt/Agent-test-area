@@ -78,6 +78,96 @@ After receiving data, confirm how many versions, tasks, and participants were pr
 
 ---
 
+## Phase 3b — Accuracy checks
+
+Before writing the CSV or running the calculator, review the raw data and flag every suspicious row. Present flags grouped by participant ID and version/task. If no flags are found, say so briefly and continue.
+
+Apply these checks (compute per-task medians from the submitted data for the time-based checks):
+
+| Check | Flag message |
+|---|---|
+| `completion=0` AND any of `ease`, `satisfaction`, or `perception` ≥ 4 | "Did not complete but rated [dimension] [score] — possible data entry error or felt good despite failing" |
+| Two of the three Likert scores ≥ 4 but the third ≤ 2 | "Score inconsistency — [high_col]=[X] and [high_col2]=[Y] but [low_col]=[Z]. Possible typo; verify against video." |
+| `ease` and `satisfaction` differ by ≥ 3 | "Large gap between ease ([X]) and satisfaction ([Y]) — confirm intentional" |
+| `completion=1` AND all three Likert scores ≤ 2 | "Completed but rated everything ≤ 2 — genuine negative experience or possible completion coding error" |
+| `completion=1` AND `time_s` < 30% of the median time for that version/task | "Unusually fast ([X]s vs. median [Y]s) — verify the participant actually completed the task" |
+| `completion=1` AND `time_s` > 3× the median time for that version/task | "Unusually long ([X]s vs. median [Y]s) — may have been distracted or abandoned and returned" |
+| `satisfaction=5` AND `ease=1` (or `ease=5` AND `satisfaction=1`) | "Extreme opposite scores on satisfaction and ease — likely a scale confusion or typo" |
+
+Flags are informational — do not block progress. Ask the researcher to keep them in mind while watching videos.
+
+---
+
+## Phase 3c — Correct paths, watch list, and notes setup
+
+### Step 1 — Collect correct path(s) per task
+
+Ask the researcher:
+
+> For each task, what is the correct path (or paths) a participant should take?
+>
+> Use a step-by-step navigation format. Example:
+> `Scroll home → Quick actions → Checking account → View transactions → Transaction detail`
+>
+> List alternate correct paths on separate lines if more than one exists.
+> *(In a future version this will be supplied automatically by the prototype review skill.)*
+
+### Step 2 — Generate the watch list
+
+Present all participants sorted into three priority tiers. All participants should be watched; tiers indicate where to pay closest attention.
+
+**Priority 1 — Watch carefully:**
+Every participant who triggered at least one Phase 3b accuracy flag, plus all non-completers (completion=0).
+
+**Priority 2 — Watch for path deviations:**
+Completers where any two of `ease`, `satisfaction`, `perception` differ by ≥ 2, or whose `time_s` exceeds 1.5× the per-task median.
+
+**Priority 3 — Standard watch:**
+All remaining participants.
+
+### Step 3 — Create the notes document
+
+Write `reports/sum_notes_YYYY-MM-DD.md` (use today's date) with this structure, repeated for each task:
+
+```markdown
+# Usability Test Notes — [date]
+
+## Task: [Task Name]
+
+### Correct Path(s)
+1. [Primary path — e.g. Scroll home → Quick actions → Checking account → View transactions → Transaction detail]
+2. [Alternate path, if applicable]
+
+### Participant Notes
+
+| Participant | Path Taken | Outcome | Quote | Quote Explanation |
+|-------------|------------|---------|-------|-------------------|
+| P01 | | | | |
+| P02 | | | | |
+...
+
+**Outcome key:** DS = Direct Success · IS = Indirect Success · DF = Direct Failure · IF = Indirect Failure
+```
+
+**Outcome definitions:**
+- **DS — Direct Success:** First click on the correct path element AND task completed without backtracking
+- **IS — Indirect Success:** Task completed, but participant deviated from the correct path before finishing
+- **DF — Direct Failure:** First click on the wrong element AND task not completed
+- **IF — Indirect Failure:** Participant tried multiple paths but ultimately did not complete the task
+
+Tell the researcher:
+
+> Please fill in a row for every participant:
+> - **Path Taken** — same step-by-step format as the correct path above
+> - **Quote** — the single best quote capturing confusion, delight, or an unexpected moment
+> - **Quote Explanation** — which screen or feature the quote refers to, and any design implication
+>
+> Return the completed notes document when you're done and we'll proceed to analysis.
+
+Wait for the researcher to return the completed notes before proceeding to Phase 4. If they don't have video access or want to skip notes, proceed without them — the Phase 6 qualitative sections will be omitted.
+
+---
+
 ## Phase 4 — Validation
 
 Write the data to `/tmp/sum_analysis_data.csv`, then run:
@@ -182,12 +272,54 @@ Provide **3–5 specific, actionable recommendations** ranked by impact, based o
 
 Frame each recommendation around the specific task(s) and dimension(s) affected.
 
+### Path and first-click analysis *(include only if notes were collected in Phase 3c)*
+
+For each task, analyze the Path Taken and Outcome columns from the notes document.
+
+**First-click accuracy:** Count how many participants' first path step matches the first step of any correct path. Report as a percentage.
+
+**Outcome breakdown:**
+
+| Outcome | Count | % of participants |
+|---------|-------|-------------------|
+| Direct Success (DS) | | |
+| Indirect Success (IS) | | |
+| Direct Failure (DF) | | |
+| Indirect Failure (IF) | | |
+
+**Path distribution (completers only):** If multiple correct paths exist, show what % of completers used each path.
+
+**Narrative (1–2 sentences):** Interpret the pattern. Examples: "All failures were direct — participants never found the entry point — suggesting a discoverability problem rather than a flow problem." Or: "High indirect success rate means participants recovered from wrong turns, so the error recovery is working but the initial affordance needs improvement."
+
+---
+
+### Quote verification *(include only if notes were collected)*
+
+For each participant quote, check whether the sentiment matches their Likert scores:
+
+- **Contradiction:** Positive quote (e.g., "That was really easy to find!") paired with `ease ≤ 2`, or negative quote paired with `ease ≥ 4`. Flag: "Quote sentiment contradicts [dimension] score — rewatch the clip to confirm the score."
+- **Validated insight:** Multiple participants with quotes referencing the same screen or feature. Call these out as a theme — e.g., "3 participants mentioned confusion at the transaction detail screen."
+
+---
+
+### Insight contradiction checks *(include only if notes were collected)*
+
+Cross-reference the path and quote findings against the SUM dimension scores and flag any of the following:
+
+- **High Time score + many Indirect Successes (IS):** Participants were fast but got lost along the way. The Time score flatters the experience — efficiency is masking navigational confusion.
+- **High Completion + many IS:** People finished, but not cleanly. The completion rate overstates how intuitive the path is.
+- **Low Satisfaction + predominantly positive quotes:** Possible Likert scale confusion — participants may have inverted the scale. Recommend a follow-up probe.
+- **Direct Failures (DF) clustered at the same path step:** The failure is localized. Name the specific step (e.g., "all DF participants stopped at 'Quick actions' — the entry point is the problem, not the downstream flow").
+- **Accuracy flags confirmed by video notes:** If a flagged participant's notes include a quote or path that explains the anomaly, resolve the flag (e.g., "P07 slow time confirmed — video shows a phone interruption mid-task").
+
+---
+
 ### Save option
 
 Ask:
 > Would you like me to save this report to `reports/sum_report_YYYY-MM-DD.md`?
 
-If yes, write the full report (table + narrative + recommendations) to that path with today's date.
+If yes, write the full report (table + narrative + recommendations + all qualitative sections if present) to that path with today's date.
 
 ---
 
