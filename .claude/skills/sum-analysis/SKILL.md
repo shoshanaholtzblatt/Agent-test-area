@@ -97,6 +97,35 @@ Do not proceed past validation until the data is clean.
 
 ---
 
+## Phase 4b — Time spec fallback (only if needed)
+
+**Trigger:** the calculator exits with code `2`, or the JSON contains `"error": "time_spec_required"`.
+
+This means one or more (version, task) pairs had fewer than 2 participants who both completed the task and rated composite satisfaction ≥ 4.0, so no time benchmark could be derived automatically.
+
+For **each task key** listed in `tasks`, say to the researcher (substituting the actual version and task name):
+
+> **[Version] / [Task]** needs a time specification.
+>
+> A **time spec** is the maximum time a user should reasonably take to complete this task satisfactorily — it's the benchmark the Time score is measured against. Normally it's derived automatically from participants who both finished the task and rated the experience positively, but none of your participants for this task did both.
+>
+> **How to find one:** Ask someone who is not on your team and is not familiar with this feature to complete the task while you time them. That time is a practical gauge for what a reasonable completion looks like. Aim for someone who represents your target user — they should be able to complete the task, just without inside knowledge of the design.
+>
+> What time (in seconds) would you like to use as the spec for **[Task]** ([Version])?
+
+Once you have a value for every affected task, re-run with `--time-spec` flags (one per task):
+
+```bash
+python3 /path/to/sum_calculator.py \
+  --csv /tmp/sum_analysis_data.csv \
+  --alpha 0.10 \
+  --time-spec "V1/Task 1=90"
+```
+
+In the Phase 6 report, note any tasks that used a manual time spec — visible as `"time_spec_source": "manual"` in the JSON output.
+
+---
+
 ## Phase 5 — Compute
 
 Run the calculator (as above). Parse the output: everything before `---JSON-END---` is JSON; everything after is the markdown table.

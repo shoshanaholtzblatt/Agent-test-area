@@ -150,7 +150,7 @@ def calc_satisfaction(ease_list, sat_list, perception_list, z_crit, alpha, sat_s
     }
 
 
-def derive_time_spec(times, completions, comp_sats, p=0.95):
+def derive_time_spec(times, completions, comp_sats, p=0.95, manual_spec=None):
     """
     95th percentile (Excel PERCENTILE.INC) of times from participants who:
       - completed the task (completion == 1)
@@ -162,6 +162,8 @@ def derive_time_spec(times, completions, comp_sats, p=0.95):
         if c == 1 and s >= 4.0
     ]
     if len(accepted) < 2:
+        if manual_spec is not None:
+            return manual_spec
         raise ValueError(
             f"Need at least 2 accepted participants (completed + sat≥4) to derive time spec; "
             f"got {len(accepted)}."
@@ -169,7 +171,7 @@ def derive_time_spec(times, completions, comp_sats, p=0.95):
     return percentile_inc(accepted, p)
 
 
-def calc_time(times, completions, comp_sats, z_crit, alpha):
+def calc_time(times, completions, comp_sats, z_crit, alpha, manual_spec=None):
     """
     Log-normal Z-score for task time against the data-derived spec.
     Uses ALL participants' times (including non-completers).
@@ -177,7 +179,7 @@ def calc_time(times, completions, comp_sats, z_crit, alpha):
     displayed_pct uses the CI midpoint with t-distribution:
       (Φ(Z + t/√n) + Φ(Z − t/√n)) / 2  where t = TINV(alpha, n-1), SE = 1/√n
     """
-    time_spec = derive_time_spec(times, completions, comp_sats)
+    time_spec = derive_time_spec(times, completions, comp_sats, manual_spec=manual_spec)
     n = len(times)
     log_times = [math.log(t) for t in times]
     mean_log = sample_mean(log_times)
@@ -196,6 +198,7 @@ def calc_time(times, completions, comp_sats, z_crit, alpha):
     displayed_pct = (normal_cdf(z + half) + normal_cdf(z - half)) / 2.0
     return {
         "time_spec": time_spec,
+        "time_spec_source": "manual" if manual_spec is not None else "derived",
         "mean_log": mean_log,
         "stdev_log": stdev_log,
         "z": z,
@@ -210,7 +213,7 @@ def calc_time(times, completions, comp_sats, z_crit, alpha):
 # Task-level and overall aggregation
 # ---------------------------------------------------------------------------
 
-def calc_task_sum(rows, z_crit, alpha):
+def calc_task_sum(rows, z_crit, alpha, time_spec=None):
     """
     rows: list of dicts with keys completion, ease, satisfaction, perception, time_s
     Returns a dict with all dimension results and the SUM score.
@@ -226,7 +229,7 @@ def calc_task_sum(rows, z_crit, alpha):
     sat_result = calc_satisfaction(ease, sat, perception, z_crit, alpha)
     comp_sats = sat_result["composites"]
 
-    time_result = calc_time(times, completions, comp_sats, z_crit, alpha)
+    time_result = calc_time(times, completions, comp_sats, z_crit, alpha, manual_spec=time_spec)
 
     # SUM score uses the observed completion rate (x/n), not the Wilson-adjusted centre.
     # The Wilson centre is used only for the CI bounds (matches SUMv5.xls).
@@ -354,7 +357,18 @@ def main():
     parser.add_argument("--csv", required=True, help="Path to input CSV file")
     parser.add_argument("--alpha", type=float, default=0.10,
                         help="Significance level (default 0.10 → 90%% CI)")
+    parser.add_argument(
+        "--time-spec", action="append", default=[], dest="time_specs",
+        metavar="VERSION/TASK=SECONDS",
+        help="Manual time spec for a version/task with no qualifying participants. "
+             "Repeatable. Example: --time-spec \"V1/Task 1=90.5\"",
+    )
     args = parser.parse_args()
+
+    time_specs = {}
+    for entry in args.time_specs:
+        key, _, val = entry.rpartition("=")
+        time_specs[key.strip()] = float(val.strip())
 
     # t-distribution critical values for common alpha levels (two-tailed, df=n-1 ≈ ∞ approximation)
     # Using z for now; the skill can document the assumption.
@@ -400,13 +414,35 @@ def main():
         print(json.dumps({"error": f"Insufficient participants: {msg}"}))
         sys.exit(1)
 
+    # Pre-flight: find (version, task) pairs that need a manual time spec
+    needs_spec = []
+    for version_name, task_rows in version_task_rows.items():
+        for task_name, rows in task_rows.items():
+            ease_pf       = [float(r["ease"])        for r in rows]
+            sat_pf        = [float(r["satisfaction"]) for r in rows]
+            perception_pf = [float(r["perception"])   for r in rows]
+            completions_pf = [int(r["completion"])    for r in rows]
+            composites_pf = [(e + s + p) / 3 for e, s, p in zip(ease_pf, sat_pf, perception_pf)]
+            accepted = sum(
+                1 for c, comp in zip(completions_pf, composites_pf) if c == 1 and comp >= 4.0
+            )
+            key = f"{version_name}/{task_name}"
+            if accepted < 2 and key not in time_specs:
+                needs_spec.append(key)
+    if needs_spec:
+        print(json.dumps({"error": "time_spec_required", "tasks": needs_spec}))
+        sys.exit(2)
+
     # Compute SUM per version per task
     version_results = {}
     for version_name, task_rows in version_task_rows.items():
         task_results = {}
         for task_name, rows in task_rows.items():
             try:
-                task_results[task_name] = calc_task_sum(rows, z_crit, args.alpha)
+                key = f"{version_name}/{task_name}"
+                task_results[task_name] = calc_task_sum(
+                    rows, z_crit, args.alpha, time_spec=time_specs.get(key)
+                )
             except ValueError as e:
                 print(json.dumps({"error": f"Version '{version_name}', Task '{task_name}': {e}"}))
                 sys.exit(1)
