@@ -160,7 +160,7 @@ Write `reports/sum_notes_YYYY-MM-DD.md` (use today's date) with this structure, 
 
 ### Participant Notes
 
-| Participant |  Path Taken | Outcome | Quote | Quote Timestamp | Quote Explanation |
+| Participant | Path Taken | Outcome | Quote | Quote Timestamp | Quote Explanation |
 |-------------|-----------|------------|---------|-------|-------------------|
 | P01 | | | | | |
 | P02 | | | | | |
@@ -179,8 +179,9 @@ Tell the researcher:
 
 > Please fill in a row for every participant:
 > - **Path Taken** — same step-by-step format as the correct path above
+> - **Outcome** — code each participant's task performance:DS/IS/DF/IF (see key below)
 > - **Quote** — the single best quote capturing confusion, delight, or an unexpected moment
-> - **Quote Timestamp** — record the approximate video timestamp where the quote occurs (e.g. ~14:30).
+> - **Quote Timestamp** — record the approximate video timestamp where the quote occurs (e.g. ~14:30)
 > - **Quote Explanation** — which screen or feature the quote refers to, and any design implications
 >
 > Return the completed notes document when you're done, and we'll proceed to analysis.
