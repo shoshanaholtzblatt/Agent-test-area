@@ -86,12 +86,12 @@ Apply these checks (compute per-task medians from the submitted data for the tim
 
 | Check | Flag message |
 |---|---|
-| `completion=0` AND any of `ease`, `satisfaction`, or `perception` ≥ 4 | "Did not complete but rated [dimension] [score] — possible data entry error. Rewatch the video to confirm the completion coding." |
+| `completion=0` AND any of `ease`, `satisfaction`, or `perception` ≥ 4 | "Did not complete but rated [dimension] [score] — possible data entry error. Rewatch the video to confirm the completion coding and scores." |
 | Two of the three Likert scores ≥ 4 but the third ≤ 2 | "Score inconsistency — [high_col]=[X] and [high_col2]=[Y] but [low_col]=[Z]. Possible typo — rewatch the video to verify the score." |
 | `ease` and `satisfaction` differ by ≥ 3 | "Large gap between ease ([X]) and satisfaction ([Y]) — rewatch the video to confirm both scores are correct." |
 | `completion=1` AND all three Likert scores ≤ 2 | "Completed but rated everything ≤ 2 — could be a genuine negative experience or a completion coding error. Rewatch the video to confirm." |
 | `completion=1` AND `time_s` < 30% of the median time for that version/task | "Unusually fast ([X]s vs. median [Y]s) — rewatch the video to verify the participant actually completed the task." |
-| `completion=1` AND `time_s` > 3× the median time for that version/task | "Unusually long ([X]s vs. median [Y]s) — rewatch the video to check for distraction, abandonment, or a restart." |
+| `completion=1` AND `time_s` > 3× the median time for that version/task | "Unusually long ([X]s vs. median [Y]s) — rewatch the video to check for distraction or genuine usability issues. Adjust task time, if needed." |
 | `satisfaction=5` AND `ease=1` (or `ease=5` AND `satisfaction=1`) | "Extreme opposite scores on satisfaction and ease — likely a scale confusion or typo. Rewatch the video to verify both scores." |
 
 Flags are informational — do not block progress. Ask the researcher to rewatch the flagged participant's video to verify before returning the notes.
@@ -140,7 +140,7 @@ Write `reports/sum_notes_YYYY-MM-DD.md` (use today's date) with this structure, 
 
 ### Participant Notes
 
-| Participant | Timestamp | Path Taken | Outcome | Quote | Quote Explanation |
+| Participant | Path Taken | Outcome | Quote | Quote Timestamp | Quote Explanation |
 |-------------|-----------|------------|---------|-------|-------------------|
 | P01 | | | | | |
 | P02 | | | | | |
@@ -157,21 +157,16 @@ Write `reports/sum_notes_YYYY-MM-DD.md` (use today's date) with this structure, 
 
 Tell the researcher:
 
-> Please fill in a row for every participant. A few rules for the Quote column:
+> Please fill in a row for every participant:
+> - **Path Taken** — same step-by-step format as the correct path above
+> - **Outcome** — code each participant's task performance: DS/IS/DF/IF (see key below)
+> - **Quote** — the single best quote capturing confusion, delight, or an unexpected moment
+> - **Quote Timestamp** — record the approximate video timestamp where the quote occurs (e.g. ~14:30)
+> - **Quote Explanation** — which screen or feature the quote refers to, and any design implications
 >
-> - **Write the quote verbatim** — copy the participant's exact words from the video. Do not paraphrase, summarize, or clean up their language.
-> - **Start where the thought begins** and continue until it's fully expressed — include the reasoning, not just the conclusion ("I wasn't sure where to look because..." not just "I wasn't sure").
-> - **Keep hedges and qualifiers** — "I think maybe..." signals uncertainty and matters for analysis.
-> - **Include emotional language** when present ("this is so frustrating" is data).
-> - **Do not combine statements** from different moments in the session into a single quote.
-> - **If a quote is longer than 3 sentences**, split it into two separate rows.
-> - **Timestamp** — record the approximate video timestamp where the quote occurs (e.g. ~14:30).
->
-> For **Quote Explanation**: note which screen or feature the quote refers to and any design implication.
->
-> Return the completed notes document when you're done and we'll proceed to analysis.
+> Return the completed notes document when you're done, and we'll proceed to analysis.
 
-Wait for the researcher to return the completed notes before proceeding to Phase 4. If they want to skip notes, proceed without them — the Phase 6 qualitative sections will be omitted.
+Wait for the researcher to return the completed notes before proceeding to Phase 4. If they don't have video access or want to skip notes, proceed without them — the Phase 6 qualitative sections will be omitted.
 
 ---
 
@@ -204,7 +199,7 @@ For **each task key** listed in `tasks`, say to the researcher (substituting the
 
 > **[Version] / [Task]** needs a time specification.
 >
-> A **time spec** is the maximum time a user should reasonably take to complete this task satisfactorily — it's the benchmark the Time score is measured against. Normally it's derived automatically from participants who both finished the task and rated the experience positively, but none of your participants for this task did both.
+> A **time spec** is the maximum time a user should reasonably take to complete this task satisfactorily — it's the benchmark the Time score is measured against. Normally, it's derived automatically from participants who both finished the task and rated the experience positively, but none of your participants for this task did both.
 >
 > **How to find one:** Ask someone who is not on your team and is not familiar with this feature to complete the task while you time them. That time is a practical gauge for what a reasonable completion looks like. Aim for someone who represents your target user — they should be able to complete the task, just without inside knowledge of the design.
 >
