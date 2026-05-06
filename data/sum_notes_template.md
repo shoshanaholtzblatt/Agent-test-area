@@ -11,7 +11,7 @@ Fill in one section per task. For each participant, complete every column:
       • Include emotional language when present
       • Do not combine statements from different moments in the session
       • If longer than 3 sentences, split into two rows
-  - Quote Explanation: which screen or feature the quote refers to, and any design implication
+  - Quote Explanation: which screen or feature the quote refers to, and any design implications
 
 Outcome key:
   DS = Direct Success   — first click correct, completed without backtracking
@@ -30,7 +30,7 @@ Outcome key:
 
 ### Participant Notes
 
-| Participant | Timestamp | Path Taken | Outcome | Quote | Quote Explanation |
+| Participant | Path Taken | Outcome | Quote | Quote Timestamp | Quote Explanation |
 |-------------|-----------|------------|---------|-------|-------------------|
 | P01 | | | | | |
 | P02 | | | | | |
@@ -58,7 +58,7 @@ Outcome key:
 
 ### Participant Notes
 
-| Participant | Timestamp | Path Taken | Outcome | Quote | Quote Explanation |
+| Participant | Path Taken | Outcome | Quote | Quote Timestamp | Quote Explanation |
 |-------------|-----------|------------|---------|-------|-------------------|
 | P01 | | | | | |
 | P02 | | | | | |
