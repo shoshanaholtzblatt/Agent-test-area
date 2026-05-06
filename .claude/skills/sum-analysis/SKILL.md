@@ -179,7 +179,7 @@ Tell the researcher:
 
 > Please fill in a row for every participant:
 > - **Path Taken** — same step-by-step format as the correct path above
-> - **Outcome** — code each participant's task performance:DS/IS/DF/IF (see key below)
+> - **Outcome** — code each participant's task performance: DS/IS/DF/IF (see key below)
 > - **Quote** — the single best quote capturing confusion, delight, or an unexpected moment
 > - **Quote Timestamp** — record the approximate video timestamp where the quote occurs (e.g. ~14:30)
 > - **Quote Explanation** — which screen or feature the quote refers to, and any design implications
@@ -219,7 +219,7 @@ For **each task key** listed in `tasks`, say to the researcher (substituting the
 
 > **[Version] / [Task]** needs a time specification.
 >
-> A **time spec** is the maximum time a user should reasonably take to complete this task satisfactorily — it's the benchmark the Time score is measured against. Normally it's derived automatically from participants who both finished the task and rated the experience positively, but none of your participants for this task did both.
+> A **time spec** is the maximum time a user should reasonably take to complete this task satisfactorily — it's the benchmark the Time score is measured against. Normally, it's derived automatically from participants who both finished the task and rated the experience positively, but none of your participants for this task did both.
 >
 > **How to find one:** Ask someone who is not on your team and is not familiar with this feature to complete the task while you time them. That time is a practical gauge for what a reasonable completion looks like. Aim for someone who represents your target user — they should be able to complete the task, just without inside knowledge of the design.
 >
