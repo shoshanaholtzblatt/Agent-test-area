@@ -2,7 +2,6 @@
 
 <!--
 Fill in one section per task. For each participant, complete every column:
-  - Timestamp: approximate video timestamp where the quote occurs (e.g. ~14:30)
   - Path Taken: step-by-step navigation (e.g. Scroll home → Quick actions → Checking account)
   - Outcome: DS / IS / DF / IF (see key below)
   - Quote: verbatim — copy the participant's exact words from the video; do not paraphrase
@@ -11,6 +10,7 @@ Fill in one section per task. For each participant, complete every column:
       • Include emotional language when present
       • Do not combine statements from different moments in the session
       • If longer than 3 sentences, split into two rows
+  - Quote Timestamp: approximate video timestamp where the quote occurs (e.g. ~14:30)
   - Quote Explanation: which screen or feature the quote refers to, and any design implications
 
 Outcome key:
