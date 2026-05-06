@@ -86,15 +86,15 @@ Apply these checks (compute per-task medians from the submitted data for the tim
 
 | Check | Flag message |
 |---|---|
-| `completion=0` AND any of `ease`, `satisfaction`, or `perception` ≥ 4 | "Did not complete but rated [dimension] [score] — possible data entry error or felt good despite failing" |
-| Two of the three Likert scores ≥ 4 but the third ≤ 2 | "Score inconsistency — [high_col]=[X] and [high_col2]=[Y] but [low_col]=[Z]. Possible typo; verify against video." |
-| `ease` and `satisfaction` differ by ≥ 3 | "Large gap between ease ([X]) and satisfaction ([Y]) — confirm intentional" |
-| `completion=1` AND all three Likert scores ≤ 2 | "Completed but rated everything ≤ 2 — genuine negative experience or possible completion coding error" |
-| `completion=1` AND `time_s` < 30% of the median time for that version/task | "Unusually fast ([X]s vs. median [Y]s) — verify the participant actually completed the task" |
-| `completion=1` AND `time_s` > 3× the median time for that version/task | "Unusually long ([X]s vs. median [Y]s) — may have been distracted or abandoned and returned" |
-| `satisfaction=5` AND `ease=1` (or `ease=5` AND `satisfaction=1`) | "Extreme opposite scores on satisfaction and ease — likely a scale confusion or typo" |
+| `completion=0` AND any of `ease`, `satisfaction`, or `perception` ≥ 4 | "Did not complete but rated [dimension] [score] — possible data entry error. Rewatch the video to confirm the completion coding." |
+| Two of the three Likert scores ≥ 4 but the third ≤ 2 | "Score inconsistency — [high_col]=[X] and [high_col2]=[Y] but [low_col]=[Z]. Possible typo — rewatch the video to verify the score." |
+| `ease` and `satisfaction` differ by ≥ 3 | "Large gap between ease ([X]) and satisfaction ([Y]) — rewatch the video to confirm both scores are correct." |
+| `completion=1` AND all three Likert scores ≤ 2 | "Completed but rated everything ≤ 2 — could be a genuine negative experience or a completion coding error. Rewatch the video to confirm." |
+| `completion=1` AND `time_s` < 30% of the median time for that version/task | "Unusually fast ([X]s vs. median [Y]s) — rewatch the video to verify the participant actually completed the task." |
+| `completion=1` AND `time_s` > 3× the median time for that version/task | "Unusually long ([X]s vs. median [Y]s) — rewatch the video to check for distraction, abandonment, or a restart." |
+| `satisfaction=5` AND `ease=1` (or `ease=5` AND `satisfaction=1`) | "Extreme opposite scores on satisfaction and ease — likely a scale confusion or typo. Rewatch the video to verify both scores." |
 
-Flags are informational — do not block progress. Ask the researcher to keep them in mind while watching videos.
+Flags are informational — do not block progress. Ask the researcher to rewatch the flagged participant's video to verify before returning the notes.
 
 ---
 
@@ -140,10 +140,10 @@ Write `reports/sum_notes_YYYY-MM-DD.md` (use today's date) with this structure, 
 
 ### Participant Notes
 
-| Participant | Path Taken | Outcome | Quote | Quote Explanation |
-|-------------|------------|---------|-------|-------------------|
-| P01 | | | | |
-| P02 | | | | |
+| Participant | Timestamp | Path Taken | Outcome | Quote | Quote Explanation |
+|-------------|-----------|------------|---------|-------|-------------------|
+| P01 | | | | | |
+| P02 | | | | | |
 ...
 
 **Outcome key:** DS = Direct Success · IS = Indirect Success · DF = Direct Failure · IF = Indirect Failure
@@ -157,14 +157,21 @@ Write `reports/sum_notes_YYYY-MM-DD.md` (use today's date) with this structure, 
 
 Tell the researcher:
 
-> Please fill in a row for every participant:
-> - **Path Taken** — same step-by-step format as the correct path above
-> - **Quote** — the single best quote capturing confusion, delight, or an unexpected moment
-> - **Quote Explanation** — which screen or feature the quote refers to, and any design implication
+> Please fill in a row for every participant. A few rules for the Quote column:
+>
+> - **Write the quote verbatim** — copy the participant's exact words from the video. Do not paraphrase, summarize, or clean up their language.
+> - **Start where the thought begins** and continue until it's fully expressed — include the reasoning, not just the conclusion ("I wasn't sure where to look because..." not just "I wasn't sure").
+> - **Keep hedges and qualifiers** — "I think maybe..." signals uncertainty and matters for analysis.
+> - **Include emotional language** when present ("this is so frustrating" is data).
+> - **Do not combine statements** from different moments in the session into a single quote.
+> - **If a quote is longer than 3 sentences**, split it into two separate rows.
+> - **Timestamp** — record the approximate video timestamp where the quote occurs (e.g. ~14:30).
+>
+> For **Quote Explanation**: note which screen or feature the quote refers to and any design implication.
 >
 > Return the completed notes document when you're done and we'll proceed to analysis.
 
-Wait for the researcher to return the completed notes before proceeding to Phase 4. If they don't have video access or want to skip notes, proceed without them — the Phase 6 qualitative sections will be omitted.
+Wait for the researcher to return the completed notes before proceeding to Phase 4. If they want to skip notes, proceed without them — the Phase 6 qualitative sections will be omitted.
 
 ---
 
@@ -293,12 +300,20 @@ For each task, analyze the Path Taken and Outcome columns from the notes documen
 
 ---
 
-### Quote verification *(include only if notes were collected)*
+### Quote presentation and data accuracy check *(include only if notes were collected)*
 
-For each participant quote, check whether the sentiment matches their Likert scores:
+Present each quote exactly as it appears in the notes — never paraphrase, condense, or rephrase. Format each as:
 
-- **Contradiction:** Positive quote (e.g., "That was really easy to find!") paired with `ease ≤ 2`, or negative quote paired with `ease ≥ 4`. Flag: "Quote sentiment contradicts [dimension] score — rewatch the clip to confirm the score."
-- **Validated insight:** Multiple participants with quotes referencing the same screen or feature. Call these out as a theme — e.g., "3 participants mentioned confusion at the transaction detail screen."
+> "[verbatim quote]" — [P-ID, ~timestamp]
+
+For every quote, cross-check its sentiment against that participant's actual Likert scores and path outcome. Flag any mismatch:
+
+- **Sentiment vs. scores:** Positive quote (e.g., "That was really easy to find!") paired with `ease ≤ 2`, or negative quote paired with `ease ≥ 4` → "Quote sentiment conflicts with [dimension] score of [X] — rewatch the video to verify the score before including this in the report."
+- **Quote vs. path:** Quote describes confusion or searching but outcome is DS (Direct Success) → "Quote suggests struggle but outcome is Direct Success — rewatch the video to confirm the outcome coding."
+
+Researchers should go back to the **video** (not their notes) to resolve any flag. Do not remove flagged quotes from the report — present them with the flag attached so the researcher can decide.
+
+Group quotes by theme where 2+ participants reference the same screen or moment — these are the strongest signals in the data.
 
 ---
 
@@ -310,7 +325,22 @@ Cross-reference the path and quote findings against the SUM dimension scores and
 - **High Completion + many IS:** People finished, but not cleanly. The completion rate overstates how intuitive the path is.
 - **Low Satisfaction + predominantly positive quotes:** Possible Likert scale confusion — participants may have inverted the scale. Recommend a follow-up probe.
 - **Direct Failures (DF) clustered at the same path step:** The failure is localized. Name the specific step (e.g., "all DF participants stopped at 'Quick actions' — the entry point is the problem, not the downstream flow").
-- **Accuracy flags confirmed by video notes:** If a flagged participant's notes include a quote or path that explains the anomaly, resolve the flag (e.g., "P07 slow time confirmed — video shows a phone interruption mid-task").
+- **Accuracy flags confirmed by notes:** If a flagged participant's quote or path explains the anomaly (e.g., P07's quote mentions a phone call mid-task), resolve the flag and note it.
+
+---
+
+### Finding confidence levels *(apply to all qualitative findings — themes, insight contradictions, and path patterns)*
+
+For every finding that uses qualitative evidence, assign a confidence level:
+
+| Level | Criteria |
+|-------|----------|
+| **High** | 3+ participants with consistent evidence (quotes and data point the same direction) |
+| **Medium** | 2 participants, or 3+ with mixed or partial signals |
+| **Low** | 1 participant, or quotes and data conflict; present as directional only — do not recommend action on Low confidence alone |
+
+Display confidence inline with each finding, e.g.:
+> "Participants struggled to locate the entry point for Task 1." *(Confidence: High — 4 of 5 DF participants stopped at the home screen)*
 
 ---
 
