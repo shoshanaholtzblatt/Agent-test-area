@@ -149,6 +149,24 @@ A blank template is available at `data/sum_template.csv`.
 
 ---
 
+## Worked example & verification harness
+
+[`data/examples/personal_finance_study/`](data/examples/personal_finance_study/) is a complete reference run of `/concept-testing` — full research plan, ratings CSV, filled-in session notes, parsed plan JSON, and a hand-crafted reconciled spec. It deliberately seeds every interesting code path: all 5 verdicts, designed-but-missed cells, a good surprise, a sticky `creates_new_problem` escalation, an emergent need, and the halo / empty-explanation / contradiction flags.
+
+To verify the helper end-to-end against the committed sample:
+
+```bash
+python3 scripts/run_example.py
+```
+
+The script runs `validate` → `aggregate` → `render-html` and asserts:
+- Aggregator output matches `expected_distributions.json` field-for-field
+- Rendered HTML contains all 5 verdict-style classes, a populated "Designed but missed" section, a populated "Good surprises" section, the emergent-need label, the `creates_new_problem` glyph, and the `insufficient_evidence` stripe pattern
+
+The script does not validate Claude's qualitative reconciliation — that's human-in-the-loop. The committed `expected_spec.json` is a reference output, not a regression target for LLM judgment.
+
+---
+
 ## Repo layout
 
 ```
@@ -161,11 +179,15 @@ data/
   concept_session_notes_template.md
   sum_template.csv
   sum_notes_template.md
+  examples/
+    personal_finance_study/         — worked example for /concept-testing
 docs/
-  research_skills_schema.md       — canonical types shared across research skills
-concept_aggregator.py             — helper for /concept-testing
-sum_calculator.py                 — helper for /sum-analysis
-reports/                          — generated outputs (gitignored)
+  research_skills_schema.md         — canonical types shared across research skills
+scripts/
+  run_example.py                    — verification harness
+concept_aggregator.py               — helper for /concept-testing
+sum_calculator.py                   — helper for /sum-analysis
+reports/                            — generated outputs (gitignored)
 ```
 
 ## Dependencies

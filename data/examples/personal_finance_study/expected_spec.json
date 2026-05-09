@@ -1,0 +1,209 @@
+{
+  "study_name": "Personal Finance Concept Study",
+  "date": "2026-04-18",
+  "participants": ["P01", "P02", "P03", "P04", "P05"],
+  "needs": [
+    {"id": "N1", "statement": "Track recurring expenses across all my accounts", "label": "Track recurring expenses"},
+    {"id": "N2", "statement": "Catch fraudulent or anomalous charges quickly", "label": "Catch fraud quickly"},
+    {"id": "N3", "statement": "Share day-to-day financial state with my partner", "label": "Share with partner"}
+  ],
+  "concepts": [
+    {
+      "id": "C1",
+      "name": "Weekly auto-digest",
+      "description": "A weekly email that automatically categorizes the past week's spending and shows changes from the prior week. No interaction required.",
+      "target_needs": [
+        {"need_id": "N1", "hypothesis": "Auto-categorization makes recurring spend visible without manual work"},
+        {"need_id": "N2", "hypothesis": "Weekly review surfaces anomalies the user might otherwise miss"}
+      ],
+      "asset_path": "",
+      "past_use_synthesis": "Across all participants, the weekly digest was framed as a low-effort way to notice spending creep — small recurring charges that would otherwise be invisible. Three participants explicitly said the appeal was not having to log into anything. P05 was an exception: rated everything positively but with vague, generic language, suggesting halo rather than considered judgment.",
+      "past_use_quotes": [
+        {"snippet": "I would have loved this last month — I would've seen the Spotify thing immediately.", "participant_id": "P01"},
+        {"snippet": "Auto-categorization is exactly what I want. I'm never going to do it myself.", "participant_id": "P03"}
+      ],
+      "aspects": [
+        {"label": "automatic categorization", "direction": "up", "count": 4},
+        {"label": "weekly cadence", "direction": "mixed", "count": 4},
+        {"label": "single-account scope", "direction": "down", "count": 1}
+      ],
+      "rating_distribution": [
+        {"need_id": "N1", "completely": 4, "partially": 1, "not_at_all": 0, "n": 5},
+        {"need_id": "N2", "completely": 1, "partially": 3, "not_at_all": 1, "n": 5},
+        {"need_id": "N3", "completely": 1, "partially": 0, "not_at_all": 4, "n": 5}
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "Manual transaction tagger",
+      "description": "Users tag every transaction with a custom category as it comes in. Tags are sharable with a partner who sees the same tagged feed.",
+      "target_needs": [
+        {"need_id": "N1", "hypothesis": "Manual control yields cleaner, user-defined categories"},
+        {"need_id": "N3", "hypothesis": "Shared tags align partners on what counts as what"}
+      ],
+      "asset_path": "",
+      "past_use_synthesis": "Participants split on whether the control was worth the burden. Sharing tags with a partner was the clear win — the only feature in the study that resolves shared-categorization disputes. But three of five participants explicitly said they wouldn't tag transactions themselves, and one described tagging as actively anxiety-inducing.",
+      "past_use_quotes": [
+        {"snippet": "Same tags, same view, finally a way to align on what counts as 'eating out'.", "participant_id": "P01"},
+        {"snippet": "Tagging every transaction would stress me out, especially around money.", "participant_id": "P03"},
+        {"snippet": "If you stick with the tagging it's the cleanest view possible.", "participant_id": "P04"}
+      ],
+      "aspects": [
+        {"label": "shared tags with partner", "direction": "up", "count": 4},
+        {"label": "tagging burden", "direction": "down", "count": 4},
+        {"label": "anxiety around getting it wrong", "direction": "down", "count": 1}
+      ],
+      "rating_distribution": [
+        {"need_id": "N1", "completely": 2, "partially": 3, "not_at_all": 0, "n": 5},
+        {"need_id": "N2", "completely": 0, "partially": 1, "not_at_all": 4, "n": 5},
+        {"need_id": "N3", "completely": 4, "partially": 1, "not_at_all": 0, "n": 5}
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "Smart spend alerts",
+      "description": "Real-time push notifications when an algorithm detects a transaction that looks unusual relative to your normal spend. User can dismiss, confirm-fraud, or mark-as-expected.",
+      "target_needs": [
+        {"need_id": "N2", "hypothesis": "Real-time anomaly detection catches fraud at the moment it happens"}
+      ],
+      "asset_path": "",
+      "past_use_synthesis": "C3 was rated by only three of five participants (study ran out of time). Among those three the response was uniformly positive on fraud — the real-time, contextual framing was repeatedly cited as 'exactly what fraud detection should feel like'. P02 rated it `completely` on fraud but verbalized distrust of automated alerts in the same breath, a contradiction worth flagging.",
+      "past_use_quotes": [
+        {"snippet": "Real-time alerts with context — that's exactly what fraud detection should feel like.", "participant_id": "P01"}
+      ],
+      "aspects": [
+        {"label": "real-time", "direction": "up", "count": 3},
+        {"label": "contextual alert content", "direction": "up", "count": 2},
+        {"label": "distrust of automation", "direction": "down", "count": 1}
+      ],
+      "rating_distribution": [
+        {"need_id": "N1", "completely": 2, "partially": 1, "not_at_all": 0, "n": 3},
+        {"need_id": "N2", "completely": 3, "partially": 0, "not_at_all": 0, "n": 3},
+        {"need_id": "N3", "completely": 0, "partially": 0, "not_at_all": 1, "n": 1}
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "concept_id": "C1", "need_id": "N1",
+      "was_targeted": true,
+      "verdict": "addresses",
+      "confidence": "high",
+      "reconciliation_note": null,
+      "evidence": [
+        {"snippet": "I would have loved this last month — I would've seen the Spotify thing immediately.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C1", "location": "rating-row N1"},
+        {"snippet": "Auto-categorization is exactly what I want. I'm never going to do it myself.", "participant_id": "P03", "polarity": "positive", "source_id": "notes:P03:C1", "location": "rating-row N1"}
+      ],
+      "notes": "Strong consensus that auto-categorization is the key driver. P05's `completely` rating is part of a halo pattern (vague generic praise across all needs); does not undermine the verdict but does not strengthen it."
+    },
+    {
+      "concept_id": "C1", "need_id": "N2",
+      "was_targeted": true,
+      "verdict": "partial",
+      "confidence": "medium",
+      "reconciliation_note": "Majority `partially` (3/5) with consistent explanations — 'weekly cadence is too slow for fraud'. P05's `completely` is halo; P02's `not_at_all` reinforces the cadence concern. Kept at `partial`.",
+      "evidence": [
+        {"snippet": "It might catch some stuff but if I see fraud on Monday, this email doesn't help me until Friday.", "participant_id": "P01", "polarity": "negative", "source_id": "notes:P01:C1", "location": "rating-row N2"},
+        {"snippet": "A weekly email is way too late. Fraud needs to be in seconds, not days.", "participant_id": "P02", "polarity": "negative", "source_id": "notes:P02:C1", "location": "rating-row N2"}
+      ],
+      "notes": "Cadence is the bottleneck. Concept was designed for fraud detection but the weekly delivery rhythm fundamentally limits effectiveness. Consider real-time fallback for high-value anomalies."
+    },
+    {
+      "concept_id": "C1", "need_id": "N3",
+      "was_targeted": false,
+      "verdict": "doesn't_address",
+      "confidence": "high",
+      "reconciliation_note": "P05's `completely` rating is part of a halo pattern (uniform completely across all C1 needs with vague explanations); reduced its weight. 4/5 explicit `not_at_all` with consistent explanations confirms the verdict.",
+      "evidence": [
+        {"snippet": "This is just for me. My partner would never see it.", "participant_id": "P01", "polarity": "negative", "source_id": "notes:P01:C1", "location": "rating-row N3"},
+        {"snippet": "Email is one-way. There's no shared aspect to it.", "participant_id": "P04", "polarity": "negative", "source_id": "notes:P04:C1", "location": "rating-row N3"}
+      ],
+      "notes": "Concept was not targeted at sharing and unanimously confirmed not to address it."
+    },
+    {
+      "concept_id": "C2", "need_id": "N1",
+      "was_targeted": true,
+      "verdict": "partial",
+      "confidence": "medium",
+      "reconciliation_note": "Designed-vs-actual gap on adoption likelihood: ratings (2 completely, 3 partially) reflect that participants understand tagging WOULD give the cleanest view, but most explicitly state they wouldn't actually do the tagging. P03's explanation cell is empty — flagged but does not change verdict.",
+      "evidence": [
+        {"snippet": "If I'm tagging things anyway I'd put 'subscription' on the recurring ones — clearer than auto-categorization.", "participant_id": "P02", "polarity": "positive", "source_id": "notes:P02:C2", "location": "rating-row N1"},
+        {"snippet": "Theoretically the cleanest. In practice I won't do it.", "participant_id": "P05", "polarity": "neutral", "source_id": "notes:P05:C2", "location": "rating-row N1"}
+      ],
+      "notes": "The disconnect between theoretical and practical addressing is the dominant signal. C2 is designed for N1 but the manual-effort cost makes adoption fragile."
+    },
+    {
+      "concept_id": "C2", "need_id": "N2",
+      "was_targeted": false,
+      "verdict": "creates_new_problem",
+      "confidence": "low",
+      "reconciliation_note": "Raw majority was `not_at_all` (4/5), which would normally yield `doesn't_address`. P03's explanation explicitly describes the concept as anxiety-inducing — 'tagging every transaction would stress me out, especially around money'. Even one strong instance of the concept making the user's relationship to the need worse triggers `creates_new_problem` per the verdict rules. Confidence is `low` because the signal is from one participant; surfaced because creates_new_problem is reportable at any confidence.",
+      "evidence": [
+        {"snippet": "Tagging every transaction would stress me out, especially around money — I'd be anxious about getting it wrong, missing one, mis-tagging it.", "participant_id": "P03", "polarity": "negative", "source_id": "notes:P03:C2", "location": "rating-row N2"}
+      ],
+      "notes": "Single strong signal — surfaced for further investigation. The risk is that tagging-as-a-mechanism, intended to give control, instead introduces money anxiety. Test in a follow-up study with anxiety-prone users specifically."
+    },
+    {
+      "concept_id": "C2", "need_id": "N3",
+      "was_targeted": true,
+      "verdict": "addresses",
+      "confidence": "high",
+      "reconciliation_note": null,
+      "evidence": [
+        {"snippet": "Same tags, same view, finally a way to align on what counts as 'eating out'.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C2", "location": "rating-row N3"},
+        {"snippet": "If my roommate could see the same tags this would solve the entire shared-grocery argument.", "participant_id": "P02", "polarity": "positive", "source_id": "notes:P02:C2", "location": "rating-row N3"},
+        {"snippet": "We'd both see the same tagged feed — that's the whole solution.", "participant_id": "P04", "polarity": "positive", "source_id": "notes:P04:C2", "location": "rating-row N3"}
+      ],
+      "notes": "C2 delivers on its target. The shared-tags mechanism resolves an explicit pain (categorization disputes) that participants had concrete past-use stories about."
+    },
+    {
+      "concept_id": "C3", "need_id": "N1",
+      "was_targeted": false,
+      "verdict": "addresses",
+      "confidence": "medium",
+      "reconciliation_note": "n=3 (sparse) but 2 completely + 1 partially with consistent reasoning that 'an algorithm that knows your normal spend also knows your recurring stuff'. Not targeted, but the addresses verdict holds.",
+      "evidence": [
+        {"snippet": "If you're catching every weird charge, you're also catching the recurring stuff that drifts.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C3", "location": "rating-row N1"},
+        {"snippet": "If it knows your normal spending it knows your subscriptions, so why not.", "participant_id": "P02", "polarity": "positive", "source_id": "notes:P02:C3", "location": "rating-row N1"}
+      ],
+      "notes": "Good surprise — C3 was designed only for fraud (N2) but the same anomaly-detection mechanism surfaces recurring-charge changes as a side effect."
+    },
+    {
+      "concept_id": "C3", "need_id": "N2",
+      "was_targeted": true,
+      "verdict": "addresses",
+      "confidence": "medium",
+      "reconciliation_note": "All 3 raters said `completely` with consistent positive reasoning around real-time + contextual content. Confidence is medium rather than high due to small n. P02's contradictory explanation ('I don't really trust automated alerts') is flagged separately but does not undermine the rating.",
+      "evidence": [
+        {"snippet": "Real-time alerts with context — that's exactly what fraud detection should feel like.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C3", "location": "rating-row N2"},
+        {"snippet": "Real-time and contextual — that's exactly the right shape.", "participant_id": "P03", "polarity": "positive", "source_id": "notes:P03:C3", "location": "rating-row N2"}
+      ],
+      "notes": "C3 delivers on its single targeted need. The contextual alert content (showing what the charge is) was consistently called out as the differentiator from generic bank alerts."
+    },
+    {
+      "concept_id": "C3", "need_id": "N3",
+      "was_targeted": false,
+      "verdict": "insufficient_evidence",
+      "confidence": "low",
+      "reconciliation_note": "Only P01 rated this cell (1× not_at_all). Below the 2-participant threshold for actionable evidence.",
+      "evidence": [
+        {"snippet": "It's a notification on my phone. My partner doesn't see my phone.", "participant_id": "P01", "polarity": "negative", "source_id": "notes:P01:C3", "location": "rating-row N3"}
+      ],
+      "notes": "Direction is negative but the cell is structurally under-evidenced. Not actionable."
+    }
+  ],
+  "emergent_needs": [
+    {
+      "label": "Splitting recurring shared expenses with roommates",
+      "confidence": "medium",
+      "confidence_note": "surfaced in 2 of 5 past-use stories (P02, P04), unprompted; both participants returned to it in spontaneous mentions",
+      "evidence": [
+        {"snippet": "Honestly the thing I really need is a way to split rent and groceries with my roommates without a shared spreadsheet.", "participant_id": "P02", "polarity": "neutral", "source_id": "notes:P02:C1", "location": "spontaneous mentions"},
+        {"snippet": "I want something for that — a way to set up shared recurring obligations with people who aren't my partner.", "participant_id": "P04", "polarity": "neutral", "source_id": "notes:P04:C1", "location": "spontaneous mentions"}
+      ],
+      "addressed_by": [],
+      "missed_by": ["C1", "C2", "C3"]
+    }
+  ],
+  "cross_cutting": "C1 dominates on tracking recurring expenses but is structurally limited on fraud (cadence) and silent on partner sharing. C2 owns partner sharing but at a real adoption cost — three of five participants explicitly said they wouldn't tag, and one experienced tagging as anxiety-inducing. C3 delivers on fraud and surprisingly also on tracking-via-anomaly, with sparse evidence to confirm. The emergent 'splitting bills with roommates' need is unmet by all three concepts and worth scoping for a future study — partner-sharing as designed assumes a romantic-partner relationship and misses roommate dynamics, which are mentioned by 40% of participants unprompted."
+}
