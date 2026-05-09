@@ -12,6 +12,26 @@ A complete worked example for `/concept-testing`. Use this folder as a reference
 | `plan.json` | The `ResearchPlan` JSON shape that Claude produces internally after parsing `research_plan.md`. Feeds the helper's `validate` and `aggregate` subcommands. |
 | `expected_distributions.json` | Output of `concept_aggregator.py aggregate` against the CSV + plan. Regenerate whenever the inputs change. |
 | `expected_spec.json` | Hand-crafted reconciled spec representing the output Claude should produce after Phase 4 reconciliation. Feeds `concept_aggregator.py render-html`. **Reference output** — not a strict regression target for LLM judgments. |
+| `example_report.html` | **Reference rendered HTML** — produced by `render-html` against `expected_spec.json`. Lets you see the actual output without checking out and running the helper. Regenerate after any change to `concept_aggregator.py` rendering or to `expected_spec.json`. |
+
+### Viewing `example_report.html`
+
+GitHub doesn't render HTML inline in its file viewer. To see the rendered report:
+
+- **Locally:** clone the repo and open the file in any browser
+- **From GitHub:** prefix the raw URL with `https://htmlpreview.github.io/?` — e.g. `https://htmlpreview.github.io/?https://raw.githubusercontent.com/<owner>/<repo>/<branch>/data/examples/personal_finance_study/example_report.html`
+
+### Regenerating the reference HTML
+
+After any change to `concept_aggregator.py` (CSS, SVG layout, HTML structure) or to `expected_spec.json`:
+
+```bash
+python3 concept_aggregator.py render-html \
+  --spec data/examples/personal_finance_study/expected_spec.json \
+  --out  data/examples/personal_finance_study/example_report.html
+```
+
+Commit the regenerated HTML alongside whatever change prompted the regeneration — the diff doubles as a visual review aid in PRs.
 
 ## Edge cases this study seeds
 
