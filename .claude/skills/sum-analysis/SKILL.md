@@ -102,6 +102,27 @@ Flags are informational — do not block progress. Ask the researcher to rewatch
 
 ### Step 1 — Collect correct path(s) per task
 
+**Check for a saved research plan first.** Before asking the researcher for correct paths, look for any file matching `reports/research_plan_*.md` in the project directory.
+
+If a plan file is found:
+1. Read the section between `<!-- sum-analysis: task-context-start -->` and `<!-- sum-analysis: task-context-end -->`.
+2. Extract the task names and correct paths.
+3. Present them to the researcher for confirmation:
+
+> I found a research plan from [date] (`reports/research_plan_YYYY-MM-DD.md`). Here are the tasks and correct paths it defined:
+>
+> **Task: [Task Name]**
+> 1. [Path from plan]
+> 2. [Alternate path, if present]
+>
+> [Repeat for each task]
+>
+> Are these still accurate, or would you like to make any changes before I create the notes document?
+
+If the researcher confirms, use the paths as-is and skip the manual path-entry prompt below. If they want to edit, accept their changes before proceeding. If no plan file is found, proceed with the manual prompt.
+
+**Manual path entry (only if no plan file found):**
+
 Ask the researcher:
 
 > For each task, what is the correct path (or paths) a participant should take?
@@ -110,7 +131,6 @@ Ask the researcher:
 > `Scroll home → Quick actions → Checking account → View transactions → Transaction detail`
 >
 > List alternate correct paths on separate lines if more than one exists.
-> *(In a future version this will be supplied automatically by the prototype review skill.)*
 
 ### Step 2 — Generate the watch list
 
