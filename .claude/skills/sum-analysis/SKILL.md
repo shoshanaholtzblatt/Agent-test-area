@@ -368,6 +368,313 @@ If yes, write the full report (table + narrative + recommendations + all qualita
 
 ---
 
+## Phase 6a — Approval gate
+
+After presenting the full Phase 6 report, ask the researcher:
+
+> Please review the results and findings above. Flag any cells where you'd like me to adjust a score interpretation, swap a quote, correct a path outcome, or revise a recommendation. Once you approve, I'll generate the HTML report.
+
+**Wait for explicit approval.** Make any requested corrections and re-present the affected sections before proceeding. Do not generate HTML before approval.
+
+If the researcher declines the HTML or wants to stop here, end the session after the markdown save.
+
+---
+
+## Phase 6b — Generate HTML report
+
+Build a spec JSON from the approved report content and the Phase 5 JSON output. Write it to `/tmp/sum_html_spec.json`, then write the HTML file directly to `reports/sum_report_YYYY-MM-DD.html`.
+
+### Spec JSON structure
+
+```json
+{
+  "study_name": "...",
+  "date": "YYYY-MM-DD",
+  "alpha": 0.10,
+  "versions": ["V1"],
+  "participants_per_task": 15,
+  "has_notes": true,
+  "tasks": [
+    {
+      "id": "find-balance",
+      "name": "Find Balance",
+      "sum_by_version": {
+        "V1": {
+          "sum": 0.595, "ci_low": 0.423, "ci_high": 0.717,
+          "completion": {"pct": 0.789, "ci_low": 0.579, "ci_high": 1.0},
+          "satisfaction": {"displayed_pct": 0.48, "ci_low": 0.348, "ci_high": 0.609},
+          "time": {"displayed_pct": 0.446, "ci_low": 0.341, "ci_high": 0.543,
+                   "time_spec": 90.0, "time_spec_source": "derived"}
+        }
+      },
+      "path_analysis": {
+        "first_click_accuracy_n": 10, "first_click_accuracy_total": 15,
+        "outcomes": {"DS": 10, "IS": 3, "DF": 2, "IF": 0},
+        "correct_paths": ["Home → Accounts tab → Checking account → Balance overview"],
+        "path_distribution": [{"label": "Path A (Accounts tab)", "pct": 0.85}],
+        "narrative": "All failures were direct — participants never found the entry point..."
+      },
+      "quotes": [
+        {"text": "I kept looking for some kind of overview page...", "participant_id": "P07",
+         "timestamp": "~8:40", "polarity": "negative", "flag": null},
+        {"text": "I found it but it's pretty buried.", "participant_id": "P12",
+         "timestamp": "~4:55", "polarity": "negative",
+         "flag": "Quote sentiment conflicts with satisfaction=5 — rewatch the video to verify."}
+      ],
+      "themes": [
+        {"label": "Accounts tab discoverability", "participants": ["P07","P09","P14","P15"],
+         "confidence": "high", "representative_quote_idx": 0}
+      ],
+      "accuracy_flags": [
+        {"participant_id": "P09", "flag": "Score inconsistency (ease=2, satisfaction=5, perception=4)"}
+      ]
+    }
+  ],
+  "overall_by_version": {
+    "V1": {"sum": 0.532, "ci_low": 0.383, "ci_high": 0.643}
+  },
+  "recommendations": [
+    {
+      "rank": 1,
+      "headline": "Resolve the Quick Actions / Transfer inconsistency",
+      "body": "The Quick Actions transfer shortcut sends users to a different screen than the Accounts flow...",
+      "tasks": ["Transfer Funds"],
+      "dimensions": ["satisfaction", "completion"]
+    }
+  ],
+  "contradiction_checks": [
+    {"label": "Find Balance — High Completion + 3 Indirect Successes",
+     "explanation": "The completion rate overstates how intuitive the path is..."}
+  ],
+  "methodology": {
+    "format": "Moderated 1:1 usability sessions",
+    "participants": "15 per task",
+    "tasks_tested": "Find Balance, Transfer Funds",
+    "sum_method": "Completion (Wilson CI), Satisfaction (log-normal Z-score vs 4.0/5.0 spec), Time (log-normal Z-score vs data-derived benchmark). 90% CI (alpha = 0.10).",
+    "manual_time_specs": ["V1 / Transfer Funds — 120s (no participant met the automatic derivation threshold)"]
+  }
+}
+```
+
+---
+
+### HTML structure
+
+The report is a self-contained single HTML file. Reuse the concept-testing CSS verbatim (same design tokens, fonts, tab system, card patterns, blockquote styles) from `data/examples/personal_finance_study/example_report.html`. Add the following usability-specific CSS after the shared styles:
+
+```css
+/* Dimension score display */
+.dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+.dim-block { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+             padding: 16px 20px; }
+.dim-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+             letter-spacing: 0.12em; color: var(--ink-mute); margin-bottom: 6px; }
+.dim-score { font-family: var(--serif); font-size: 32px; font-weight: 500;
+             line-height: 1; letter-spacing: -0.02em; }
+.dim-score.good { color: var(--pos); }
+.dim-score.moderate { color: var(--mixed); }
+.dim-score.poor { color: var(--neg); }
+.dim-ci { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
+.dim-note { font-size: 12px; color: var(--ink-mute); font-style: italic; margin-top: 6px; }
+
+/* CI bar */
+.ci-bar-wrap { position: relative; height: 4px; background: var(--rule-soft);
+               border-radius: 2px; margin: 10px 0 4px; }
+.ci-bar-fill { position: absolute; height: 100%; background: var(--ink-mute);
+               border-radius: 2px; opacity: 0.4; }
+.ci-bar-point { position: absolute; top: -4px; width: 2px; height: 12px;
+                background: var(--ink); border-radius: 1px; transform: translateX(-50%); }
+
+/* SUM score card */
+.score-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+              padding: 24px 28px; box-shadow: var(--shadow); }
+.score-card-version { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+                      text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.score-card-sum { font-family: var(--serif); font-size: 56px; font-weight: 500;
+                  line-height: 1; letter-spacing: -0.03em; }
+.score-card-ci { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); margin-top: 4px; }
+.interp-badge { display: inline-block; font-family: var(--mono); font-size: 10px;
+                letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px;
+                border-radius: 2px; margin-top: 10px; }
+.interp-badge.good { background: rgba(47,95,58,0.12); color: var(--pos); }
+.interp-badge.moderate { background: rgba(138,110,26,0.12); color: var(--mixed); }
+.interp-badge.poor { background: rgba(155,42,42,0.12); color: var(--neg); }
+.interp-badge.critical { background: var(--neg); color: white; }
+.delta-badge { font-family: var(--mono); font-size: 13px; font-weight: 600; margin-left: 12px; }
+.delta-badge.up { color: var(--pos); }
+.delta-badge.down { color: var(--neg); }
+
+/* Outcome bar */
+.outcome-bar { display: flex; height: 20px; border-radius: 2px; overflow: hidden;
+               background: var(--rule-soft); margin: 12px 0 8px; }
+.outcome-bar .seg { height: 100%; display: flex; align-items: center; justify-content: center;
+                    font-size: 11px; color: white; font-weight: 600; }
+.outcome-bar .seg.DS { background: var(--pos); }
+.outcome-bar .seg.IS { background: var(--mixed); }
+.outcome-bar .seg.DF { background: var(--neg); }
+.outcome-bar .seg.IF { background: #6b1c1c; }
+
+/* Recommendation item */
+.rec-item { display: flex; gap: 18px; padding: 18px 0;
+            border-bottom: 1px solid var(--rule-soft); }
+.rec-item:last-child { border-bottom: none; }
+.rec-rank { font-family: var(--mono); font-size: 22px; font-weight: 500;
+            color: var(--accent); min-width: 32px; line-height: 1; }
+.rec-body { flex: 1; }
+.rec-headline { font-family: var(--serif); font-size: 18px; font-weight: 500;
+                margin: 0 0 6px; line-height: 1.2; }
+.rec-text { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+       text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+.tag.task { background: var(--bg); border: 1px solid var(--rule); color: var(--ink-soft); }
+.tag.completion { background: rgba(155,42,42,0.10); color: var(--neg); }
+.tag.satisfaction { background: rgba(138,110,26,0.10); color: var(--mixed); }
+.tag.time { background: rgba(28,26,23,0.06); color: var(--ink-mute); }
+
+/* Results table */
+.results-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.results-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+                    letter-spacing: 0.1em; color: var(--ink-mute); padding: 8px 10px;
+                    border-bottom: 1px solid var(--ink-soft); text-align: right; }
+.results-table th:first-child, .results-table th:nth-child(2) { text-align: left; }
+.results-table td { padding: 10px 10px; border-bottom: 1px solid var(--rule-soft);
+                    text-align: right; color: var(--ink-soft); }
+.results-table td:first-child, .results-table td:nth-child(2) { text-align: left; font-weight: 500; color: var(--ink); }
+.results-table .score-cell { font-family: var(--mono); font-weight: 600; }
+.score-cell.good { color: var(--pos); }
+.score-cell.moderate { color: var(--mixed); }
+.score-cell.poor { color: var(--neg); }
+.score-cell.ci { color: var(--ink-mute); font-weight: 400; }
+.results-table tr.overall-row td { border-top: 1px solid var(--ink-soft);
+                                    font-weight: 600; color: var(--ink); }
+```
+
+---
+
+### Tab and content structure
+
+**Masthead:**
+```html
+<p class="eyebrow">Usability Testing Report · [study_name]</p>
+<h1>[N] tasks tested. Overall SUM: <em>[X%]</em>.</h1>
+<!-- If two versions: <h1>V2 improved overall SUM by <em>+Xpp</em> across [N] tasks.</h1> -->
+<div class="meta">
+  <span>Date <strong>[date]</strong></span>
+  <span>Participants <strong>[N] per task</strong></span>
+  <span>Tasks <strong>[N]</strong></span>
+  <span>Version(s) <strong>[V1 / V2]</strong></span>
+  <span>Method <strong>SUM · 90% CI</strong></span>
+</div>
+```
+
+**Tabs:** `01 Overview` · `02 Key Insights` · `03 [Task Name]` (one per task) · `N Methodology`
+
+---
+
+**Overview tab (§01–§03):**
+
+*§01 — Score cards:* `.card-grid-2` (or single card if one version). Each `.score-card`:
+- Version label (`.score-card-version`, mono, accent)
+- Overall SUM % (`.score-card-sum`, colored: `--pos` ≥ 80%, `--mixed` 60–79%, `--neg` < 60%)
+- CI range (`.score-card-ci`)
+- Interpretation badge (`.interp-badge.good/moderate/poor/critical`)
+- If two versions: delta badge (`.delta-badge.up/down`) on the V2 card
+
+*§02 — Results table:* `<table class="results-table">`. Score cells use `.score-cell.good/moderate/poor/ci`. Overall rows use `.overall-row`. CI columns use `.score-cell.ci` (muted).
+
+*§03 — Score interpretation:* `.def-list` with four entries (Good / Moderate / Poor / Critical) and three dimension rows (Completion / Satisfaction / Time).
+
+---
+
+**Key Insights tab (§01–§04):**
+
+*§01 — UX recommendations:* `.card` containing `.rec-item` list. Each item: rank (`.rec-rank`), headline (`.rec-headline`), body (`.rec-text`), tag row (`.tag-row`) with task tags (`.tag.task`) and dimension tags (`.tag.completion/satisfaction/time`).
+
+*§02 — Qualitative themes* *(omit if `has_notes: false`):* One `.insight-card` per theme. Include:
+- Theme label (h3, serif)
+- Confidence pips (same `.conf-pips` pattern from concept-testing) + level text
+- Participant list (mono, small, muted)
+- Representative quote from `quotes[representative_quote_idx]` as a blockquote
+
+*§03 — Insight contradiction checks* *(omit if `has_notes: false`):* `.card` with bulleted list. Each: `<strong>` label + sentence explanation.
+
+*§04 — Accuracy flags* *(omit if no flags across any task):* Table inside `.card`: Participant | Task | Flag | Status.
+
+---
+
+**Per-task tab (`task-[id]`, one per task):**
+
+*Task hero:* Two-column grid (`grid-template-columns: 1fr 2fr`):
+- Left: Task name (h2, serif), SUM score (`.score-card-sum`, colored), CI range (`.score-card-ci`), interpretation badge
+- Right: `.dim-grid` with three `.dim-block` entries (Completion / Satisfaction / Time). Each block:
+  - Label (`.dim-label`, mono uppercase)
+  - Score (`.dim-score.good/moderate/poor`, serif large)
+  - CI bar (`.ci-bar-wrap` → `.ci-bar-fill` + `.ci-bar-point` positioned at `pct * 100%`)
+  - CI range text (`.dim-ci`)
+  - For Time only: `.dim-note` showing "time spec: Xs (derived)" or "(manual)"
+
+*§01 — Path and first-click analysis* *(omit if `has_notes: false` or `path_analysis: null`):*
+- First-click accuracy: large mono readout + label ("X of N participants started on a correct path element")
+- Outcome bar (`.outcome-bar`): segments sized by count (DS=`--pos`, IS=`--mixed`, DF=`--neg`, IF=`#6b1c1c`), each labeled with count if segment is wide enough
+- Outcome table: DS / IS / DF / IF with count and %
+- Path distribution table (omit if single path)
+- Narrative: `<p class="lead" style="font-style:italic">` (serif, 1–2 sentences)
+
+*§02 — Participant quotes* *(omit if `has_notes: false`):*
+Grouped under `<h4>` theme headings where `themes` exist; ungrouped otherwise.
+Each quote:
+```html
+<blockquote class="pos|neg|[none]">
+  "[verbatim text]"
+  <span class="attr">— P07, ~8:40</span>
+</blockquote>
+<!-- If quote.flag is non-null: -->
+<div class="reconciliation">
+  <strong>Flag</strong>[flag text]
+</div>
+```
+
+*§03 — Accuracy flags for this task* *(omit if `accuracy_flags` is empty):*
+`.card` with compact list: each entry as `<span class="concept-meta-id">[P-ID]</span> [flag message]`.
+
+---
+
+**Methodology tab (§01–§03):**
+
+*§01 Study setup:* `.insight-card` with `<p>` blocks for format, participants, tasks, CI level, satisfaction spec.
+
+*§02 SUM dimension definitions:* `.insight-card` with `.def-list`:
+- Completion — Wilson score interval; reflects task success rate
+- Satisfaction — log-normal Z-score vs 4.0/5.0 fixed spec; reflects perceived ease and satisfaction
+- Time — log-normal Z-score vs data-derived benchmark (85th-percentile time of satisfied completers); reflects efficiency. If `manual_time_specs` is non-empty, list affected tasks.
+
+*§03 Confidence definitions:* `.insight-card` with `.def-list`, same 3-pip icons as concept-testing (High / Medium / Low with criteria text).
+
+---
+
+**Footer:**
+```html
+<footer>
+  <span>Generated [date] · /sum-analysis</span>
+  <span>Usability Testing Report · [study_name]</span>
+</footer>
+```
+
+---
+
+**JavaScript:** Copy the tab-switching script from `data/examples/personal_finance_study/example_report.html` verbatim (14 lines).
+
+---
+
+### After writing the file
+
+Tell the researcher:
+
+> HTML report saved to `reports/sum_report_YYYY-MM-DD.html`. Open in any browser. Tabs: Overview, Key Insights, one tab per task, Methodology.
+
+---
+
 ## Score interpretation quick reference
 
 | SUM Score | Interpretation |
