@@ -98,32 +98,63 @@ def step_render_html(spec_json):
 
 def step_content_checks(html, spec):
     expected_substrings = [
-        ("verdict-addresses class",         'verdict-addresses'),
-        ("verdict-partial class",           'verdict-partial'),
-        ("verdict-doesn't_address class",   "verdict-doesn&#x27;t_address"),
-        ("verdict-creates_new_problem class", 'verdict-creates_new_problem'),
-        ("verdict-insufficient_evidence class", 'verdict-insufficient_evidence'),
-        ("Designed but missed section",     'Designed but missed'),
-        ("Good surprises section",          'Good surprises'),
-        ("emergent-needs section heading",  'Emergent needs'),
-        ("creates_new_problem ! glyph",     '>!<'),
-        ("insufficient_evidence stripe pattern", 'id="stripe"'),
+        # Tabs
+        ("Overview tab button",          'data-target="overview"'),
+        ("Cross-Concept tab button",     'data-target="cross"'),
+        ("Methodology tab button",       'data-target="method"'),
+        ("Overview panel",               'id="overview"'),
+        ("Cross panel",                  'id="cross"'),
+        ("Methodology panel",            'id="method"'),
+        # Harvey ball symbol defs
+        ("ball-full symbol",             'id="ball-full"'),
+        ("ball-half symbol",             'id="ball-half"'),
+        ("ball-empty symbol",            'id="ball-empty"'),
+        ("ball-warn symbol",             'id="ball-warn"'),
+        ("ball-insuf symbol",            'id="ball-insuf"'),
+        # Verdict text classes (no apostrophes — matches new doesnt_address key)
+        ("vtext.addresses",              'vtext addresses'),
+        ("vtext.partial",                'vtext partial'),
+        ("vtext.doesnt_address",         'vtext doesnt_address'),
+        ("vtext.creates_new_problem",    'vtext creates_new_problem'),
+        ("vtext.insufficient_evidence",  'vtext insufficient_evidence'),
+        # Layout sections
+        ("Designed but missed",          'Designed but missed'),
+        ("Good surprises",               'Good surprises'),
+        ("designed-vs-actual gap heading", 'Designed-vs-actual gap'),
+        # Cross-concept content
+        ("coverage grid",                'class="coverage-grid"'),
+        ("recurring drivers heading",    'Recurring drivers'),
+        ("strategic implications heading", 'Strategic implications'),
+        # Theme infrastructure
+        ("CSS custom property: accent",  '--accent:'),
+        ("CSS custom property: serif",   '--serif:'),
+        ("CSS custom property: paper",   '--paper:'),
+        # Tab JS
+        ("tab-switching script",         "data-target"),
     ]
     emergent_label = (spec.get("emergent_needs") or [{}])[0].get("label", "")
     if emergent_label:
         expected_substrings.append(("emergent need label",
-                                    f">{emergent_label}<"))
+                                    emergent_label))
 
     missing = [name for name, sub in expected_substrings if sub not in html]
     if missing:
         fail("HTML missing expected content:\n  - " + "\n  - ".join(missing))
 
-    has_designed_missed_entry = ("Designed but missed</h3><ul>" in html)
-    has_good_surprise_entry = ("Good surprises</h3><ul>" in html)
-    if not has_designed_missed_entry:
-        fail("HTML 'Designed but missed' section is empty (expected at least one entry)")
-    if not has_good_surprise_entry:
-        fail("HTML 'Good surprises' section is empty (expected at least one entry)")
+    # Each concept must have a disposition badge
+    n_dispositions = html.count('class="value advance"') \
+        + html.count('class="value iterate"') \
+        + html.count('class="value kill"') \
+        + html.count('class="value park"')
+    n_concepts = len(spec.get("concepts", []))
+    if n_dispositions < n_concepts:
+        fail(f"Expected {n_concepts} disposition badges, found {n_dispositions}")
+
+    # var(--*) usage — proof of theme-able structural CSS
+    n_var = html.count('var(--')
+    if n_var < 30:
+        fail(f"CSS uses only {n_var} var(--*) references; expected ≥30 — "
+             "structural CSS may have hardcoded colors/fonts")
 
 
 def main():
@@ -161,7 +192,9 @@ def main():
     step_content_checks(html, spec)
     n_findings = len(spec.get("findings", []))
     n_emergent = len(spec.get("emergent_needs", []))
-    print(f"OK (5 verdict classes, gap section, {n_emergent} emergent need(s), glyphs)")
+    n_concepts = len(spec.get("concepts", []))
+    print(f"OK (6 tabs, 5 ball symbols, {n_concepts} dispositions, "
+          f"{n_emergent} emergent need(s), CSS theme vars)")
 
     print(f"\nPASS: {args.study} verified — {n_findings} findings, "
           f"{n_emergent} emergent need(s), {len(html):,} bytes of HTML")

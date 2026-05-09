@@ -160,5 +160,58 @@
         "majority_pct": 1.0
       }
     }
+  },
+  "concept_summaries": {
+    "C1": {
+      "n_raters": 5,
+      "raters": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "n_cells_rated": 3,
+      "is_sparse": false
+    },
+    "C2": {
+      "n_raters": 5,
+      "raters": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "n_cells_rated": 3,
+      "is_sparse": false
+    },
+    "C3": {
+      "n_raters": 3,
+      "raters": [
+        "P01",
+        "P02",
+        "P03"
+      ],
+      "n_cells_rated": 3,
+      "is_sparse": true
+    }
+  },
+  "study_summary": {
+    "n_participants_total": 5,
+    "uniform_rating_candidates": [
+      {
+        "participant_id": "P05",
+        "concept_id": "C1",
+        "rating": "completely",
+        "n_cells": 3
+      },
+      {
+        "participant_id": "P02",
+        "concept_id": "C3",
+        "rating": "completely",
+        "n_cells": 2
+      }
+    ]
   }
 }
