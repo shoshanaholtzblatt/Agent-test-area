@@ -1,10 +1,79 @@
-# SUM Analysis Skill
+# Claude Code Research Skills
 
-A Claude Code skill for analyzing usability test data using the **Single Usability Metric (SUM)** methodology developed by Jeff Sauro / MeasuringUsability.com.
+A repo of Claude Code skills for UX research methods. Skills will be coordinated by a future research orchestrator that picks the right method for a research question, emits a structured `ResearchPlan`, and routes execution to the right skill.
+
+| Skill | Purpose |
+|---|---|
+| [`/concept-testing`](#concept-testing-concept-testing) | Early-stage UX concept evaluation — does a concept credibly serve specific user needs? |
+| [`/sum-analysis`](#sum-analysis-sum-analysis) | Single Usability Metric scoring — late-stage usability evaluation |
+
+Shared types (`Need`, `Concept`, `ResearchPlan`, `Finding`, `Evidence`) are documented in [`docs/research_skills_schema.md`](docs/research_skills_schema.md). `/concept-testing` conforms to this schema; `/sum-analysis` predates it and will be aligned in a separate PR.
 
 ---
 
-## What it does
+## Concept Testing (`/concept-testing`)
+
+Evaluate UX concepts against pre-specified user needs by reconciling 3-point usefulness ratings with qualitative past-use stories and per-need explanations. Produces a concept × need verdict matrix with confidence levels and a self-contained HTML report.
+
+### What it does
+
+1. **Parses a structured research plan** into typed `Need[]` and `Concept[]` objects (orchestrator-emittable; researcher-authorable)
+2. **Validates a ratings CSV** against the plan — rating enum, ID consistency, no duplicates
+3. **Generates a session-notes scaffold** for the researcher to fill while watching session recordings
+4. **Flags rating-vs-explanation contradictions** — halo effects, missing evidence, sentiment mismatches, story-context gaps
+5. **Inductively extracts concept aspects** — themes that drove ratings up, down, or both
+6. **Detects emergent needs** — needs surfaced in past-use stories that the plan didn't anticipate
+7. **Reconciles each cell into a `Finding`** — verdict (5-value scale) + confidence + structured evidence + reconciliation note
+8. **Surfaces designed-vs-actual gap** — concepts that missed targeted needs; concepts that addressed needs they weren't designed for
+9. **Markdown review with approval gate**, then **self-contained HTML report**
+
+### Verdict scale
+
+| Verdict | Meaning |
+|---|---|
+| `addresses` | Credibly serves the need |
+| `partial` | Addresses some aspects with caveats |
+| `doesn't_address` | Does not credibly serve the need |
+| `creates_new_problem` | Actively makes the need harder; sticky — overrides positive ratings on a single strong instance |
+| `insufficient_evidence` | <2 participants with usable evidence, or unresolvable contradiction |
+
+Participant ratings stay 3-point (`completely | partially | not_at_all`); the 5-value verdict is the reconciled judgment the skill produces per cell.
+
+### How to invoke
+
+```
+/concept-testing
+```
+
+### Inputs
+
+| Input | Format | Template |
+|---|---|---|
+| Research plan | Markdown with structured headings | `data/concept_research_plan_template.md` |
+| Ratings | CSV: `participant,concept_id,need_id,rating` | `data/concept_ratings_template.csv` |
+| Session notes | Markdown (auto-scaffolded by the skill) | `data/concept_session_notes_template.md` |
+| Concept assets | Image paths or text descriptions | referenced in research plan |
+
+### Output files
+
+| File | Description |
+|---|---|
+| `reports/concept_session_notes_YYYY-MM-DD.md` | Auto-scaffolded notes doc for researcher to fill while watching sessions |
+| `reports/concept_review_YYYY-MM-DD.md` | Markdown analysis review (matrix + per-concept deep dives + emergent needs); requires researcher approval |
+| `reports/concept_report_YYYY-MM-DD.html` | Self-contained final HTML report (inline CSS, inline SVG matrix, base64-embedded assets) |
+
+### Dependencies
+
+- Python 3 (standard library only)
+- `concept_aggregator.py` in the project root
+
+---
+
+## SUM Analysis (`/sum-analysis`)
+
+A Claude Code skill for analyzing usability test data using the **Single Usability Metric (SUM)** methodology developed by Jeff Sauro / MeasuringUsability.com.
+
+### What it does
 
 Run `/sum-analysis` in a Claude Code session to:
 
@@ -13,9 +82,7 @@ Run `/sum-analysis` in a Claude Code session to:
 3. **Compute SUM scores** — per-task scores with 90% confidence intervals across three dimensions: Completion, Satisfaction, and Time
 4. **Produce a full report** — results table, narrative summary, UX recommendations, and (if notes are provided) path analysis, quote verification, and finding confidence levels
 
----
-
-## Requirements
+### Requirements
 
 | Requirement | Detail |
 |---|---|
@@ -25,9 +92,7 @@ Run `/sum-analysis` in a Claude Code session to:
 | Time | Seconds — record for ALL participants, including non-completers |
 | Version label | Use one label if single version; distinct labels (V1, V2) to compare versions side-by-side |
 
----
-
-## How to invoke
+### How to invoke
 
 ```
 /sum-analysis
@@ -35,9 +100,7 @@ Run `/sum-analysis` in a Claude Code session to:
 
 Claude will walk you through each phase. You can provide data by pasting CSV text directly or sharing a file path.
 
----
-
-## Input format
+### Input format
 
 One row per participant per task:
 
@@ -45,83 +108,31 @@ One row per participant per task:
 version,task,participant,completion,ease,satisfaction,perception,time_s
 V1,Task 1,P01,1,5,4,4,62
 V1,Task 1,P02,0,2,2,3,145
-...
 ```
 
 A blank template is available at `data/sum_template.csv`.
 
----
+### Skill workflow
 
-## Skill workflow
-
-### Phase 1 — Announce
-Claude describes the data format and requirements.
-
-### Phase 3 — Data collection
-Paste or upload your CSV. Claude confirms the number of versions, tasks, and participants.
-
-### Phase 3b — Accuracy checks
-Claude scans every row for suspicious patterns before running any calculations:
-- Non-completer with high Likert scores
-- Inconsistent scores (e.g., ease=1 but satisfaction=5)
-- Large gap between ease and satisfaction (≥ 3 points)
-- Completed but all scores ≤ 2
-- Unusually fast or slow times relative to the task median
-
-Flagged rows are informational — you are asked to rewatch the relevant video to verify before returning notes.
-
-### Phase 3c — Correct paths, watch list, and notes
-1. You provide the correct navigation path(s) for each task
-2. Claude generates a tiered watch list (Priority 1 / 2 / 3) for all participants
-3. Claude creates `reports/sum_notes_YYYY-MM-DD.md` — a structured notes document for you to fill in while watching recordings
-
-The notes document captures per participant:
-
-| Column | What to enter |
+| Phase | Description |
 |---|---|
-| Path Taken | Step-by-step navigation the participant actually took |
-| Outcome | DS / IS / DF / IF (see below) |
-| Quote | Verbatim — exact words from the video; no paraphrasing |
-| Quote Timestamp | Approximate timestamp, e.g. ~14:30 |
-| Quote Explanation | Which screen or feature the quote refers to and the design implication |
+| 1 — Announce | Claude describes the data format and requirements |
+| 3 — Data collection | Paste or upload your CSV; counts confirmed |
+| 3b — Accuracy checks | Suspicious-row flags (inconsistent scores, completion-vs-rating mismatches, time outliers) |
+| 3c — Watch list & notes | Tiered watch list + auto-scaffolded notes doc for video review |
+| 4 — Validation | Structural error checks |
+| 4b — Time spec fallback | Manual time benchmark if data-derived spec unavailable |
+| 5 — Compute | Full SUM calculation |
+| 6 — Report | Results table, narrative, UX recommendations, path/quote/contradiction analysis |
 
-**Outcome codes:**
-- **DS** — Direct Success: first click correct, completed without backtracking
-- **IS** — Indirect Success: completed, but deviated from the correct path first
-- **DF** — Direct Failure: first click wrong, task not completed
-- **IF** — Indirect Failure: tried multiple paths, ultimately did not complete
-
-### Phase 4 — Validation
-Claude runs the calculator and checks for structural errors (missing columns, out-of-range values, insufficient participants).
-
-### Phase 4b — Time spec fallback *(if needed)*
-If no participant both completed a task and rated composite satisfaction ≥ 4.0, the time benchmark cannot be derived automatically. Claude will explain the situation and ask you to provide a manually measured time in seconds. You can obtain this by timing an external person unfamiliar with the design completing the task.
-
-### Phase 5 — Compute
-Claude runs the full SUM calculation and parses the results.
-
-### Phase 6 — Report
-Claude presents:
-- **Results table** — SUM scores and CI bounds per task and dimension
-- **Narrative summary** — interpretation of overall scores
-- **Prioritized UX recommendations** — 3–5 actionable items ranked by impact
-- **Path and first-click analysis** *(if notes provided)* — DS/IS/DF/IF breakdown, first-click accuracy %, path distribution across correct alternates
-- **Quote presentation and data accuracy check** *(if notes provided)* — verbatim quotes with timestamp citations; flags where quote sentiment conflicts with Likert scores; grouped themes
-- **Insight contradiction checks** *(if notes provided)* — cross-references path patterns against SUM scores (e.g., high Time score masked by many indirect completions)
-- **Finding confidence levels** *(if notes provided)* — High / Medium / Low based on how many participants support each qualitative finding
-
----
-
-## Output files
+### Output files
 
 | File | Description |
 |---|---|
 | `reports/sum_notes_YYYY-MM-DD.md` | Blank notes document created in Phase 3c for you to fill in |
 | `reports/sum_report_YYYY-MM-DD.md` | Full report saved at the end of Phase 6 (optional) |
 
----
-
-## Score interpretation
+### Score interpretation
 
 | SUM Score | Usability level |
 |---|---|
@@ -138,8 +149,25 @@ Claude presents:
 
 ---
 
+## Repo layout
+
+```
+.claude/skills/
+  concept-testing/SKILL.md
+  sum-analysis/SKILL.md
+data/
+  concept_research_plan_template.md
+  concept_ratings_template.csv
+  concept_session_notes_template.md
+  sum_template.csv
+  sum_notes_template.md
+docs/
+  research_skills_schema.md       — canonical types shared across research skills
+concept_aggregator.py             — helper for /concept-testing
+sum_calculator.py                 — helper for /sum-analysis
+reports/                          — generated outputs (gitignored)
+```
+
 ## Dependencies
 
 - Python 3 (standard library only — no installs required)
-- `sum_calculator.py` in the project root
-- `data/sum_notes_template.md` — standalone reference copy of the notes format
