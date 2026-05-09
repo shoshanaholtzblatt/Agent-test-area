@@ -1,0 +1,74 @@
+{
+  "study_name": "Personal Finance Concept Study",
+  "method": "concept_testing",
+  "needs": [
+    {
+      "id": "N1",
+      "statement": "Track recurring expenses across all my accounts",
+      "source": "manual",
+      "source_metadata": {},
+      "importance": 4.2,
+      "current_satisfaction": 2.1,
+      "evaluation_criteria": [
+        "See all subscriptions and recurring charges in one place",
+        "Notice when a recurring charge changes amount or frequency"
+      ]
+    },
+    {
+      "id": "N2",
+      "statement": "Catch fraudulent or anomalous charges quickly",
+      "source": "manual",
+      "source_metadata": {},
+      "importance": 4.6,
+      "current_satisfaction": 2.5,
+      "evaluation_criteria": [
+        "Get notified within 1 hour of an unusual charge",
+        "Distinguish fraud from legitimate-but-unusual spending"
+      ]
+    },
+    {
+      "id": "N3",
+      "statement": "Share day-to-day financial state with my partner",
+      "source": "manual",
+      "source_metadata": {},
+      "importance": 3.8,
+      "current_satisfaction": 1.9,
+      "evaluation_criteria": [
+        "Both partners see the same view of recent activity",
+        "Either partner can categorize or annotate transactions"
+      ]
+    }
+  ],
+  "concepts": [
+    {
+      "id": "C1",
+      "name": "Weekly auto-digest",
+      "description": "A weekly email that automatically categorizes the past week's spending and shows changes from the prior week. No interaction required.",
+      "target_needs": [
+        {"need_id": "N1", "hypothesis": "Auto-categorization makes recurring spend visible without manual work"},
+        {"need_id": "N2", "hypothesis": "Weekly review surfaces anomalies the user might otherwise miss"}
+      ],
+      "assets": ["A mocked email screenshot showing a 'Your Week in Money' digest with categorized totals and change-from-last-week indicators."]
+    },
+    {
+      "id": "C2",
+      "name": "Manual transaction tagger",
+      "description": "Users tag every transaction with a custom category as it comes in. Tags are sharable with a partner who sees the same tagged feed.",
+      "target_needs": [
+        {"need_id": "N1", "hypothesis": "Manual control yields cleaner, user-defined categories"},
+        {"need_id": "N3", "hypothesis": "Shared tags align partners on what counts as what"}
+      ],
+      "assets": ["A mocked mobile screen showing a transaction list with tag-input affordances and a 'shared with' avatar."]
+    },
+    {
+      "id": "C3",
+      "name": "Smart spend alerts",
+      "description": "Real-time push notifications when an algorithm detects a transaction that looks unusual relative to your normal spend. User can dismiss, confirm-fraud, or mark-as-expected.",
+      "target_needs": [
+        {"need_id": "N2", "hypothesis": "Real-time anomaly detection catches fraud at the moment it happens"}
+      ],
+      "assets": ["A mocked phone lock-screen showing a 'Heads up: $89 at FuelStop is 4x your usual gas spend' notification with three quick actions."]
+    }
+  ],
+  "participants": ["P01", "P02", "P03", "P04", "P05"]
+}

@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 *.pyo
 reports/*.md
+reports/*.html
+reports/*.json

@@ -1,0 +1,13 @@
+participant,concept_id,need_id,rating
+P01,C1,N1,completely
+P01,C1,N2,partially
+P01,C1,N3,not_at_all
+P01,C2,N1,partially
+P01,C2,N2,completely
+P01,C2,N3,partially
+P02,C1,N1,partially
+P02,C1,N2,partially
+P02,C1,N3,not_at_all
+P02,C2,N1,completely
+P02,C2,N2,completely
+P02,C2,N3,partially

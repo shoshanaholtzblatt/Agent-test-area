@@ -1,0 +1,217 @@
+{
+  "study_name": "Personal Finance Concept Study",
+  "concept_ids": [
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "need_ids": [
+    "N1",
+    "N2",
+    "N3"
+  ],
+  "participants": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05"
+  ],
+  "cells": {
+    "C1": {
+      "N1": {
+        "completely": 4,
+        "partially": 1,
+        "not_at_all": 0,
+        "n": 5,
+        "raters": {
+          "P01": "completely",
+          "P02": "completely",
+          "P03": "completely",
+          "P04": "partially",
+          "P05": "completely"
+        },
+        "was_targeted": true,
+        "majority": "completely",
+        "majority_pct": 0.8
+      },
+      "N2": {
+        "completely": 1,
+        "partially": 3,
+        "not_at_all": 1,
+        "n": 5,
+        "raters": {
+          "P01": "partially",
+          "P02": "not_at_all",
+          "P03": "partially",
+          "P04": "partially",
+          "P05": "completely"
+        },
+        "was_targeted": true,
+        "majority": "partially",
+        "majority_pct": 0.6
+      },
+      "N3": {
+        "completely": 1,
+        "partially": 0,
+        "not_at_all": 4,
+        "n": 5,
+        "raters": {
+          "P01": "not_at_all",
+          "P02": "not_at_all",
+          "P03": "not_at_all",
+          "P04": "not_at_all",
+          "P05": "completely"
+        },
+        "was_targeted": false,
+        "majority": "not_at_all",
+        "majority_pct": 0.8
+      }
+    },
+    "C2": {
+      "N1": {
+        "completely": 2,
+        "partially": 3,
+        "not_at_all": 0,
+        "n": 5,
+        "raters": {
+          "P01": "partially",
+          "P02": "completely",
+          "P03": "partially",
+          "P04": "completely",
+          "P05": "partially"
+        },
+        "was_targeted": true,
+        "majority": "partially",
+        "majority_pct": 0.6
+      },
+      "N2": {
+        "completely": 0,
+        "partially": 1,
+        "not_at_all": 4,
+        "n": 5,
+        "raters": {
+          "P01": "not_at_all",
+          "P02": "not_at_all",
+          "P03": "partially",
+          "P04": "not_at_all",
+          "P05": "not_at_all"
+        },
+        "was_targeted": false,
+        "majority": "not_at_all",
+        "majority_pct": 0.8
+      },
+      "N3": {
+        "completely": 4,
+        "partially": 1,
+        "not_at_all": 0,
+        "n": 5,
+        "raters": {
+          "P01": "completely",
+          "P02": "completely",
+          "P03": "completely",
+          "P04": "completely",
+          "P05": "partially"
+        },
+        "was_targeted": true,
+        "majority": "completely",
+        "majority_pct": 0.8
+      }
+    },
+    "C3": {
+      "N1": {
+        "completely": 2,
+        "partially": 1,
+        "not_at_all": 0,
+        "n": 3,
+        "raters": {
+          "P01": "completely",
+          "P02": "completely",
+          "P03": "partially"
+        },
+        "was_targeted": false,
+        "majority": "completely",
+        "majority_pct": 0.667
+      },
+      "N2": {
+        "completely": 3,
+        "partially": 0,
+        "not_at_all": 0,
+        "n": 3,
+        "raters": {
+          "P01": "completely",
+          "P02": "completely",
+          "P03": "completely"
+        },
+        "was_targeted": true,
+        "majority": "completely",
+        "majority_pct": 1.0
+      },
+      "N3": {
+        "completely": 0,
+        "partially": 0,
+        "not_at_all": 1,
+        "n": 1,
+        "raters": {
+          "P01": "not_at_all"
+        },
+        "was_targeted": false,
+        "majority": "not_at_all",
+        "majority_pct": 1.0
+      }
+    }
+  },
+  "concept_summaries": {
+    "C1": {
+      "n_raters": 5,
+      "raters": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "n_cells_rated": 3,
+      "is_sparse": false
+    },
+    "C2": {
+      "n_raters": 5,
+      "raters": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "n_cells_rated": 3,
+      "is_sparse": false
+    },
+    "C3": {
+      "n_raters": 3,
+      "raters": [
+        "P01",
+        "P02",
+        "P03"
+      ],
+      "n_cells_rated": 3,
+      "is_sparse": true
+    }
+  },
+  "study_summary": {
+    "n_participants_total": 5,
+    "uniform_rating_candidates": [
+      {
+        "participant_id": "P05",
+        "concept_id": "C1",
+        "rating": "completely",
+        "n_cells": 3
+      },
+      {
+        "participant_id": "P02",
+        "concept_id": "C3",
+        "rating": "completely",
+        "n_cells": 2
+      }
+    ]
+  }
+}

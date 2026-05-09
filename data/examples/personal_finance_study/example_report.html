@@ -1,0 +1,371 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Personal Finance Concept Study — Concept Testing Report</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"><style>:root {
+  --bg: #f6f4ee;
+  --paper: #fbfaf6;
+  --ink: #1c1a17;
+  --ink-soft: #4a463f;
+  --ink-mute: #807a70;
+  --rule: #d8d3c6;
+  --rule-soft: #e8e3d6;
+  --accent: #8b3a17;
+  --accent-soft: #c9663a;
+  --pos: #2f5f3a;
+  --neg: #9b2a2a;
+  --mixed: #8a6e1a;
+  --warn-bg: #f1e6dc;
+  --shadow: 0 1px 0 rgba(28,26,23,0.04), 0 6px 22px -12px rgba(28,26,23,0.18);
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
+
+/* Header */
+.masthead { border-bottom: 1px solid var(--ink); padding-bottom: 24px; margin-bottom: 28px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+           text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+.masthead h1 { font-family: var(--serif); font-weight: 500;
+               font-size: clamp(32px, 4.2vw, 48px); line-height: 1.05;
+               letter-spacing: -0.02em; margin: 0 0 16px;
+               font-variation-settings: "opsz" 96; }
+.masthead h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+.meta { display: flex; flex-wrap: wrap; gap: 18px 28px; font-size: 13px; color: var(--ink-soft); }
+.meta span strong { color: var(--ink); font-weight: 600; margin-left: 6px; }
+
+/* Tabs */
+.tabnav { display: flex; gap: 4px; border-bottom: 1px solid var(--rule);
+          margin-bottom: 40px; overflow-x: auto; scrollbar-width: none; }
+.tabnav::-webkit-scrollbar { display: none; }
+.tab { background: none; border: none; border-bottom: 2px solid transparent;
+       padding: 14px 20px; margin-bottom: -1px; font-family: var(--sans);
+       font-size: 14px; font-weight: 500; color: var(--ink-mute); cursor: pointer;
+       white-space: nowrap; letter-spacing: 0.01em;
+       transition: color 0.15s, border-color 0.15s; }
+.tab:hover { color: var(--ink-soft); }
+.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.tab .tab-num { font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+                margin-right: 8px; font-weight: 400; }
+.tab.active .tab-num { color: var(--accent); }
+
+/* Panels */
+.panel { display: none; animation: fadein 0.25s ease; }
+.panel.active { display: block; }
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Typography */
+h2 { font-family: var(--serif); font-weight: 500; font-size: 26px;
+     letter-spacing: -0.01em; margin: 0 0 16px; font-variation-settings: "opsz" 36; }
+h3 { font-family: var(--serif); font-weight: 500; font-size: 20px;
+     letter-spacing: -0.005em; margin: 28px 0 10px; }
+h4 { font-family: var(--sans); font-weight: 600; font-size: 12px;
+     letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute);
+     margin: 28px 0 12px; }
+p { margin: 0 0 14px; color: var(--ink-soft); }
+p.lead { font-family: var(--serif); font-size: 19px; line-height: 1.55;
+         color: var(--ink); font-weight: 400; font-variation-settings: "opsz" 24; }
+p.lead em { color: var(--accent); font-style: italic; }
+
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px;
+                border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
+.section-head h2 { margin-bottom: 0; }
+.section-head .section-num { font-family: var(--mono); font-size: 11px;
+                             color: var(--ink-mute); letter-spacing: 0.1em; }
+
+/* Verdict matrix (Harvey balls) */
+.matrix-wrap { background: var(--paper); border: 1px solid var(--rule);
+               border-radius: 4px; padding: 32px; box-shadow: var(--shadow); }
+.matrix { display: grid; gap: 0; }
+.matrix > div { padding: 14px 16px; border-bottom: 1px solid var(--rule-soft); }
+.matrix > div.matrix-headrow { border-bottom: 1px solid var(--ink-soft); background: transparent; }
+.matrix-corner { font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+                 letter-spacing: 0.12em; text-transform: uppercase; padding-bottom: 12px !important; }
+.matrix-col-head { font-family: var(--sans); font-size: 13px; font-weight: 600;
+                   color: var(--ink); text-align: center; padding-bottom: 12px !important; }
+.matrix-col-head .col-id { display: block; font-family: var(--mono); font-size: 10px;
+                           color: var(--accent); letter-spacing: 0.1em; margin-bottom: 4px;
+                           font-weight: 500; }
+.matrix-row-head { font-family: var(--sans); font-size: 14px; font-weight: 600;
+                   color: var(--ink); display: flex; flex-direction: column;
+                   justify-content: center; }
+.matrix-row-head .row-id { font-family: var(--mono); font-size: 10px;
+                           color: var(--accent); letter-spacing: 0.1em;
+                           margin-bottom: 2px; font-weight: 500; }
+.matrix-cell { text-align: center; position: relative; cursor: default; }
+.matrix-cell.designed::before {
+  content: ''; position: absolute; top: 8px; right: 8px;
+  width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+}
+.ball-svg { width: 36px; height: 36px; color: var(--ink); margin: 4px auto 8px; display: block; }
+.ball-svg.warn { color: var(--neg); }
+.ball-svg.insuf { color: var(--ink-mute); }
+.conf-pips { display: inline-flex; gap: 3px; margin-top: 2px; }
+.conf-pips span { width: 5px; height: 5px; border-radius: 50%;
+                  background: var(--ink-mute); opacity: 0.25; }
+.conf-pips span.on { opacity: 1; }
+.verdict-label { display: block; font-size: 11px; color: var(--ink-mute);
+                 margin-top: 4px; font-family: var(--mono); letter-spacing: 0.05em; }
+
+/* Legend */
+.legend { margin-top: 24px; padding: 20px 24px; background: var(--bg);
+          border: 1px solid var(--rule-soft); border-radius: 4px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; }
+.legend-group h5 { font-family: var(--sans); font-size: 11px; text-transform: uppercase;
+                   letter-spacing: 0.12em; color: var(--ink-mute); margin: 0 0 10px;
+                   font-weight: 600; }
+.legend-item { display: flex; align-items: center; gap: 10px; font-size: 13px;
+               color: var(--ink-soft); margin-bottom: 6px; }
+.legend-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+.legend-item .pip-row { display: inline-flex; gap: 3px; width: 18px;
+                        align-items: center; justify-content: center; }
+.legend-item .pip-row span { width: 5px; height: 5px; border-radius: 50%;
+                              background: var(--ink-mute); opacity: 0.25; }
+.legend-item .pip-row span.on { opacity: 1; }
+.legend-item .designed-marker { width: 6px; height: 6px; background: var(--accent);
+                                 border-radius: 50%; display: inline-block; }
+
+/* Cards */
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+        padding: 24px 28px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+/* Gap section */
+.gap-list { list-style: none; padding: 0; margin: 0; }
+.gap-list li { padding: 14px 0; border-bottom: 1px solid var(--rule-soft);
+               display: flex; align-items: flex-start; gap: 14px;
+               font-size: 14px; color: var(--ink-soft); }
+.gap-list li:last-child { border-bottom: none; }
+.gap-list .tag { flex-shrink: 0; font-family: var(--mono); font-size: 11px;
+                 background: var(--ink); color: var(--paper); padding: 3px 8px;
+                 border-radius: 2px; letter-spacing: 0.05em; }
+.gap-list .tag.surprise { background: var(--pos); }
+
+/* Emergent need */
+.emergent-card { border-left: 3px solid var(--accent); padding: 20px 24px;
+                 background: var(--paper); margin-bottom: 16px; }
+.emergent-card h4 { color: var(--ink); text-transform: none; letter-spacing: 0;
+                    font-family: var(--serif); font-size: 18px; font-weight: 500; margin: 0 0 8px; }
+.emergent-meta { font-size: 12px; color: var(--ink-mute); font-family: var(--mono); margin-bottom: 12px; }
+.emergent-quote { margin: 8px 0; padding: 8px 14px; border-left: 2px solid var(--rule);
+                  font-style: italic; color: var(--ink-soft); font-size: 14px; }
+.emergent-quote .attr { display: block; font-style: normal; font-family: var(--mono);
+                         font-size: 11px; color: var(--ink-mute); margin-top: 4px;
+                         letter-spacing: 0.05em; }
+.emergent-card .missed { margin-top: 12px; font-size: 13px; color: var(--ink-soft); }
+.emergent-card .missed strong { color: var(--ink); }
+
+/* Concept hero */
+.concept-hero { display: grid; grid-template-columns: 360px 1fr; gap: 36px;
+                align-items: start; margin-bottom: 36px; padding-bottom: 32px;
+                border-bottom: 1px solid var(--rule); }
+.concept-image { aspect-ratio: 4 / 3; background: var(--paper);
+                 border: 1px dashed var(--ink-mute); border-radius: 4px;
+                 display: flex; flex-direction: column; align-items: center;
+                 justify-content: center; position: relative; overflow: hidden; }
+.concept-image.has-image { border-style: solid; border-color: var(--rule); padding: 0; }
+.concept-image.has-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.concept-image::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(135deg, transparent 48%, var(--rule-soft) 49%, var(--rule-soft) 51%, transparent 52%);
+  background-size: 12px 12px; opacity: 0.5;
+}
+.concept-image.has-image::before { display: none; }
+.concept-image .placeholder-label { font-family: var(--mono); font-size: 10px;
+                                     letter-spacing: 0.15em; text-transform: uppercase;
+                                     color: var(--ink-mute); margin-bottom: 6px; z-index: 1;
+                                     background: var(--paper); padding: 0 8px; }
+.concept-image .placeholder-name { font-family: var(--serif); font-style: italic;
+                                    font-size: 18px; color: var(--ink-soft); z-index: 1;
+                                    background: var(--paper); padding: 0 12px; text-align: center; }
+.concept-meta-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+                   color: var(--accent); margin-bottom: 10px; text-transform: uppercase; }
+.concept-name { font-family: var(--serif); font-size: 34px; font-weight: 500;
+                line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 14px; }
+.concept-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 22px; max-width: 60ch; }
+.disposition { display: inline-flex; align-items: center; gap: 12px;
+               padding: 12px 18px; border-radius: 4px; background: var(--paper);
+               border: 1px solid var(--rule); margin-bottom: 14px; }
+.disposition .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+                       text-transform: uppercase; color: var(--ink-mute); }
+.disposition .value { font-family: var(--serif); font-size: 17px; font-weight: 500; font-style: italic; }
+.disposition .value.advance { color: var(--pos); }
+.disposition .value.iterate { color: var(--mixed); }
+.disposition .value.kill { color: var(--neg); }
+.disposition .value.park { color: var(--ink-mute); }
+.disposition-rationale { font-size: 14px; color: var(--ink-soft); max-width: 60ch; font-style: italic; }
+
+/* Distribution bars */
+.dist-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.dist-table th, .dist-table td { padding: 10px 8px; text-align: left;
+                                  font-size: 13px; border-bottom: 1px solid var(--rule-soft); }
+.dist-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+                 letter-spacing: 0.1em; color: var(--ink-mute); font-weight: 500; }
+.dist-bar { display: flex; height: 18px; border-radius: 2px; overflow: hidden;
+            background: var(--rule-soft); min-width: 160px; }
+.dist-bar .seg { height: 100%; display: flex; align-items: center; justify-content: center;
+                 font-size: 11px; color: white; font-weight: 600; }
+.dist-bar .seg.completely { background: var(--pos); }
+.dist-bar .seg.partially { background: var(--mixed); }
+.dist-bar .seg.not_at_all { background: var(--neg); }
+
+/* Aspects */
+.aspect-row { display: flex; align-items: center; gap: 14px; padding: 12px 0;
+              border-bottom: 1px solid var(--rule-soft); font-size: 14px; }
+.aspect-row:last-child { border: none; }
+.aspect-name { flex: 1; color: var(--ink); font-weight: 500; }
+.aspect-direction { font-family: var(--mono); font-size: 10px; padding: 3px 8px;
+                    border-radius: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
+.aspect-direction.up { background: rgba(47,95,58,0.12); color: var(--pos); }
+.aspect-direction.down { background: rgba(155,42,42,0.12); color: var(--neg); }
+.aspect-direction.mixed { background: rgba(138,110,26,0.14); color: var(--mixed); }
+.aspect-count { font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+                min-width: 80px; text-align: right; }
+
+/* Findings */
+.finding-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+                padding: 22px 26px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.finding-head { display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+                margin-bottom: 14px; padding-bottom: 14px;
+                border-bottom: 1px solid var(--rule-soft); }
+.finding-head h4 { margin: 0; color: var(--ink); text-transform: none;
+                   letter-spacing: -0.005em; font-size: 16px; font-family: var(--serif);
+                   font-weight: 500; flex: 1; }
+.finding-head .need-id { font-family: var(--mono); font-size: 10px;
+                          color: var(--accent); letter-spacing: 0.1em; margin-right: 6px; }
+.finding-head .targeted-tag { font-family: var(--mono); font-size: 10px;
+                               background: var(--accent); color: var(--paper);
+                               padding: 3px 8px; border-radius: 2px;
+                               letter-spacing: 0.08em; text-transform: uppercase; }
+.finding-verdict { display: flex; align-items: center; gap: 10px; }
+.finding-verdict svg { width: 24px; height: 24px; }
+.finding-verdict .vtext { font-family: var(--mono); font-size: 11px;
+                          text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+.vtext.addresses { color: var(--pos); }
+.vtext.partial { color: var(--mixed); }
+.vtext.doesnt_address { color: var(--neg); }
+.vtext.creates_new_problem { color: var(--neg); }
+.vtext.insufficient_evidence { color: var(--ink-mute); }
+
+.reconciliation { background: var(--bg); border-left: 3px solid var(--rule);
+                  padding: 12px 16px; margin: 12px 0; font-size: 13px;
+                  color: var(--ink-soft); line-height: 1.55; }
+.reconciliation strong { font-family: var(--mono); font-size: 10px;
+                          letter-spacing: 0.12em; text-transform: uppercase;
+                          color: var(--ink-mute); display: block; margin-bottom: 4px; }
+
+blockquote { margin: 12px 0; padding: 10px 0 10px 20px;
+             border-left: 3px solid var(--rule); font-family: var(--serif);
+             font-style: italic; font-size: 15px; color: var(--ink); line-height: 1.5; }
+blockquote.pos { border-left-color: var(--pos); }
+blockquote.neg { border-left-color: var(--neg); }
+blockquote .attr { display: block; font-style: normal; font-family: var(--mono);
+                    font-size: 11px; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+.finding-notes { margin-top: 12px; font-size: 13.5px; color: var(--ink-soft);
+                  padding: 10px 0 0; border-top: 1px dashed var(--rule); }
+
+/* Cross-concept insights */
+.insight-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+                padding: 26px 30px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.insight-card h3 { margin-top: 0; display: flex; align-items: baseline; gap: 12px; }
+.insight-card h3 .insight-num { font-family: var(--mono); font-size: 11px;
+                                 color: var(--accent); letter-spacing: 0.1em; font-weight: 500; }
+.insight-card p { font-size: 14.5px; }
+.coverage-grid { display: grid; gap: 16px; margin: 16px 0 8px; }
+.coverage-item { padding: 16px; background: var(--bg); border-radius: 4px;
+                  border: 1px solid var(--rule-soft); }
+.coverage-item .nid { font-family: var(--mono); font-size: 10px;
+                       color: var(--accent); letter-spacing: 0.1em; }
+.coverage-item .nname { font-family: var(--serif); font-size: 15px;
+                         font-weight: 500; margin: 4px 0 10px; }
+.coverage-balls { display: flex; gap: 14px; margin-bottom: 8px; }
+.coverage-balls > div { text-align: center; }
+.coverage-balls svg { width: 22px; height: 22px; display: block; margin: 0 auto 4px; }
+.coverage-balls .cid { font-family: var(--mono); font-size: 9px;
+                        color: var(--ink-mute); letter-spacing: 0.05em; }
+.coverage-verdict { font-size: 12px; color: var(--ink-soft); margin-top: 6px; line-height: 1.4; }
+.coverage-verdict strong { color: var(--ink); }
+.strategic-list { padding-left: 18px; color: var(--ink-soft); font-size: 14.5px; line-height: 1.65; }
+.strategic-list li { margin-bottom: 10px; }
+.strategic-list li strong { color: var(--ink); }
+.strategic-list li:last-child { margin-bottom: 0; }
+
+/* Methodology */
+.method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.method-grid .insight-card { margin-bottom: 0; }
+dl.def-list { margin: 0; }
+dl.def-list dt { font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+                  letter-spacing: 0.1em; color: var(--ink); font-weight: 600;
+                  margin-top: 14px; display: flex; align-items: center; gap: 8px; }
+dl.def-list dt:first-child { margin-top: 0; }
+dl.def-list dt svg { width: 16px; height: 16px; }
+dl.def-list dt .pip-row { display: inline-flex; gap: 3px; }
+dl.def-list dt .pip-row span { width: 5px; height: 5px; border-radius: 50%;
+                                background: var(--ink-mute); opacity: 0.25; }
+dl.def-list dt .pip-row span.on { background: var(--ink); opacity: 1; }
+dl.def-list dd { margin: 4px 0 0 24px; font-size: 13.5px; color: var(--ink-soft); }
+
+/* Footer */
+footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--rule);
+         font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+         letter-spacing: 0.05em; display: flex; justify-content: space-between; }
+
+@media (max-width: 880px) {
+  .page { padding: 24px 20px 60px; }
+  .matrix-row-head { font-size: 12px; padding: 12px 8px !important; }
+  .concept-hero { grid-template-columns: 1fr; }
+  .legend { grid-template-columns: 1fr; }
+  .method-grid { grid-template-columns: 1fr; }
+  .card-grid-2 { grid-template-columns: 1fr; }
+}</style></head><body><svg style="position:absolute;width:0;height:0" aria-hidden="true">
+  <defs>
+    <symbol id="ball-full" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="currentColor"/>
+    </symbol>
+    <symbol id="ball-half" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M 12 3 A 9 9 0 0 1 12 21 Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="ball-empty" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="ball-warn" viewBox="0 0 24 24">
+      <path d="M 12 3 L 22 21 L 2 21 Z" fill="currentColor" stroke="currentColor" stroke-width="0.5" stroke-linejoin="round"/>
+      <text x="12" y="18" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">!</text>
+    </symbol>
+    <symbol id="ball-insuf" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2.5"/>
+      <text x="12" y="16" text-anchor="middle" fill="currentColor" font-size="10" font-weight="700" font-family="IBM Plex Sans, sans-serif">?</text>
+    </symbol>
+  </defs>
+</svg><div class="page"><header class="masthead"><p class="eyebrow">Concept Testing Report · Personal Finance MVP</p><h1>How three concepts <em>address</em> three needs.</h1><div class="meta"><span>Date <strong>2026-04-18</strong></span><span>Participants <strong>5</strong></span><span>Concepts <strong>3</strong></span><span>Needs tested <strong>3</strong></span><span>Method <strong>Past-use stories + concept ratings</strong></span></div></header><nav class="tabnav" role="tablist"><button class="tab active" data-target="overview" role="tab"><span class="tab-num">01</span>Overview</button><button class="tab" data-target="cross" role="tab"><span class="tab-num">02</span>Cross-Concept Insights</button><button class="tab" data-target="c1" role="tab"><span class="tab-num">03</span>C1: Weekly auto-digest</button><button class="tab" data-target="c2" role="tab"><span class="tab-num">04</span>C2: Manual transaction tagger</button><button class="tab" data-target="c3" role="tab"><span class="tab-num">05</span>C3: Smart spend alerts</button><button class="tab" data-target="method" role="tab"><span class="tab-num">06</span>Methodology</button></nav><section class="panel active" id="overview" role="tabpanel"><p class="lead">Three concepts, read as a portfolio rather than as individuals — patterns of coverage, recurring drivers, methodological signals, and what the design space is missing.</p><div class="section"><div class="section-head"><span class="section-num">§01</span><h2>Verdict matrix</h2></div><div class="matrix-wrap"><div class="matrix" style="grid-template-columns: 220px repeat(3, 1fr)"><div class="matrix-corner matrix-headrow">Concept × Need</div><div class="matrix-col-head matrix-headrow"><span class="col-id">N1</span>Track recurring expenses</div><div class="matrix-col-head matrix-headrow"><span class="col-id">N2</span>Catch fraud quickly</div><div class="matrix-col-head matrix-headrow"><span class="col-id">N3</span>Share with partner</div><div class="matrix-row-head"><span class="row-id">C1</span>Weekly auto-digest</div><div class="matrix-cell designed"><svg class="ball-svg"><use href="#ball-full"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span class="on"></span></span><span class="verdict-label">addresses</span></div><div class="matrix-cell designed"><svg class="ball-svg"><use href="#ball-half"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span></span></span><span class="verdict-label">partial</span></div><div class="matrix-cell"><svg class="ball-svg"><use href="#ball-empty"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span class="on"></span></span><span class="verdict-label">doesn&#x27;t address</span></div><div class="matrix-row-head"><span class="row-id">C2</span>Manual transaction tagger</div><div class="matrix-cell designed"><svg class="ball-svg"><use href="#ball-half"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span></span></span><span class="verdict-label">partial</span></div><div class="matrix-cell"><svg class="ball-svg warn"><use href="#ball-warn"/></svg><span class="conf-pips"><span class="on"></span><span></span><span></span></span><span class="verdict-label">creates new problem</span></div><div class="matrix-cell designed"><svg class="ball-svg"><use href="#ball-full"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span class="on"></span></span><span class="verdict-label">addresses</span></div><div class="matrix-row-head"><span class="row-id">C3</span>Smart spend alerts</div><div class="matrix-cell"><svg class="ball-svg"><use href="#ball-full"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span></span></span><span class="verdict-label">addresses</span></div><div class="matrix-cell designed"><svg class="ball-svg"><use href="#ball-full"/></svg><span class="conf-pips"><span class="on"></span><span class="on"></span><span></span></span><span class="verdict-label">addresses</span></div><div class="matrix-cell"><svg class="ball-svg insuf"><use href="#ball-insuf"/></svg><span class="conf-pips"><span class="on"></span><span></span><span></span></span><span class="verdict-label">insufficient ev.</span></div></div><div class="legend"><div class="legend-group"><h5>Verdict</h5><div class="legend-item"><svg><use href="#ball-full"/></svg>Addresses the need</div><div class="legend-item"><svg><use href="#ball-half"/></svg>Partially addresses</div><div class="legend-item"><svg><use href="#ball-empty"/></svg>Does not address</div><div class="legend-item"><svg style="color:var(--neg)"><use href="#ball-warn"/></svg>Creates new problem</div><div class="legend-item"><svg style="color:var(--ink-mute)"><use href="#ball-insuf"/></svg>Insufficient evidence</div></div><div class="legend-group"><h5>Confidence &amp; design intent</h5><div class="legend-item"><span class="pip-row"><span class="on"></span><span class="on"></span><span class="on"></span></span>High confidence (consistent signal across participants)</div><div class="legend-item"><span class="pip-row"><span class="on"></span><span class="on"></span><span></span></span>Medium confidence</div><div class="legend-item"><span class="pip-row"><span class="on"></span><span></span><span></span></span>Low confidence (sparse or contradictory)</div><div class="legend-item"><span class="designed-marker"></span>Concept was designed for this need</div></div></div></div></div><div class="section"><div class="section-head"><span class="section-num">§02</span><h2>Designed-vs-actual gap</h2></div><p>What the concepts were intended to do, versus what testing actually showed.</p><div class="card-grid-2"><div class="card"><h4>Designed but missed</h4><ul class="gap-list"><li><span class="tag">C1 → N2</span>Weekly auto-digest was designed to address <em>"Catch fraud quickly"</em>. Verdict: partial.</li><li><span class="tag">C2 → N1</span>Manual transaction tagger was designed to address <em>"Track recurring expenses"</em>. Verdict: partial.</li></ul></div><div class="card"><h4>Good surprises</h4><ul class="gap-list"><li><span class="tag surprise">C3 → N1</span>Smart spend alerts addresses <em>"Track recurring expenses"</em> even though it was not designed to.</li></ul></div></div></div><div class="section"><div class="section-head"><span class="section-num">§03</span><h2>Emergent need</h2></div><p>One unmet need surfaced consistently in past-use stories that no concept addressed. See <a href="#" data-jump="cross" style="color:var(--accent)">Cross-Concept Insights</a> for full treatment.</p><div class="emergent-card"><h4>Splitting recurring shared expenses with roommates</h4><p class="emergent-meta">Confidence: medium · Surfaced unprompted in 2/5 past-use stories (P02, P04); both returned to it spontaneously</p><div class="emergent-quote">"Honestly the thing I really need is a way to split rent and groceries with my roommates without a shared spreadsheet."<span class="attr">— P02</span></div><p class="missed"><strong>Missed by:</strong> C1, C2, C3.</p></div></div></section><section class="panel" id="cross" role="tabpanel"><p class="lead">Three concepts, read as a portfolio rather than as individuals — patterns of coverage, recurring drivers, methodological signals, and what the design space is missing.</p><div class="insight-card"><h3><span class="insight-num">01</span>Need coverage across the portfolio</h3><p>Every need has at least one concept that addresses it, but each is owned by a single concept. There are no redundancies and one structural gap: <strong>no single concept</strong> handles fraud detection <em>and</em> partner sharing together.</p><div class="coverage-grid" style="grid-template-columns: repeat(3, 1fr)"><div class="coverage-item"><span class="nid">N1</span><div class="nname">Track recurring expenses</div><div class="coverage-balls"><div><svg><use href="#ball-full"/></svg><span class="cid">C1</span></div><div><svg><use href="#ball-half"/></svg><span class="cid">C2</span></div><div><svg><use href="#ball-full"/></svg><span class="cid">C3</span></div></div><div class="coverage-verdict"><strong>Well-covered.</strong> C1 owns it; C3 is a good surprise via anomaly-detection.</div></div><div class="coverage-item"><span class="nid">N2</span><div class="nname">Catch fraud quickly</div><div class="coverage-balls"><div><svg><use href="#ball-half"/></svg><span class="cid">C1</span></div><div><svg style="color:var(--neg)"><use href="#ball-warn"/></svg><span class="cid">C2</span></div><div><svg><use href="#ball-full"/></svg><span class="cid">C3</span></div></div><div class="coverage-verdict"><strong>Single point of coverage.</strong> Only C3 actually solves it. C1's cadence is the cap; C2 makes things worse.</div></div><div class="coverage-item"><span class="nid">N3</span><div class="nname">Share with partner</div><div class="coverage-balls"><div><svg><use href="#ball-empty"/></svg><span class="cid">C1</span></div><div><svg><use href="#ball-full"/></svg><span class="cid">C2</span></div><div><svg style="color:var(--ink-mute)"><use href="#ball-insuf"/></svg><span class="cid">C3</span></div></div><div class="coverage-verdict"><strong>Single point of coverage.</strong> Only C2 — and its sharing value is yoked to a tagging behavior most users won't perform.</div></div></div></div><div class="insight-card"><h3><span class="insight-num">02</span>Recurring drivers across concepts</h3><p>Aspects mentioned across multiple concepts reveal what the user population is actually responding to, beneath any single stimulus.</p><div class="aspect-row"><div class="aspect-name">Automation / no-effort affordances</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">C1 (4), C3 (3)</span></div><div class="aspect-row"><div class="aspect-name">Manual effort &amp; tagging burden</div><span class="aspect-direction down">driver-down</span><span class="aspect-count">C2 (4)</span></div><div class="aspect-row"><div class="aspect-name">Real-time / latency-sensitive delivery</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">C3 (3) · inverse on C1 cadence</span></div><div class="aspect-row"><div class="aspect-name">Contextual content (what the charge is, not just that one happened)</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">C3 (2)</span></div><div class="aspect-row"><div class="aspect-name">Distrust of automated judgment</div><span class="aspect-direction down">driver-down</span><span class="aspect-count">C3 (1)</span></div><p style="margin-top:18px">The dominant signal is <strong>aversion to manual effort</strong>. Where automation worked, participants rated up; where the concept asked for input (C2), most said they'd rate it generously in theory but wouldn't follow through. This makes "automation with override" a strong design principle going forward.</p></div><div class="insight-card"><h3><span class="insight-num">03</span>Methodological observations</h3><p>Two patterns affect how the matrix above should be read.</p><h4>P05 halo pattern</h4><p>P05 rated &lt;em&gt;completely&lt;/em&gt; across nearly every cell with vague, generic explanations (&quot;sounds good&quot;, &quot;this would help&quot;). This is consistent with halo / acquiescence rather than considered judgment. Their ratings were down-weighted in every per-cell reconciliation. Treat P05&#x27;s data as directional only — not as one of five equal data points.</p><h4>Sparse coverage on C3</h4><p>C3 was rated by only 3 participants. C3 was rated by only 3 of 5 participants because the study ran out of time. This is why every C3 verdict carries medium-or-lower confidence even when the signal is uniformly positive. A follow-up round bringing C3 to n=5 is the cheapest way to firm up the strongest single concept in the portfolio.</p><h4>P02 contradiction on C3</h4><p>P02 rated C3 &lt;em&gt;completely&lt;/em&gt; on fraud while saying &quot;I don&#x27;t really trust automated alerts&quot; in the same breath. Logged as a known contradiction worth probing, not as an undermining signal — the rating itself was for the concept&#x27;s shape, the comment was about a category-level skepticism.</p></div><div class="insight-card"><h3><span class="insight-num">04</span>Emergent need: Splitting recurring shared expenses with roommates</h3><div class="emergent-card" style="border-left:none;padding:0;background:transparent;margin-bottom:14px"><p class="emergent-meta">Confidence: medium · Surfaced unprompted in 2/5 past-use stories (P02, P04); both returned to it spontaneously</p><div class="emergent-quote">"Honestly the thing I really need is a way to split rent and groceries with my roommates without a shared spreadsheet."<span class="attr">— P02</span></div><div class="emergent-quote">"I want something for that — a way to set up shared recurring obligations with people who aren&#x27;t my partner."<span class="attr">— P04</span></div></div><p>The "share with partner" need (N3) as scoped assumes a romantic-partnership context. 40% of participants surfaced a roommate / non-romantic-cohabitant need without prompting. The portfolio doesn't address it — and given the demographic shift toward later partnership, this gap may be larger than this study can size. Worth scoping a discovery study.</p><p><strong>Missed by:</strong> C1, C2, C3</p></div><div class="insight-card"><h3><span class="insight-num">05</span>Strategic implications</h3><p>Four takeaways for the MVP roadmap conversation.</p><ul class="strategic-list"><li><strong>No concept is a complete solution.</strong> Building any one of these alone leaves at least two of three needs underserved. The MVP framing should be a <em>set</em>, not a single winner.</li><li><strong>C3 + C2 is the most addressable combination.</strong> C3 owns fraud and surprises positively on tracking. C2 owns sharing. Together they cover all three needs. C1's distinct value (low-effort weekly summary) is real but not unique — C3 absorbs much of it.</li><li><strong>&quot;Automation with override&quot; is the design principle the data is asking for.</strong> Across concepts, automation drove up-rating; manual control was claimed in theory and rejected in practice. The next iteration of C2 should test whether shared tagging can work with auto-suggestion as the default.</li><li><strong>Roommate-style sharing is an unmet need worth a discovery study.</strong> 2 of 5 participants raised it unprompted; the concept set as designed doesn't see it.</li></ul></div></section><section class="panel" id="c1" role="tabpanel"><div class="concept-hero"><div class="concept-image"><span class="placeholder-label">Stimulus image</span><span class="placeholder-name">Weekly auto-digest email mockup</span></div><div><p class="concept-meta-id">Concept C1</p><h2 class="concept-name">Weekly auto-digest</h2><p class="concept-desc">A weekly email that automatically categorizes the past week&#x27;s spending and shows changes from the prior week. No interaction required.</p><div class="disposition"><span class="label">Disposition</span><span class="value advance">Advance</span></div><p class="disposition-rationale">Strong on its targeted need (recurring expenses) at the lowest effort cost in the portfolio. Re-scope away from fraud — pair with a real-time mechanism instead. Cadence is the structural cap.</p></div></div><div class="section"><h3>Rating distribution</h3><table class="dist-table"><thead><tr><th>Need</th><th>Distribution</th><th>n</th></tr></thead><tbody><tr><td><strong>N1</strong> Track recurring expenses</td><td><div class="dist-bar"><div class="seg completely" style="width:80%">4</div><div class="seg partially" style="width:20%">1</div></div></td><td>5</td></tr><tr><td><strong>N2</strong> Catch fraud quickly</td><td><div class="dist-bar"><div class="seg completely" style="width:20%">1</div><div class="seg partially" style="width:60%">3</div><div class="seg not_at_all" style="width:20%">1</div></div></td><td>5</td></tr><tr><td><strong>N3</strong> Share with partner</td><td><div class="dist-bar"><div class="seg completely" style="width:20%">1</div><div class="seg not_at_all" style="width:80%">4</div></div></td><td>5</td></tr></tbody></table></div><div class="section"><h3>Past-use story synthesis</h3><p>Across all participants, the weekly digest was framed as a low-effort way to notice spending creep — small recurring charges that would otherwise be invisible. Three participants explicitly said the appeal was not having to log into anything. P05 was an exception: rated everything positively but with vague, generic language, suggesting halo rather than considered judgment.</p><blockquote class="pos">"I would have loved this last month — I would&#x27;ve seen the Spotify thing immediately."<span class="attr">— P01</span></blockquote><blockquote class="pos">"Auto-categorization is exactly what I want. I&#x27;m never going to do it myself."<span class="attr">— P03</span></blockquote></div><div class="section"><h3>Aspects</h3><div class="aspect-row"><div class="aspect-name">Automatic categorization</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">cited by 4</span></div><div class="aspect-row"><div class="aspect-name">Weekly cadence</div><span class="aspect-direction mixed">driver-mixed</span><span class="aspect-count">cited by 4</span></div><div class="aspect-row"><div class="aspect-name">Single-account scope</div><span class="aspect-direction down">driver-down</span><span class="aspect-count">cited by 1</span></div></div><div class="section"><h3>Per-need findings</h3><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N1</span>Track recurring expenses</h4><span class="targeted-tag">Designed for</span><div class="finding-verdict"><svg><use href="#ball-full"/></svg><span class="vtext addresses">Addresses · high conf.</span></div></div><blockquote class="pos">"I would have loved this last month — I would&#x27;ve seen the Spotify thing immediately."<span class="attr">— P01 · rating-row N1</span></blockquote><blockquote class="pos">"Auto-categorization is exactly what I want. I&#x27;m never going to do it myself."<span class="attr">— P03 · rating-row N1</span></blockquote><p class="finding-notes">Strong consensus that auto-categorization is the key driver. P05 halo applied (see Cross-Concept Insights / Methodological observations) — does not undermine the verdict but does not strengthen it.</p></div><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N2</span>Catch fraud quickly</h4><span class="targeted-tag">Designed for</span><div class="finding-verdict"><svg><use href="#ball-half"/></svg><span class="vtext partial">Partial · medium conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>Majority `partially` (3/5) with consistent explanations citing weekly cadence. P05 halo applied; P02&#x27;s `not_at_all` reinforces the cadence concern. Held at `partial`.</div><blockquote class="neg">"It might catch some stuff but if I see fraud on Monday, this email doesn&#x27;t help me until Friday."<span class="attr">— P01 · rating-row N2</span></blockquote><blockquote class="neg">"A weekly email is way too late. Fraud needs to be in seconds, not days."<span class="attr">— P02 · rating-row N2</span></blockquote><p class="finding-notes">Cadence is the bottleneck. Concept was designed for fraud detection but the weekly delivery rhythm fundamentally limits effectiveness. Consider a real-time fallback for high-value anomalies.</p></div><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N3</span>Share with partner</h4><div class="finding-verdict"><svg><use href="#ball-empty"/></svg><span class="vtext doesnt_address">Doesn&#x27;t address · high conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>P05 halo applied. 4/5 explicit `not_at_all` with consistent explanations confirms the verdict.</div><blockquote class="neg">"This is just for me. My partner would never see it."<span class="attr">— P01 · rating-row N3</span></blockquote><blockquote class="neg">"Email is one-way. There&#x27;s no shared aspect to it."<span class="attr">— P04 · rating-row N3</span></blockquote><p class="finding-notes">Concept was not targeted at sharing and unanimously confirmed not to address it.</p></div></div></section><section class="panel" id="c2" role="tabpanel"><div class="concept-hero"><div class="concept-image"><span class="placeholder-label">Stimulus image</span><span class="placeholder-name">Manual transaction tagger UI</span></div><div><p class="concept-meta-id">Concept C2</p><h2 class="concept-name">Manual transaction tagger</h2><p class="concept-desc">Users tag every transaction with a custom category as it comes in. Tags are sharable with a partner who sees the same tagged feed.</p><div class="disposition"><span class="label">Disposition</span><span class="value iterate">Iterate</span></div><p class="disposition-rationale">Owns partner-sharing — the only concept that does. But adoption fragility is real: 3/5 said they wouldn&#x27;t tag, one experienced tagging as anxiety-inducing. Test whether shared tags can work with auto-suggested defaults and manual override.</p></div></div><div class="section"><h3>Rating distribution</h3><table class="dist-table"><thead><tr><th>Need</th><th>Distribution</th><th>n</th></tr></thead><tbody><tr><td><strong>N1</strong> Track recurring expenses</td><td><div class="dist-bar"><div class="seg completely" style="width:40%">2</div><div class="seg partially" style="width:60%">3</div></div></td><td>5</td></tr><tr><td><strong>N2</strong> Catch fraud quickly</td><td><div class="dist-bar"><div class="seg partially" style="width:20%">1</div><div class="seg not_at_all" style="width:80%">4</div></div></td><td>5</td></tr><tr><td><strong>N3</strong> Share with partner</td><td><div class="dist-bar"><div class="seg completely" style="width:80%">4</div><div class="seg partially" style="width:20%">1</div></div></td><td>5</td></tr></tbody></table></div><div class="section"><h3>Past-use story synthesis</h3><p>Participants split on whether the control was worth the burden. Sharing tags with a partner was the clear win — the only feature in the study that resolves shared-categorization disputes. But three of five participants explicitly said they wouldn&#x27;t tag transactions themselves, and one described tagging as actively anxiety-inducing.</p><blockquote class="pos">"Same tags, same view, finally a way to align on what counts as &#x27;eating out&#x27;."<span class="attr">— P01</span></blockquote><blockquote class="neg">"Tagging every transaction would stress me out, especially around money."<span class="attr">— P03</span></blockquote><blockquote>"If you stick with the tagging it&#x27;s the cleanest view possible."<span class="attr">— P04</span></blockquote></div><div class="section"><h3>Aspects</h3><div class="aspect-row"><div class="aspect-name">Shared tags with partner</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">cited by 4</span></div><div class="aspect-row"><div class="aspect-name">Tagging burden</div><span class="aspect-direction down">driver-down</span><span class="aspect-count">cited by 4</span></div><div class="aspect-row"><div class="aspect-name">Anxiety around getting it wrong</div><span class="aspect-direction down">driver-down</span><span class="aspect-count">cited by 1</span></div></div><div class="section"><h3>Per-need findings</h3><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N1</span>Track recurring expenses</h4><span class="targeted-tag">Designed for</span><div class="finding-verdict"><svg><use href="#ball-half"/></svg><span class="vtext partial">Partial · medium conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>Designed-vs-actual gap on adoption likelihood: ratings (2 completely, 3 partially) reflect that participants understand tagging would give the cleanest view, but most explicitly state they wouldn&#x27;t actually do the tagging. P03&#x27;s explanation cell was empty — flagged but does not change verdict.</div><blockquote class="pos">"If I&#x27;m tagging things anyway I&#x27;d put &#x27;subscription&#x27; on the recurring ones — clearer than auto-categorization."<span class="attr">— P02 · rating-row N1</span></blockquote><blockquote>"Theoretically the cleanest. In practice I won&#x27;t do it."<span class="attr">— P05 · rating-row N1</span></blockquote><p class="finding-notes">The disconnect between theoretical and practical addressing is the dominant signal. C2 is designed for N1 but the manual-effort cost makes adoption fragile.</p></div><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N2</span>Catch fraud quickly</h4><div class="finding-verdict"><svg style="color:var(--neg)"><use href="#ball-warn"/></svg><span class="vtext creates_new_problem">Creates new problem · low conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>Raw majority was `not_at_all` (4/5), which would normally yield `doesn&#x27;t address`. P03&#x27;s explanation explicitly describes the concept as anxiety-inducing — even one strong instance of the concept making the user&#x27;s relationship to the need worse triggers `creates new problem` per the verdict rules. Confidence is low because the signal is from one participant; surfaced because creates-new-problem is reportable at any confidence.</div><blockquote class="neg">"Tagging every transaction would stress me out, especially around money — I&#x27;d be anxious about getting it wrong, missing one, mis-tagging it."<span class="attr">— P03 · rating-row N2</span></blockquote><p class="finding-notes">Single strong signal — surfaced for further investigation. The risk is that tagging-as-mechanism, intended to give control, instead introduces money anxiety. Test in a follow-up study with anxiety-prone users specifically.</p></div><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N3</span>Share with partner</h4><span class="targeted-tag">Designed for</span><div class="finding-verdict"><svg><use href="#ball-full"/></svg><span class="vtext addresses">Addresses · high conf.</span></div></div><blockquote class="pos">"Same tags, same view, finally a way to align on what counts as &#x27;eating out&#x27;."<span class="attr">— P01 · rating-row N3</span></blockquote><blockquote class="pos">"If my roommate could see the same tags this would solve the entire shared-grocery argument."<span class="attr">— P02 · rating-row N3</span></blockquote><blockquote class="pos">"We&#x27;d both see the same tagged feed — that&#x27;s the whole solution."<span class="attr">— P04 · rating-row N3</span></blockquote><p class="finding-notes">C2 delivers on its target. The shared-tags mechanism resolves an explicit pain (categorization disputes) that participants had concrete past-use stories about. Note that P02&#x27;s quote drifts toward roommates — see emergent need in Cross-Concept Insights.</p></div></div></section><section class="panel" id="c3" role="tabpanel"><div class="concept-hero"><div class="concept-image"><span class="placeholder-label">Stimulus image</span><span class="placeholder-name">Smart spend alert push notification</span></div><div><p class="concept-meta-id">Concept C3</p><h2 class="concept-name">Smart spend alerts</h2><p class="concept-desc">Real-time push notifications when an algorithm detects a transaction that looks unusual relative to your normal spend. User can dismiss, confirm-fraud, or mark-as-expected.</p><div class="disposition"><span class="label">Disposition</span><span class="value advance">Advance — with follow-up</span></div><p class="disposition-rationale">Strongest single concept in the portfolio: only one to address fraud, and a positive surprise on tracking. But evidence is sparse (n=3) and one participant&#x27;s automation-distrust comment warrants probing. A second round to bring this to n=5 is the highest-leverage next study.</p></div></div><div class="section"><h3>Rating distribution</h3><table class="dist-table"><thead><tr><th>Need</th><th>Distribution</th><th>n</th></tr></thead><tbody><tr><td><strong>N1</strong> Track recurring expenses</td><td><div class="dist-bar"><div class="seg completely" style="width:67%">2</div><div class="seg partially" style="width:33%">1</div></div></td><td>3</td></tr><tr><td><strong>N2</strong> Catch fraud quickly</td><td><div class="dist-bar"><div class="seg completely" style="width:100%">3</div></div></td><td>3</td></tr><tr><td><strong>N3</strong> Share with partner</td><td><div class="dist-bar"><div class="seg not_at_all" style="width:100%">1</div></div></td><td>1</td></tr></tbody></table><p style="margin-top:10px;font-size:13px;color:var(--ink-mute);font-style:italic">Note: Sparse coverage (study ran out of time). All C3 verdicts carry medium-or-lower confidence as a result.</p></div><div class="section"><h3>Past-use story synthesis</h3><p>C3 was rated by only three of five participants (study ran out of time). Among those three the response was uniformly positive on fraud — the real-time, contextual framing was repeatedly cited as &#x27;exactly what fraud detection should feel like&#x27;. P02 rated it `completely` on fraud but verbalized distrust of automated alerts in the same breath, a contradiction worth flagging.</p><blockquote class="pos">"Real-time alerts with context — that&#x27;s exactly what fraud detection should feel like."<span class="attr">— P01</span></blockquote></div><div class="section"><h3>Aspects</h3><div class="aspect-row"><div class="aspect-name">Real-time delivery</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">cited by 3</span></div><div class="aspect-row"><div class="aspect-name">Contextual alert content</div><span class="aspect-direction up">driver-up</span><span class="aspect-count">cited by 2</span></div><div class="aspect-row"><div class="aspect-name">Distrust of automation</div><span class="aspect-direction down">driver-down</span><span class="aspect-count">cited by 1</span></div></div><div class="section"><h3>Per-need findings</h3><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N1</span>Track recurring expenses</h4><div class="finding-verdict"><svg><use href="#ball-full"/></svg><span class="vtext addresses">Addresses · medium conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>n=3 (sparse) but 2 completely + 1 partially with consistent reasoning that &#x27;an algorithm that knows your normal spend also knows your recurring stuff.&#x27; Not targeted, but the addresses verdict holds.</div><blockquote class="pos">"If you&#x27;re catching every weird charge, you&#x27;re also catching the recurring stuff that drifts."<span class="attr">— P01 · rating-row N1</span></blockquote><blockquote class="pos">"If it knows your normal spending it knows your subscriptions, so why not."<span class="attr">— P02 · rating-row N1</span></blockquote><p class="finding-notes">Good surprise — C3 was designed only for fraud (N2) but the same anomaly-detection mechanism surfaces recurring-charge changes as a side effect.</p></div><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N2</span>Catch fraud quickly</h4><span class="targeted-tag">Designed for</span><div class="finding-verdict"><svg><use href="#ball-full"/></svg><span class="vtext addresses">Addresses · medium conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>All 3 raters said `completely` with consistent positive reasoning around real-time + contextual content. Confidence is medium rather than high due to small n. P02&#x27;s contradictory explanation is logged at study level (see Methodological observations).</div><blockquote class="pos">"Real-time alerts with context — that&#x27;s exactly what fraud detection should feel like."<span class="attr">— P01 · rating-row N2</span></blockquote><blockquote class="pos">"Real-time and contextual — that&#x27;s exactly the right shape."<span class="attr">— P03 · rating-row N2</span></blockquote><p class="finding-notes">C3 delivers on its single targeted need. The contextual alert content (showing what the charge is) was consistently called out as the differentiator from generic bank alerts.</p></div><div class="finding-card"><div class="finding-head"><h4><span class="need-id">N3</span>Share with partner</h4><div class="finding-verdict"><svg style="color:var(--ink-mute)"><use href="#ball-insuf"/></svg><span class="vtext insufficient_evidence">Insufficient evidence · low conf.</span></div></div><div class="reconciliation"><strong>Reconciliation</strong>Only P01 rated this cell (1× not_at_all). Below the 2-participant threshold for actionable evidence.</div><blockquote class="neg">"It&#x27;s a notification on my phone. My partner doesn&#x27;t see my phone."<span class="attr">— P01 · rating-row N3</span></blockquote><p class="finding-notes">Direction is negative but the cell is structurally under-evidenced. Not actionable.</p></div></div></section><section class="panel" id="method" role="tabpanel"><div class="method-grid"><div class="insight-card"><h3><span class="insight-num">01</span>Study setup</h3><p><strong>Format:</strong> 60-minute moderated 1:1 sessions. Each session opened with a past-use story for each need, followed by stimulus-based concept presentation, followed by per-need ratings with explanations.</p><p><strong>Sample:</strong> 5 participants, recruited for active personal-finance app use and at least one shared-spending context (partner or roommate). Mix of household structures.</p><p><strong>Concepts tested:</strong> 3 stimulus-level concepts (early-stage; not click-throughs).</p><p><strong>Needs tested:</strong> 3 functional outcomes from the team&#x27;s job-map work.</p></div><div class="insight-card"><h3><span class="insight-num">02</span>Verdict definitions</h3><dl class="def-list"><dt><svg><use href="#ball-full"/></svg>Addresses</dt><dd>Concept resolves the need as participants describe it, with consistent reasoning. ≥3/5 rate "completely" with substantive explanations.</dd><dt><svg><use href="#ball-half"/></svg>Partial</dt><dd>Concept addresses some aspect of the need but a structural element of the stimulus prevents full resolution. Mixed ratings with consistent explanations.</dd><dt><svg><use href="#ball-empty"/></svg>Doesn't address</dt><dd>Concept does not address the need. ≥3/5 rate "not_at_all" with consistent reasoning.</dd><dt><svg style="color:var(--neg)"><use href="#ball-warn"/></svg>Creates new problem</dt><dd>Concept makes the user's relationship to the need <em>worse</em>. Triggered by even one strong signal — surfaced at any confidence level.</dd><dt><svg style="color:var(--ink-mute)"><use href="#ball-insuf"/></svg>Insufficient evidence</dt><dd>Below the 2-participant minimum for actionable evidence on the cell. Not an indictment of the concept; a signal that the cell is under-tested.</dd></dl></div><div class="insight-card"><h3><span class="insight-num">03</span>Confidence definitions</h3><dl class="def-list"><dt><span class="pip-row"><span class="on"></span><span class="on"></span><span class="on"></span></span> High</dt><dd>Consistent signal across ≥4 participants with substantive, non-overlapping explanations. Halo-pattern responses excluded.</dd><dt><span class="pip-row"><span class="on"></span><span class="on"></span><span></span></span> Medium</dt><dd>Clear majority signal but with one of: small n on the cell, mild contradiction, or one halo response that would otherwise tip the count.</dd><dt><span class="pip-row"><span class="on"></span><span></span><span></span></span> Low</dt><dd>Single-participant signal, sparse coverage (n≤2), or significant contradiction. Reported but not actionable on its own.</dd></dl></div><div class="insight-card"><h3><span class="insight-num">04</span>Reconciliation rules</h3><p>Raw ratings are reconciled against participant explanations before a verdict is set. The skill applies the following adjustments:</p><ul style="padding-left:18px;color:var(--ink-soft);font-size:13.5px"><li><strong>Halo down-weighting:</strong> Participants whose ratings are uniformly positive across all cells with vague language have their ratings reduced to directional weight only. Detected once at study level rather than re-explained per cell.</li><li><strong>Contradiction logging:</strong> Where rating and explanation conflict, the rating stands (it's the rated artifact), but the contradiction is flagged in reconciliation.</li><li><strong>Creates-new-problem trigger:</strong> A single strong signal that the concept worsens the user's relationship to the need is sufficient to flag <em>creates new problem</em>, regardless of the majority verdict.</li><li><strong>Sparse-coverage threshold:</strong> Cells rated by fewer than 2 participants are surfaced as <em>insufficient evidence</em>, not as a negative verdict.</li></ul></div></div></section><footer><span>Generated 2026-04-18 · /concept-testing</span><span>Concept Testing Report · Personal Finance MVP</span></footer></div><script>
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.target;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+document.querySelectorAll('[data-jump]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = link.dataset.jump;
+    document.querySelector('.tab[data-target="' + target + '"]').click();
+  });
+});
+</script></body></html>
