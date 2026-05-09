@@ -151,7 +151,9 @@ A blank template is available at `data/sum_template.csv`.
 
 ## Worked example & verification harness
 
-[`data/examples/personal_finance_study/`](data/examples/personal_finance_study/) is a complete reference run of `/concept-testing` — full research plan, ratings CSV, filled-in session notes, parsed plan JSON, and a hand-crafted reconciled spec. It deliberately seeds every interesting code path: all 5 verdicts, designed-but-missed cells, a good surprise, a sticky `creates_new_problem` escalation, an emergent need, and the halo / empty-explanation / contradiction flags.
+[`data/examples/personal_finance_study/`](data/examples/personal_finance_study/) is a complete reference run of `/concept-testing` — full research plan, ratings CSV, filled-in session notes, parsed plan JSON, a hand-crafted reconciled spec, and a committed [`example_report.html`](data/examples/personal_finance_study/example_report.html) showing the actual rendered output. It deliberately seeds every interesting code path: all 5 verdicts, designed-but-missed cells, a good surprise, a sticky `creates_new_problem` escalation, an emergent need, and the halo / empty-explanation / contradiction flags.
+
+To preview the rendered HTML directly from GitHub, prefix the raw URL with `https://htmlpreview.github.io/?` (GitHub's file viewer doesn't render HTML inline).
 
 To verify the helper end-to-end against the committed sample:
 
