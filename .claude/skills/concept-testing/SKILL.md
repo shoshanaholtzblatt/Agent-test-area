@@ -11,11 +11,14 @@ This skill consumes a structured research plan (typically emitted by the researc
 1. Parses a structured research plan (`research_plan.md`) into typed `Need[]` and `Concept[]` objects
 2. Validates a ratings CSV against the plan
 3. Generates a pre-populated session-notes template for the researcher to fill while watching session videos
-4. Flags rating-vs-explanation contradictions, halo effects, missing evidence, and story-context mismatches
+4. Flags rating-vs-explanation contradictions, missing evidence, and story-context mismatches
 5. Inductively extracts concept aspects and detects emergent needs from past-use stories
 6. Reconciles ratings + qualitative evidence into per-cell `Finding` objects (verdict + confidence + structured evidence)
-7. Surfaces designed-vs-actual gaps (concepts that missed targeted needs; concepts that addressed needs they weren't designed for)
-8. Produces a markdown analysis review for researcher approval, then a self-contained HTML report
+7. Detects study-level patterns once (halo participants, sparse-coverage concepts, notable contradictions) — not repeated per cell
+8. Synthesizes cross-concept insights — coverage by need, recurring drivers across concepts, strategic implications for the portfolio
+9. Assigns each concept a **disposition** (`Advance` / `Iterate` / `Kill` / `Park` / `Advance — with follow-up`) with a one-sentence rationale grounded in the data
+10. Surfaces designed-vs-actual gaps (concepts that missed targeted needs; concepts that addressed needs they weren't designed for)
+11. Produces a markdown analysis review for researcher approval, then a self-contained tabbed HTML report
 
 ---
 
@@ -200,9 +203,20 @@ The output JSON shape:
         "was_targeted": true
       }
     }
+  },
+  "concept_summaries": {
+    "C1": {"n_raters": 5, "raters": ["P01","..."], "n_cells_rated": 3, "is_sparse": false}
+  },
+  "study_summary": {
+    "n_participants_total": 5,
+    "uniform_rating_candidates": [
+      {"participant_id": "P05", "concept_id": "C1", "rating": "completely", "n_cells": 3}
+    ]
   }
 }
 ```
+
+`concept_summaries` and `study_summary` feed Phases 4c–4e. `uniform_rating_candidates` is a deterministic halo *candidate* signal — Claude validates by checking explanation text for vague/generic language before treating a participant as a confirmed halo case.
 
 For each cell, produce one `Finding` (see `docs/research_skills_schema.md`) by combining the rating distribution with the qualitative evidence.
 
@@ -212,11 +226,18 @@ For each cell, produce one `Finding` (see `docs/research_skills_schema.md`) by c
 |---|---|
 | ≥60% `completely` AND explanations consistent | `addresses` |
 | ≥60% `partially` (or mixed `completely`/`partially` with consistent explanations) | `partial` |
-| ≥60% `not_at_all` AND explanations consistent | `doesn't_address` |
+| ≥60% `not_at_all` AND explanations consistent | `doesnt_address` |
 | Any explanation describes the concept actively making the need *worse* (introducing friction, anxiety, error) — even one strong instance | `creates_new_problem` (sticky — overrides positive rating majority; record `reconciliation_note`) |
 | <2 participants with usable evidence, OR ratings and explanations strongly contradict with no resolution | `insufficient_evidence` |
 | Majority rating clear but explanations contradict | Downgrade one level (`completely` → `partially`, `partially` → `not_at_all`); record `reconciliation_note` |
 | Past-use story shows concept did serve this need historically but ratings are tepid | Upgrade one level; record `reconciliation_note` |
+
+### Halo references in `reconciliation_note`
+
+If a halo participant's rating affected the cell, **point to the lifted observation** rather than re-explain it. Phase 4c records the halo pattern once at study level; per-cell notes should reference that — not repeat it.
+
+- ✅ `"P05 halo applied. 4/5 explicit not_at_all confirms the verdict."`
+- ❌ `"P05's completely rating is part of a halo pattern (uniform completely across all C1 needs with vague generic language). Reduced its weight..."` (re-explains; belongs in Phase 4c, not here)
 
 ### Confidence rules
 
@@ -249,10 +270,130 @@ Use `notes:<participant>:<concept>` as the source_id for evidence drawn from the
 
 Compute two derived sections from the Findings:
 
-- **Designed but missed** — Findings where `was_targeted = true` AND `verdict ∈ {partial, doesn't_address, creates_new_problem}`. The concept's designed-for hypothesis didn't hold.
+- **Designed but missed** — Findings where `was_targeted = true` AND `verdict ∈ {partial, doesnt_address, creates_new_problem}`. The concept's designed-for hypothesis didn't hold.
 - **Good surprises** — Findings where `was_targeted = false` AND `verdict = addresses`. The concept hit a need it wasn't designed for.
 
 These are first-class findings — surface them prominently in the markdown review and the HTML report.
+
+---
+
+## Phase 4c — Study-level observations
+
+Identify and record patterns *once* at study level. The HTML report surfaces these in the Cross-Concept Insights tab; per-cell `reconciliation_note`s reference them rather than repeat them.
+
+### Halo participants
+
+For each `(participant_id, concept_id)` in `study_summary.uniform_rating_candidates`, validate by checking the participant's explanation text for that concept:
+
+- Vague/generic language ("yeah it's all good", "sure, this would help", "sounds fine") → confirmed halo
+- Specific, differentiated explanations even with uniform ratings → not halo; some participants genuinely rate everything positively with reasons. Don't flag.
+
+For each confirmed halo, record:
+```json
+{
+  "participant_id": "P05",
+  "scope": ["C1"],
+  "rationale": "P05 rated `completely` across all C1 cells with vague, generic explanations like 'yeah it's all good'. Down-weighted in per-cell reconciliations; treat as directional only.",
+  "applied_in_phase4": true
+}
+```
+
+### Sparse-coverage concepts
+
+For each concept where `concept_summaries[*].is_sparse == true`, record a `SparseCoverageObs`:
+```json
+{
+  "concept_id": "C3",
+  "n_raters": 3,
+  "rationale": "Study ran out of time. C3 verdicts capped at medium confidence even with uniformly positive signal."
+}
+```
+
+### Notable contradictions
+
+Lift any cross-cutting rating-vs-explanation contradiction worth probing (rather than flagging at every cell). Example: a participant who rated something `completely` while voicing categorical distrust of automation. Record:
+```json
+{
+  "participant_id": "P02",
+  "concept_id": "C3",
+  "need_id": "N2",
+  "rationale": "P02 rated C3 `completely` on fraud while saying 'I don't trust automated alerts'. The rating was for the concept's shape; the comment was a category-level skepticism. Logged for follow-up, not as undermining the rating.",
+  "snippet": "I don't really trust automated alerts. I always second-guess them."
+}
+```
+
+---
+
+## Phase 4d — Cross-concept synthesis
+
+Read findings as a portfolio rather than as individual concepts. Produce `cross_concept_insights`:
+
+### `coverage_by_need`
+
+For each need, list every concept's verdict on it. Mark `is_single_point: true` when exactly one concept reaches `addresses`. Author a one-sentence `summary` calling out who owns the need and any noteworthy non-addressing verdicts.
+
+```json
+{
+  "need_id": "N2",
+  "owners": [
+    {"concept_id": "C1", "verdict": "partial"},
+    {"concept_id": "C2", "verdict": "creates_new_problem"},
+    {"concept_id": "C3", "verdict": "addresses"}
+  ],
+  "is_single_point": true,
+  "summary": "<strong>Single point of coverage.</strong> Only C3 actually solves it. C1's cadence is the cap; C2 makes things worse."
+}
+```
+
+### `recurring_drivers`
+
+Cluster aspects across concepts by semantic equivalence (e.g., "automatic categorization" + "real-time delivery" both map to "automation / no-effort affordances" if they're driving ratings the same way). For each cluster:
+
+- `direction`: aggregate up / down / mixed across the citing concepts
+- `citations`: list of `{concept_id, count}` per concept that surfaced the driver
+- `note`: optional — call out semantic inversions (e.g. "automation as up-driver, manual-effort as down-driver are the same axis")
+
+Aim for 3–6 recurring drivers across the whole study.
+
+### `strategic_implications`
+
+3–5 decision-relevant takeaways framed for the design/PM conversation. Must consider:
+
+- **Portfolio completeness** — does any single concept address all needs?
+- **Best combinatorial pairing** — which 2-concept set covers the most needs?
+- **Primary unmet space** — emergent needs + partial-only cells
+
+Each implication has `headline` (bold lead) + `body` (1–2 supporting sentences).
+
+---
+
+## Phase 4e — Disposition assignment
+
+For each concept, apply the disposition rule using metrics from `concept_summaries`, the findings, and the study observations.
+
+### Decision rule
+
+| Disposition | When |
+|---|---|
+| `advance` | Addresses ≥ 50% of needs, no `creates_new_problem` verdicts, evidence is non-sparse, owns at least one need |
+| `advance_with_followup` | Strong-positive but evidence is sparse OR a logged contradiction warrants probing OR a single high-stakes question remains |
+| `iterate` | Owns a need but adoption-fragile (designed-for need came back `partial` due to adoption gap), OR mixed verdicts that suggest re-scoping |
+| `kill` | Addresses no needs, OR widely creates_new_problem, OR clearly dominated by another concept |
+| `park` | `insufficient_evidence` dominant; can't decide yet — re-test before deciding |
+
+Author the rationale referencing specific cells and metrics. The rationale is the headline content for stakeholders — make it specific:
+
+- ✅ "Strongest single concept in the portfolio: only one to address fraud, and a positive surprise on tracking. But evidence is sparse (n=3) and one participant's automation-distrust comment warrants probing."
+- ❌ "Addresses some needs with some confidence; recommend further testing." (mechanical, no signal)
+
+Each concept gets:
+```json
+{
+  "verdict": "advance|advance_with_followup|iterate|kill|park",
+  "label": "Advance — with follow-up",
+  "rationale": "..."
+}
+```
 
 ---
 
@@ -269,30 +410,53 @@ Write `reports/concept_review_YYYY-MM-DD.md` with this structure:
 - Participants: [list with N]
 
 ## Accuracy & contradiction flags
-[Phase 3b flag table grouped by (participant, concept), or "No flags."]
+[Phase 3b flag table, or "No flags."]
+
+## Study-level observations
+- **Halo participants:** [P05 — short rationale, or "None detected"]
+- **Sparse-coverage concepts:** [C3 — n=3 of 5, rationale]
+- **Notable contradictions:** [P02 on C3 — short rationale]
 
 ## Verdict matrix
 
 | Concept \ Need | [N1] | [N2] | ... |
 |---|---|---|---|
-| [C1] | addresses (high) | partial (medium) ⊙ | ... |
-| [C2] | doesn't_address (low) | addresses (high) | ... |
+| [C1] | ● addresses (high) ⊙ | ◐ partial (medium) ⊙ | ... |
+| [C2] | ○ doesnt_address (low) | ⚠ creates_new_problem | ... |
 
+Glyphs: ● addresses · ◐ partial · ○ doesnt_address · ⚠ creates_new_problem · ◌ insufficient_evidence
 ⊙ = was_targeted (concept was designed for this need)
 
 ## Designed-vs-actual gap
 
 ### Designed but missed
-- **C1 → N2**: [concept name] was designed to address "[need statement]" but verdict is *partial*. [one-sentence summary]
-- ...
+- **C1 → N2**: [one-sentence summary]
 
 ### Good surprises
-- **C2 → N2**: [concept name] addresses "[need statement]" even though it was not designed to. [one-sentence summary]
+- **C2 → N2**: [one-sentence summary]
+
+## Cross-concept insights
+
+### Coverage by need
+| Need | C1 | C2 | C3 | Summary |
+|---|---|---|---|---|
+| N1 | ● | ◐ | ● | Well-covered. C1 owns it; C3 is a good surprise. |
+| ...
+
+### Recurring drivers
+- **Automation / no-effort affordances** — driver-up — cited by C1 (4), C3 (3)
+- **Manual effort & tagging burden** — driver-down — cited by C2 (4)
 - ...
+
+### Strategic implications
+1. **Headline 1.** Body…
+2. **Headline 2.** Body…
 
 ## Per-concept deep dives
 
-### C1: [concept name]
+### C1: [concept name] — Disposition: *Advance*
+> [one-sentence rationale]
+
 **Description:** [from plan]
 **Designed for:** N1, N3
 
@@ -300,36 +464,28 @@ Write `reports/concept_review_YYYY-MM-DD.md` with this structure:
 | Need | completely | partially | not_at_all | n |
 |---|---|---|---|---|
 
-**Past-use story synthesis:** [2–4 sentences across participants, with 1–2 verbatim representative blockquotes]
+**Past-use story synthesis:** [2–4 sentences with 1–2 representative blockquotes]
 
 **Aspects:**
 - [Aspect 1] — driver-up — cited by [N]
-- [Aspect 2] — driver-down — cited by [N]
 
 **Per-need findings:**
 
-#### N1: [need statement] — *addresses* *(confidence: high — 4 of 5 with consistent reasoning around [aspect])*
-**Reconciliation:** [if any]
+#### N1: [need statement] — *addresses* *(confidence: high)*
+**Reconciliation:** [if any — point to lifted observations, don't re-explain halo]
 > "[verbatim]" — P01
-> "[verbatim]" — P03
 
-[qualitative texture paragraph if any]
-
-#### N2: ...
+[qualitative texture if any]
 
 [Repeat for each concept]
 
 ## Emergent needs
 
 ### [Emergent need label]
-*(confidence: high — surfaced in 3 of 5 past-use stories)*
+*(confidence: medium — surfaced in 2 of 5 past-use stories)*
 > "[verbatim]" — P02
-> "[verbatim]" — P04
-**Concepts that addressed it:** [list]
-**Concepts that missed it:** [list]
-
-## Cross-cutting observations
-[2–4 paragraphs: which concept best serves which subset of needs; which needs are under-served across all concepts; aspect patterns]
+**Missed by:** [list]
+[short commentary]
 ```
 
 ---
@@ -346,11 +502,14 @@ After presenting the markdown review, ask the researcher:
 
 ## Phase 6 — Generate HTML
 
-Build the complete spec JSON from the approved markdown content. Shape:
+Build the complete spec JSON from the approved markdown content. The helper renders this into a tabbed HTML report (Overview · Cross-Concept Insights · one tab per concept · Methodology) with Harvey-ball verdicts, integrated confidence pips, designed-for accent dots, disposition badges, and a CSS-custom-property theme. See `data/examples/personal_finance_study/expected_spec.json` for a complete worked example.
 
 ```json
 {
   "study_name": "...",
+  "study_subtitle": "Concept Testing Report · <Project name>",
+  "masthead_h1_html": "How <em>N</em> concepts address <em>M</em> needs.",
+  "method_description": "Past-use stories + concept ratings",
   "date": "YYYY-MM-DD",
   "participants": ["P01"],
   "needs": [{"id": "N1", "statement": "...", "label": "..."}],
@@ -360,13 +519,25 @@ Build the complete spec JSON from the approved markdown content. Shape:
       "name": "...",
       "description": "...",
       "target_needs": [{"need_id": "N1", "hypothesis": "..."}],
-      "asset_path": "/abs/path.png",
+      "stimulus_image": {
+        "path": "/abs/path.png or null",
+        "label": "Stimulus image",
+        "name": "Short description of what the stimulus shows"
+      },
+      "disposition": {
+        "verdict": "advance|advance_with_followup|iterate|kill|park",
+        "label": "Advance",
+        "rationale": "One to two specific sentences..."
+      },
       "past_use_synthesis": "...",
-      "past_use_quotes": [{"snippet": "...", "participant_id": "P01"}],
+      "past_use_quotes": [
+        {"snippet": "...", "participant_id": "P01", "polarity": "positive|negative|neutral"}
+      ],
       "aspects": [{"label": "...", "direction": "up|down|mixed", "count": 3}],
       "rating_distribution": [
         {"need_id": "N1", "completely": 3, "partially": 1, "not_at_all": 1, "n": 5}
-      ]
+      ],
+      "dist_note": "Optional caveat under the distribution table (e.g. sparse coverage)."
     }
   ],
   "findings": [
@@ -387,14 +558,60 @@ Build the complete spec JSON from the approved markdown content. Shape:
   "emergent_needs": [
     {
       "label": "...",
-      "confidence": "high",
-      "confidence_note": "surfaced in 3 of 5 past-use stories",
+      "confidence": "medium",
+      "confidence_note": "Surfaced unprompted in 2/5 past-use stories",
       "evidence": [{"snippet": "...", "participant_id": "P02"}],
-      "addressed_by": ["C1"],
-      "missed_by": ["C2"]
+      "addressed_by": [],
+      "missed_by": ["C1", "C2"],
+      "commentary": "Optional paragraph for the cross-concept tab full treatment."
     }
   ],
-  "cross_cutting": "..."
+  "cross_concept_insights": {
+    "lead_paragraph": "Three concepts read as a portfolio...",
+    "coverage_intro": "...",
+    "coverage_by_need": [
+      {
+        "need_id": "N2",
+        "owners": [
+          {"concept_id": "C1", "verdict": "partial"},
+          {"concept_id": "C2", "verdict": "creates_new_problem"},
+          {"concept_id": "C3", "verdict": "addresses"}
+        ],
+        "is_single_point": true,
+        "summary": "<strong>Single point of coverage.</strong> Only C3..."
+      }
+    ],
+    "drivers_intro": "...",
+    "recurring_drivers": [
+      {"label": "...", "direction": "up", "citations": [{"concept_id": "C1", "count": 4}], "note": null}
+    ],
+    "drivers_outro": "...",
+    "methodology_intro": "...",
+    "implications_intro": "...",
+    "strategic_implications": [
+      {"headline": "Bold lead.", "body": "Supporting sentence."}
+    ]
+  },
+  "study_observations": {
+    "halo_participants": [
+      {"participant_id": "P05", "scope": ["C1"], "rationale": "...", "applied_in_phase4": true}
+    ],
+    "sparse_coverage": [
+      {"concept_id": "C3", "n_raters": 3, "rationale": "..."}
+    ],
+    "contradictions": [
+      {"participant_id": "P02", "concept_id": "C3", "need_id": "N2",
+       "rationale": "...", "snippet": "..."}
+    ]
+  },
+  "methodology": {
+    "study_setup": {
+      "format": "60-minute moderated 1:1 sessions...",
+      "sample": "5 participants...",
+      "concepts_tested": "...",
+      "needs_tested": "..."
+    }
+  }
 }
 ```
 
@@ -407,7 +624,7 @@ python3 /absolute/path/to/concept_aggregator.py render-html \
 ```
 
 Confirm to the researcher:
-> HTML report saved to `reports/concept_report_YYYY-MM-DD.html`. Open in any browser — fully self-contained.
+> HTML report saved to `reports/concept_report_YYYY-MM-DD.html`. Open in any browser. Tabbed layout: Overview, Cross-Concept Insights, one tab per concept, Methodology.
 
 ---
 
@@ -417,7 +634,7 @@ Confirm to the researcher:
 |---|---|
 | `addresses` | Concept credibly serves this need based on participants' lived experience |
 | `partial` | Concept addresses some aspects of the need but with caveats or gaps |
-| `doesn't_address` | Concept does not credibly serve this need |
+| `doesnt_address` | Concept does not credibly serve this need |
 | `creates_new_problem` | Concept actively makes the need harder, introduces friction or new pain points |
 | `insufficient_evidence` | Fewer than 2 participants with usable evidence, or unresolvable contradiction |
 

@@ -37,6 +37,12 @@ type Concept = {
   description: string                                     // 1–3 sentences
   target_needs: { need_id: string; hypothesis: string }[] // designed-for, asymmetric
   assets: string[]                                        // file paths or text descriptions
+  stimulus_image?: {                                      // for HTML rendering
+    path: string | null                                   // resolves to base64 if present
+    label: string                                         // placeholder caption
+    name: string                                          // short stimulus description
+  }
+  disposition?: Disposition                               // populated by the evaluating skill (Phase 4e)
 }
 ```
 
@@ -89,7 +95,7 @@ type Finding = {
   was_targeted: boolean              // derived from concept.target_needs
   verdict: "addresses"
          | "partial"
-         | "doesn't_address"
+         | "doesnt_address"
          | "creates_new_problem"
          | "insufficient_evidence"
   confidence: "high" | "medium" | "low"
@@ -105,9 +111,9 @@ type Finding = {
 |---|---|
 | `addresses` | Concept credibly serves this need based on participants' lived experience |
 | `partial` | Concept addresses some aspects of the need but with caveats or gaps |
-| `doesn't_address` | Concept does not credibly serve this need |
+| `doesnt_address` | Concept does not credibly serve this need |
 | `creates_new_problem` | Concept actively makes the need harder, introduces friction, or creates a new pain point. Sticky — overrides positive ratings when even one strong instance is present. Reportable at any confidence. |
-| `insufficient_evidence` | Fewer than 2 participants with usable evidence, or ratings and explanations conflict with no resolution. Distinct from `doesn't_address`. |
+| `insufficient_evidence` | Fewer than 2 participants with usable evidence, or ratings and explanations conflict with no resolution. Distinct from `doesnt_address`. |
 
 ### Confidence semantics
 
@@ -162,7 +168,111 @@ Emergent needs are reported in their own section. They are **not** added to the 
 
 Two derived sections any concept-evaluating skill should emit, computable from `Finding[]` + `Concept.target_needs`:
 
-- **Designed but missed** — Findings where `was_targeted = true` AND `verdict ∈ { partial, doesn't_address, creates_new_problem }`. The original hypothesis didn't hold.
+- **Designed but missed** — Findings where `was_targeted = true` AND `verdict ∈ { partial, doesnt_address, creates_new_problem }`. The original hypothesis didn't hold.
 - **Good surprises** — Findings where `was_targeted = false` AND `verdict = addresses`. The concept hit a need it wasn't designed for.
 
 Both surface high-leverage insights for the next design iteration.
+
+---
+
+## Disposition (per concept)
+
+Each concept gets a Disposition — the headline output for stakeholders making roadmap decisions.
+
+```ts
+type Disposition = {
+  verdict: "advance" | "advance_with_followup" | "iterate" | "kill" | "park"
+  label: string                  // human-friendly label e.g. "Advance — with follow-up"
+  rationale: string              // 1–2 sentences referencing specific cells/metrics
+}
+```
+
+| Disposition | When |
+|---|---|
+| `advance` | Addresses ≥ 50% of needs, no `creates_new_problem` verdicts, evidence is non-sparse, owns at least one need |
+| `advance_with_followup` | Strong-positive but evidence is sparse OR a logged contradiction warrants probing |
+| `iterate` | Owns a need but adoption-fragile, OR mixed verdicts that suggest re-scoping |
+| `kill` | Addresses no needs, OR widely creates_new_problem, OR clearly dominated by another concept |
+| `park` | `insufficient_evidence` dominant; can't decide yet |
+
+The rationale must reference specific data ("only concept to address fraud", "owns partner-sharing", "3/5 said they wouldn't tag") — not generic ("recommend further testing").
+
+---
+
+## Cross-concept and study-level outputs
+
+These are *single, study-wide* objects that the evaluating skill produces alongside the per-cell `Finding[]`.
+
+### `CrossConceptInsights`
+
+Reads the findings as a portfolio rather than as individuals.
+
+```ts
+type CrossConceptInsights = {
+  lead_paragraph: string             // overview/cross-tab opener
+  coverage_intro?: string            // optional intro for the coverage section
+  coverage_by_need: CoverageByNeedItem[]
+  drivers_intro?: string
+  recurring_drivers: RecurringDriver[]
+  drivers_outro?: string
+  methodology_intro?: string
+  implications_intro?: string
+  strategic_implications: StrategicImplication[]
+}
+
+type CoverageByNeedItem = {
+  need_id: string
+  owners: { concept_id: string; verdict: string }[]   // every concept's verdict on this need
+  is_single_point: boolean                             // exactly one concept reaches `addresses`
+  summary: string                                      // 1-sentence; can include inline HTML
+}
+
+type RecurringDriver = {
+  label: string                      // 3–7 words, e.g. "Automation / no-effort affordances"
+  direction: "up" | "down" | "mixed"
+  citations: { concept_id: string; count: number }[]
+  note?: string                      // optional inversion / nuance note
+}
+
+type StrategicImplication = {
+  headline: string                   // bold lead
+  body: string                       // 1–2 supporting sentences; can include inline HTML
+}
+```
+
+`recurring_drivers` aggregates aspects across concepts by **semantic equivalence**, not exact label match. A skill should cluster "automatic categorization" + "real-time delivery" if both are driving ratings via the same underlying property (no-effort affordance).
+
+### `StudyObservations`
+
+Patterns lifted out of per-cell reconciliations and surfaced once at study level. Per-cell `reconciliation_note`s reference these rather than re-explain them.
+
+```ts
+type StudyObservations = {
+  halo_participants: HaloParticipantObs[]
+  sparse_coverage: SparseCoverageObs[]
+  contradictions: ContradictionObs[]
+}
+
+type HaloParticipantObs = {
+  participant_id: string
+  scope: string[]                    // concept_ids where halo was confirmed
+  rationale: string
+  applied_in_phase4: boolean         // true if reconciliation down-weighted this participant
+}
+
+type SparseCoverageObs = {
+  concept_id: string
+  n_raters: number
+  rationale: string                  // why is the coverage sparse?
+}
+
+type ContradictionObs = {
+  participant_id: string
+  concept_id?: string
+  need_id?: string
+  rationale: string
+  snippet: string                    // verbatim quote
+}
+```
+
+Halo detection has a deterministic candidate (uniform-rating across a concept's cells) and a qualitative confirmation (vague language in the explanations). Both required to confirm.

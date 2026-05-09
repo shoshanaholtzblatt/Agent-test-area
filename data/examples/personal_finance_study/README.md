@@ -37,15 +37,17 @@ Commit the regenerated HTML alongside whatever change prompted the regeneration 
 
 | Edge case | Where | What to look for |
 |---|---|---|
-| All 5 verdicts | findings | `addresses`, `partial`, `doesn't_address`, `creates_new_problem`, `insufficient_evidence` all present |
+| All 5 verdicts | findings | `addresses`, `partial`, `doesnt_address`, `creates_new_problem`, `insufficient_evidence` all present |
 | Designed-but-missed | C1 → N2, C2 → N1 | targeted needs the concept failed to deliver on |
 | Good surprise | C3 → N1 | a need addressed by a concept not designed for it |
 | Sticky `creates_new_problem` | C2 × N2 | rating majority was `not_at_all`, escalated by P03's anxiety language |
 | `insufficient_evidence` | C3 × N3 | n=1, no evidence to act on |
-| Halo flag | P05 across C1 | uniform `completely` with vague generic explanations |
-| Empty-explanation flag | P03 × C2 × N1 | rating present, explanation cell blank |
-| Rating-vs-explanation contradiction | P02 × C3 × N2 | rated `completely` but expressed distrust |
+| Halo participant (lifted) | P05 across C1 | uniform `completely` with vague language; surfaced once in `study_observations.halo_participants`, referenced from per-cell notes |
+| Sparse-coverage concept (lifted) | C3 (n=3 of 5) | surfaced once in `study_observations.sparse_coverage` |
+| Cross-concept contradiction (lifted) | P02 × C3 × N2 | logged once in `study_observations.contradictions` |
 | Emergent need | spontaneous mentions in P02 and P04 stories | "splitting bills with roommates" — absent from plan |
+| Disposition variety | per concept | C1 = `advance`, C2 = `iterate`, C3 = `advance_with_followup` |
+| Single-point-of-coverage | N2, N3 in `coverage_by_need` | only one concept reaches `addresses` for these needs |
 
 ## How to run the verification harness against this study
 
@@ -64,7 +66,8 @@ This study skips the live Claude session. In a real run the researcher would:
 1. Hand `research_plan.md` (or a similar plan their orchestrator emits) and `ratings.csv` to Claude via `/concept-testing`
 2. Claude generates a blank session-notes scaffold; researcher fills it in while watching session videos (the filled-in version here represents that step)
 3. Claude runs Phase 3b accuracy checks, then Phase 3c/3d aspect and emergent-needs extraction
-4. Claude proposes Findings (per-cell verdicts); researcher iterates with Claude until the markdown review is approved
-5. Claude generates the final HTML report
+4. Claude proposes Findings (per-cell verdicts), Phase 4c study observations (halo / sparse / contradictions, lifted once), Phase 4d cross-concept synthesis (coverage, drivers, strategic implications), and Phase 4e per-concept dispositions (Advance/Iterate/Kill/Park + rationale)
+5. Researcher iterates with Claude until the markdown review is approved
+6. Claude generates the final HTML report (tabbed: Overview, Cross-Concept Insights, per-concept tabs, Methodology)
 
 `expected_spec.json` here represents what step 4's output should converge to for this dataset. It's a worked example, not a contract — different runs may produce slightly different evidence quotes or aspect labels.
