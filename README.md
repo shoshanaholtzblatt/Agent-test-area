@@ -20,22 +20,25 @@ Evaluate UX concepts against pre-specified user needs by reconciling 3-point use
 1. **Parses a structured research plan** into typed `Need[]` and `Concept[]` objects (orchestrator-emittable; researcher-authorable)
 2. **Validates a ratings CSV** against the plan — rating enum, ID consistency, no duplicates
 3. **Generates a session-notes scaffold** for the researcher to fill while watching session recordings
-4. **Flags rating-vs-explanation contradictions** — halo effects, missing evidence, sentiment mismatches, story-context gaps
+4. **Flags rating-vs-explanation contradictions** — missing evidence, sentiment mismatches, story-context gaps
 5. **Inductively extracts concept aspects** — themes that drove ratings up, down, or both
 6. **Detects emergent needs** — needs surfaced in past-use stories that the plan didn't anticipate
 7. **Reconciles each cell into a `Finding`** — verdict (5-value scale) + confidence + structured evidence + reconciliation note
-8. **Surfaces designed-vs-actual gap** — concepts that missed targeted needs; concepts that addressed needs they weren't designed for
-9. **Markdown review with approval gate**, then **self-contained HTML report**
+8. **Lifts study-level patterns once** — halo participants, sparse-coverage concepts, notable contradictions (referenced from per-cell reconciliations rather than repeated)
+9. **Synthesizes cross-concept insights** — coverage by need, recurring drivers across concepts, strategic implications for the portfolio
+10. **Assigns each concept a disposition** — `Advance` / `Iterate` / `Kill` / `Park` / `Advance — with follow-up` with a one-sentence rationale grounded in specific cells
+11. **Surfaces designed-vs-actual gap** — concepts that missed targeted needs; concepts that addressed needs they weren't designed for
+12. **Markdown review with approval gate**, then **self-contained tabbed HTML report** (Overview · Cross-Concept Insights · per-concept tabs · Methodology) using Harvey-ball verdicts and a CSS-custom-property theme
 
 ### Verdict scale
 
 | Verdict | Meaning |
 |---|---|
-| `addresses` | Credibly serves the need |
-| `partial` | Addresses some aspects with caveats |
-| `doesn't_address` | Does not credibly serve the need |
-| `creates_new_problem` | Actively makes the need harder; sticky — overrides positive ratings on a single strong instance |
-| `insufficient_evidence` | <2 participants with usable evidence, or unresolvable contradiction |
+| `addresses` (●) | Credibly serves the need |
+| `partial` (◐) | Addresses some aspects with caveats |
+| `doesnt_address` (○) | Does not credibly serve the need |
+| `creates_new_problem` (⚠) | Actively makes the need harder; sticky — overrides positive ratings on a single strong instance |
+| `insufficient_evidence` (◌) | <2 participants with usable evidence, or unresolvable contradiction |
 
 Participant ratings stay 3-point (`completely | partially | not_at_all`); the 5-value verdict is the reconciled judgment the skill produces per cell.
 
