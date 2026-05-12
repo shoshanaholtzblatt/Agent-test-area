@@ -17,18 +17,20 @@ Evaluate UX concepts against pre-specified user needs by reconciling 3-point use
 
 ### What it does
 
-1. **Parses a structured research plan** into typed `Need[]` and `Concept[]` objects (orchestrator-emittable; researcher-authorable)
-2. **Validates a ratings CSV** against the plan — rating enum, ID consistency, no duplicates
-3. **Generates a session-notes scaffold** for the researcher to fill while watching session recordings
-4. **Flags rating-vs-explanation contradictions** — missing evidence, sentiment mismatches, story-context gaps
-5. **Inductively extracts concept aspects** — themes that drove ratings up, down, or both
-6. **Detects emergent needs** — needs surfaced in past-use stories that the plan didn't anticipate
-7. **Reconciles each cell into a `Finding`** — verdict (5-value scale) + confidence + structured evidence + reconciliation note
-8. **Lifts study-level patterns once** — halo participants, sparse-coverage concepts, notable contradictions (referenced from per-cell reconciliations rather than repeated)
-9. **Synthesizes cross-concept insights** — coverage by need, recurring drivers across concepts, strategic implications for the portfolio
-10. **Assigns each concept a disposition** — `Advance` / `Iterate` / `Kill` / `Park` / `Advance — with follow-up` with a one-sentence rationale grounded in specific cells
-11. **Surfaces designed-vs-actual gap** — concepts that missed targeted needs; concepts that addressed needs they weren't designed for
-12. **Markdown review with approval gate**, then **self-contained tabbed HTML report** (Overview · Cross-Concept Insights · per-concept tabs · Methodology) using Harvey-ball verdicts and a CSS-custom-property theme
+1. **Takes in project context up front** — project name, research question, how-to-use guidance, and a point-of-contact (name / role / email / optional links). These anchor the report so it stands on its own outside the meeting it was discussed in.
+2. **Parses a structured research plan** into typed `Need[]` and `Concept[]` objects (orchestrator-emittable; researcher-authorable)
+3. **Validates a ratings CSV** against the plan — rating enum, ID consistency, no duplicates
+4. **Generates a session-notes scaffold** for the researcher to fill while watching session recordings
+5. **Flags rating-vs-explanation contradictions** — missing evidence, sentiment mismatches, story-context gaps
+6. **Inductively extracts concept aspects** — themes that drove ratings up, down, or both
+7. **Detects emergent needs** — needs surfaced in past-use stories that the plan didn't anticipate
+8. **Reconciles each cell into a `Finding`** — verdict (5-value scale) + confidence + structured evidence + reconciliation note
+9. **Lifts study-level patterns once** — halo participants, sparse-coverage concepts, notable contradictions (referenced from per-cell reconciliations rather than repeated)
+10. **Synthesizes key insights** — coverage by need, recurring drivers across concepts, plus per-section so-what / now-what
+11. **Assigns each concept a recommendation** — `Advance` / `Iterate` / `Kill` / `Park` / `Advance — with follow-up` with a one-sentence rationale grounded in specific cells, plus a punchy high-level finding
+12. **Authors the leadership brief** — single-sentence takeaway, 3–7 top findings, 3–7 top recommendations (each in insight / evidence / so-what / now-what form). This is what fills the Overview tab.
+13. **Surfaces designed-vs-actual gap** — concepts that missed targeted needs; concepts that addressed needs they weren't designed for
+14. **Markdown review with approval gate**, then **self-contained tabbed HTML report** with an Overview-as-brief, a renamed **Key Insights** tab, per-concept tabs (Recommendation badge + high-level finding), and a Methodology tab (now hosting study observations) — using Harvey-ball verdicts and a CSS-custom-property theme
 
 ### Verdict scale
 
@@ -166,7 +168,8 @@ python3 scripts/run_example.py
 
 The script runs `validate` → `aggregate` → `render-html` and asserts:
 - Aggregator output matches `expected_distributions.json` field-for-field
-- Rendered HTML contains all 5 verdict-style classes, a populated "Designed but missed" section, a populated "Good surprises" section, the emergent-need label, the `creates_new_problem` glyph, and the `insufficient_evidence` stripe pattern
+- Rendered HTML contains all 5 verdict-style classes, the v3 Overview brief (project-name h1, top findings, top recommendations, Concept × Need matrix, POC card), the renamed **Key Insights** tab, **Recommendation** badges, the `Need 1/2/3` display rule, and the Methodology tab's Study Observations card
+- Forbidden v2 strings (`>Disposition<` badge label, `Cross-Concept Insights` heading) are absent
 
 The script does not validate Claude's qualitative reconciliation — that's human-in-the-loop. The committed `expected_spec.json` is a reference output, not a regression target for LLM judgment.
 

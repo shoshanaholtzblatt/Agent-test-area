@@ -16,9 +16,10 @@ This skill consumes a structured research plan (typically emitted by the researc
 6. Reconciles ratings + qualitative evidence into per-cell `Finding` objects (verdict + confidence + structured evidence)
 7. Detects study-level patterns once (halo participants, sparse-coverage concepts, notable contradictions) — not repeated per cell
 8. Synthesizes cross-concept insights — coverage by need, recurring drivers across concepts, strategic implications for the portfolio
-9. Assigns each concept a **disposition** (`Advance` / `Iterate` / `Kill` / `Park` / `Advance — with follow-up`) with a one-sentence rationale grounded in the data
+9. Assigns each concept a **recommendation** (`Advance` / `Iterate` / `Kill` / `Park` / `Advance — with follow-up`) with a one-sentence rationale grounded in the data
 10. Surfaces designed-vs-actual gaps (concepts that missed targeted needs; concepts that addressed needs they weren't designed for)
-11. Produces a markdown analysis review for researcher approval, then a self-contained tabbed HTML report
+11. Authors a project-level brief — single-sentence takeaway, 3–7 top findings, 3–7 top recommendations — that anchors the Overview tab of the final report
+12. Produces a markdown analysis review for researcher approval, then a self-contained tabbed HTML report (Overview · Key Insights · per-concept tabs · Methodology)
 
 ---
 
@@ -35,16 +36,25 @@ No fixed minimum-N. Confidence levels reflect available evidence (3+ for high, 2
 
 ## Phase 1 — Announce
 
-When the user invokes `/concept-testing`, say:
+When the user invokes `/concept-testing`, say verbatim:
 
-> I'll help you evaluate UX concepts against the targeted needs in your research plan, reconciling 3-point ratings with qualitative past-use stories.
+> I'll help you evaluate UX concepts against the targeted needs in your research plan, and produce a leadership-ready report. To get started, I need:
 >
-> I need three inputs:
-> 1. **Research plan** (markdown) — listing needs (with definitions and evaluation criteria) and concepts (with descriptions and which needs each was designed to address). Use template at `data/concept_research_plan_template.md`. The research orchestrator emits this; you can also author it by hand.
-> 2. **Ratings CSV** — columns `participant,concept_id,need_id,rating`. Rating values: `completely`, `partially`, `not_at_all`. Use template at `data/concept_ratings_template.csv`.
-> 3. **Session notes** (markdown) — past-use story + per-need rating explanations for each (participant × concept). I'll generate a pre-populated template after you share the plan and ratings; you fill it in while watching the session videos and return it.
+> **Project context** (researcher provides up front):
+> - Project name (short — e.g. "Personal Finance MVP")
+> - Research question (specific — e.g. "Which concepts best meet customer needs around tracking and fraud?")
+> - How these results should be used (1–2 sentences — who's the audience, what decision is this informing?)
+> - Point of contact (name, role, email; any additional links like Slack handle optional)
+> - Method description (optional; defaults to "Concept testing — past-use stories + per-need usefulness ratings")
 >
-> You can paste content directly or share file paths.
+> **Study inputs** (as before):
+> - Research plan (markdown — template at `data/concept_research_plan_template.md`)
+> - Ratings CSV (template at `data/concept_ratings_template.csv`)
+> - Session notes (I'll generate a scaffold after I have the plan + ratings)
+>
+> You can paste anything inline or share file paths.
+
+Capture the project-context fields into a scratch state — they don't feed the validator or aggregator, but they're written into the spec JSON assembled in Phase 6 (`project_name`, `research_question`, `usage_guidance`, `poc`, `method_description`). If the researcher omits the method description, use the default above.
 
 ---
 
@@ -324,9 +334,11 @@ Lift any cross-cutting rating-vs-explanation contradiction worth probing (rather
 
 ---
 
-## Phase 4d — Cross-concept synthesis
+## Phase 4d — Key insights synthesis
 
-Read findings as a portfolio rather than as individual concepts. Produce `cross_concept_insights`:
+Read findings as a portfolio rather than as individual concepts. Produce `key_insights` (the field that feeds the **Key Insights** tab — renamed from `cross_concept_insights` in v3).
+
+Methodological observations (halo, sparse coverage, contradictions) do **not** belong on Key Insights — they live in `study_observations` and render on the Methodology tab.
 
 ### `coverage_by_need`
 
@@ -345,35 +357,33 @@ For each need, list every concept's verdict on it. Mark `is_single_point: true` 
 }
 ```
 
+After the list, author `coverage_so_what` and `coverage_now_what` (1 sentence each) summarizing what the coverage pattern means and what to do about it.
+
 ### `recurring_drivers`
 
 Cluster aspects across concepts by semantic equivalence (e.g., "automatic categorization" + "real-time delivery" both map to "automation / no-effort affordances" if they're driving ratings the same way). For each cluster:
 
 - `direction`: aggregate up / down / mixed across the citing concepts
 - `citations`: list of `{concept_id, count}` per concept that surfaced the driver
-- `note`: optional — call out semantic inversions (e.g. "automation as up-driver, manual-effort as down-driver are the same axis")
+- `note`: optional — call out semantic inversions
 
-Aim for 3–6 recurring drivers across the whole study.
+Aim for 3–6 recurring drivers across the whole study. After the list, author `drivers_so_what` and `drivers_now_what` (1 sentence each).
 
-### `strategic_implications`
+### `additional_insights`
 
-3–5 decision-relevant takeaways framed for the design/PM conversation. Must consider:
-
-- **Portfolio completeness** — does any single concept address all needs?
-- **Best combinatorial pairing** — which 2-concept set covers the most needs?
-- **Primary unmet space** — emergent needs + partial-only cells
-
-Each implication has `headline` (bold lead) + `body` (1–2 supporting sentences).
+0–4 `StructuredInsight` cards beyond coverage / drivers — for cross-concept patterns that don't fit a fixed category (e.g. a design-principle takeaway, the smallest viable concept-pair). Each has `insight` + `evidence[]` + `so_what` + `now_what`.
 
 ---
 
-## Phase 4e — Disposition assignment
+## Phase 4e — Recommendation assignment
 
-For each concept, apply the disposition rule using metrics from `concept_summaries`, the findings, and the study observations.
+For each concept, apply the recommendation rule using metrics from `concept_summaries`, the findings, and the study observations.
+
+(v3 rename: this was previously called Recommendation. Enum values are unchanged; label and helper-rendered badge now read "Recommendation".)
 
 ### Decision rule
 
-| Disposition | When |
+| Recommendation | When |
 |---|---|
 | `advance` | Addresses ≥ 50% of needs, no `creates_new_problem` verdicts, evidence is non-sparse, owns at least one need |
 | `advance_with_followup` | Strong-positive but evidence is sparse OR a logged contradiction warrants probing OR a single high-stakes question remains |
@@ -394,6 +404,37 @@ Each concept gets:
   "rationale": "..."
 }
 ```
+
+Also author a per-concept `high_level_finding`: a 5–15 word punchy fragment that surfaces THE single thing about the concept. Sentence-fragment OK; italic accent color in the report. Example tone: "Low-effort pulse check, appreciated." This replaces the previous past-use synthesis section on the concept tab.
+
+---
+
+## Phase 4f — Top findings, top recommendations, single-sentence takeaway
+
+After per-concept recommendations are settled, author the project-level brief content. This populates the Overview tab and is what stakeholders see first.
+
+### `top_findings` — 3 to 7 StructuredInsights, Claude-prioritized
+
+Each is a `StructuredInsight`: `{ insight, evidence[], so_what, now_what }`. Source from:
+
+- Cross-concept patterns from Phase 4d (e.g. "no single concept covers the full plan")
+- Individual concept results that change the strategic picture
+- Recurring drivers that surprised the team
+- Emergent needs IF they're decision-relevant
+
+Order by stakeholder impact — most decision-relevant first. Each `evidence` entry can carry a `snippet` + `participant_id`, a `metric` (e.g. "3/5 said they wouldn't tag"), and/or a `source_ref` (e.g. concept ID, matrix anchor) — author whichever combination makes the evidence legible.
+
+### `top_recommendations` — 3 to 7 StructuredInsights
+
+What to do next, ranked. Each ties to a finding via `evidence.source_ref` where natural. Treat these as ranked next-actions, not narrative; the `now_what` should be one decisive sentence.
+
+### `single_sentence_takeaway`
+
+One sentence that, if a reader saw nothing else, would orient them correctly to the study. Claude-authored from the analysis; researcher gets to push back during Phase 5b approval.
+
+### Free-text need references in evidence
+
+When you write evidence/so_what/now_what prose, refer to needs as **"Need 1"**, **"Need 2"** etc. — not "N1". The helper transforms IDs at render time but does not rewrite free text.
 
 ---
 
@@ -454,7 +495,7 @@ Glyphs: ● addresses · ◐ partial · ○ doesnt_address · ⚠ creates_new_pr
 
 ## Per-concept deep dives
 
-### C1: [concept name] — Disposition: *Advance*
+### C1: [concept name] — Recommendation: *Advance*
 > [one-sentence rationale]
 
 **Description:** [from plan]
@@ -502,17 +543,45 @@ After presenting the markdown review, ask the researcher:
 
 ## Phase 6 — Generate HTML
 
-Build the complete spec JSON from the approved markdown content. The helper renders this into a tabbed HTML report (Overview · Cross-Concept Insights · one tab per concept · Methodology) with Harvey-ball verdicts, integrated confidence pips, designed-for accent dots, disposition badges, and a CSS-custom-property theme. See `data/examples/personal_finance_study/expected_spec.json` for a complete worked example.
+Build the complete spec JSON from the approved markdown content and the Phase 1 project-context inputs. The helper renders this into a tabbed HTML report (Overview as brief · Key Insights · one tab per concept · Methodology) with Harvey-ball verdicts, integrated confidence pips, designed-for accent dots, **Recommendation** badges, and a CSS-custom-property theme. See `data/examples/personal_finance_study/expected_spec.json` for a complete worked example.
 
 ```json
 {
+  "project_name": "Personal Finance MVP",
   "study_name": "...",
   "study_subtitle": "Concept Testing Report · <Project name>",
-  "masthead_h1_html": "How <em>N</em> concepts address <em>M</em> needs.",
-  "method_description": "Past-use stories + concept ratings",
+  "single_sentence_takeaway": "One sentence that orients the reader.",
+  "research_question": "Specific question the study answers.",
+  "method_description": "Concept testing — past-use stories + per-need usefulness ratings",
+  "usage_guidance": "1–2 sentences: who's the audience, what decision is this informing.",
+  "poc": {
+    "name": "Sarah Chen",
+    "role": "Senior UX Researcher",
+    "email": "schen@example.com",
+    "links": [{"label": "#ux-research", "url": "https://example.slack.com/channels/ux-research"}]
+  },
   "date": "YYYY-MM-DD",
   "participants": ["P01"],
   "needs": [{"id": "N1", "statement": "...", "label": "..."}],
+  "top_findings": [
+    {
+      "insight": "Headline statement.",
+      "evidence": [
+        {"snippet": "verbatim", "participant_id": "P01", "source_ref": "C1"},
+        {"metric": "3/5 said …", "source_ref": "C2"}
+      ],
+      "so_what": "Why this matters for business + customer.",
+      "now_what": "Implication / next action."
+    }
+  ],
+  "top_recommendations": [
+    {
+      "insight": "What to do.",
+      "evidence": [{"source_ref": "Top finding 2"}],
+      "so_what": "Why this is the right move.",
+      "now_what": "One decisive sentence — the action."
+    }
+  ],
   "concepts": [
     {
       "id": "C1",
@@ -524,15 +593,12 @@ Build the complete spec JSON from the approved markdown content. The helper rend
         "label": "Stimulus image",
         "name": "Short description of what the stimulus shows"
       },
-      "disposition": {
+      "high_level_finding": "5–15 word punchy fragment.",
+      "recommendation": {
         "verdict": "advance|advance_with_followup|iterate|kill|park",
         "label": "Advance",
         "rationale": "One to two specific sentences..."
       },
-      "past_use_synthesis": "...",
-      "past_use_quotes": [
-        {"snippet": "...", "participant_id": "P01", "polarity": "positive|negative|neutral"}
-      ],
       "aspects": [{"label": "...", "direction": "up|down|mixed", "count": 3}],
       "rating_distribution": [
         {"need_id": "N1", "completely": 3, "partially": 1, "not_at_all": 1, "n": 5}
@@ -560,13 +626,16 @@ Build the complete spec JSON from the approved markdown content. The helper rend
       "label": "...",
       "confidence": "medium",
       "confidence_note": "Surfaced unprompted in 2/5 past-use stories",
-      "evidence": [{"snippet": "...", "participant_id": "P02"}],
+      "evidence": [
+        {"snippet": "...", "participant_id": "P02",
+         "source_id": "notes:P02:C1", "location": "spontaneous mentions"}
+      ],
       "addressed_by": [],
       "missed_by": ["C1", "C2"],
-      "commentary": "Optional paragraph for the cross-concept tab full treatment."
+      "commentary": "Optional paragraph."
     }
   ],
-  "cross_concept_insights": {
+  "key_insights": {
     "lead_paragraph": "Three concepts read as a portfolio...",
     "coverage_intro": "...",
     "coverage_by_need": [
@@ -581,15 +650,22 @@ Build the complete spec JSON from the approved markdown content. The helper rend
         "summary": "<strong>Single point of coverage.</strong> Only C3..."
       }
     ],
+    "coverage_so_what": "...",
+    "coverage_now_what": "...",
     "drivers_intro": "...",
     "recurring_drivers": [
-      {"label": "...", "direction": "up", "citations": [{"concept_id": "C1", "count": 4}], "note": null}
+      {"label": "...", "direction": "up",
+       "citations": [{"concept_id": "C1", "count": 4}], "note": null}
     ],
-    "drivers_outro": "...",
-    "methodology_intro": "...",
-    "implications_intro": "...",
-    "strategic_implications": [
-      {"headline": "Bold lead.", "body": "Supporting sentence."}
+    "drivers_so_what": "...",
+    "drivers_now_what": "...",
+    "additional_insights": [
+      {
+        "insight": "Cross-concept design principle takeaway.",
+        "evidence": [{"snippet": "...", "participant_id": "P03", "source_ref": "C1"}],
+        "so_what": "...",
+        "now_what": "..."
+      }
     ]
   },
   "study_observations": {
@@ -615,6 +691,14 @@ Build the complete spec JSON from the approved markdown content. The helper rend
 }
 ```
 
+**Notes on the v3 shape:**
+
+- `project_name` becomes the H1 on every tab. The masthead eyebrow reads "Project · <project_name>".
+- Per-concept field is `recommendation`. The helper accepts `disposition` as a back-compat fallback for one minor-version transition; new specs should write `recommendation`.
+- `key_insights` replaces `cross_concept_insights`. Methodological observations and emergent-need full treatments move out of this tab — observations go to Methodology; emergent needs go to per-concept tabs (where the helper attributes them by `evidence.source_id`).
+- `top_findings` and `top_recommendations` are required for the Overview brief — author 3–7 each.
+- `single_sentence_takeaway`, `research_question`, `usage_guidance`, `poc` populate the Overview hero.
+
 Write this to `/tmp/concept_html_spec.json`, then run:
 
 ```bash
@@ -624,7 +708,7 @@ python3 /absolute/path/to/concept_aggregator.py render-html \
 ```
 
 Confirm to the researcher:
-> HTML report saved to `reports/concept_report_YYYY-MM-DD.html`. Open in any browser. Tabbed layout: Overview, Cross-Concept Insights, one tab per concept, Methodology.
+> HTML report saved to `reports/concept_report_YYYY-MM-DD.html`. Open in any browser. Tabbed layout: Overview (brief), Key Insights, one tab per concept, Methodology.
 
 ---
 
