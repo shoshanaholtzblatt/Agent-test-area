@@ -11,8 +11,8 @@ A complete worked example for `/concept-testing`. Use this folder as a reference
 | `session_notes.md` | Filled-in session notes — past-use stories, per-need explanations, spontaneous mentions. **Input** to the skill (Phase 3 onwards). |
 | `plan.json` | The `ResearchPlan` JSON shape that Claude produces internally after parsing `research_plan.md`. Feeds the helper's `validate` and `aggregate` subcommands. |
 | `expected_distributions.json` | Output of `concept_aggregator.py aggregate` against the CSV + plan. Regenerate whenever the inputs change. |
-| `expected_spec.json` | Hand-crafted reconciled spec representing the output Claude should produce after Phase 4 reconciliation. Feeds `concept_aggregator.py render-html`. **Reference output** — not a strict regression target for LLM judgments. |
-| `example_report.html` | **Reference rendered HTML** — produced by `render-html` against `expected_spec.json`. Lets you see the actual output without checking out and running the helper. Regenerate after any change to `concept_aggregator.py` rendering or to `expected_spec.json`. |
+| `expected_spec.json` | Hand-crafted reconciled spec representing the output Claude should produce after Phase 4 reconciliation. Feeds `concept_aggregator.py render-html`. v3 shape: `project_name` h1, `single_sentence_takeaway`, `research_question`, `usage_guidance`, `poc`, `top_findings[]` (3–7), `top_recommendations[]` (3–7), restructured `key_insights` with section-level `so_what` / `now_what`, per-concept `high_level_finding` + `recommendation` (renamed from `disposition`). **Reference output** — not a strict regression target for LLM judgments. |
+| `example_report.html` | **Reference rendered HTML** — produced by `render-html` against `expected_spec.json`. Overview tab is a leadership brief (project name h1, takeaway, top findings, top recommendations, Concept × Need matrix, POC card). Renamed **Key Insights** tab (was Cross-Concept Insights). Per-concept tabs show a punchy **Finding** strip and a **Recommendation** badge. Regenerate after any change to `concept_aggregator.py` rendering or to `expected_spec.json`. |
 
 ### Viewing `example_report.html`
 
@@ -46,7 +46,7 @@ Commit the regenerated HTML alongside whatever change prompted the regeneration 
 | Sparse-coverage concept (lifted) | C3 (n=3 of 5) | surfaced once in `study_observations.sparse_coverage` |
 | Cross-concept contradiction (lifted) | P02 × C3 × N2 | logged once in `study_observations.contradictions` |
 | Emergent need | spontaneous mentions in P02 and P04 stories | "splitting bills with roommates" — absent from plan |
-| Disposition variety | per concept | C1 = `advance`, C2 = `iterate`, C3 = `advance_with_followup` |
+| Recommendation variety | per concept | C1 = `advance`, C2 = `iterate`, C3 = `advance_with_followup` |
 | Single-point-of-coverage | N2, N3 in `coverage_by_need` | only one concept reaches `addresses` for these needs |
 
 ## How to run the verification harness against this study
@@ -66,8 +66,8 @@ This study skips the live Claude session. In a real run the researcher would:
 1. Hand `research_plan.md` (or a similar plan their orchestrator emits) and `ratings.csv` to Claude via `/concept-testing`
 2. Claude generates a blank session-notes scaffold; researcher fills it in while watching session videos (the filled-in version here represents that step)
 3. Claude runs Phase 3b accuracy checks, then Phase 3c/3d aspect and emergent-needs extraction
-4. Claude proposes Findings (per-cell verdicts), Phase 4c study observations (halo / sparse / contradictions, lifted once), Phase 4d cross-concept synthesis (coverage, drivers, strategic implications), and Phase 4e per-concept dispositions (Advance/Iterate/Kill/Park + rationale)
+4. Claude proposes Findings (per-cell verdicts), Phase 4c study observations (halo / sparse / contradictions, lifted once), Phase 4d key-insights synthesis (coverage + drivers + additional insights with so-what/now-what), Phase 4e per-concept recommendations (Advance/Iterate/Kill/Park + rationale + high-level finding), and Phase 4f the leadership brief (single-sentence takeaway, 3–7 top findings, 3–7 top recommendations)
 5. Researcher iterates with Claude until the markdown review is approved
-6. Claude generates the final HTML report (tabbed: Overview, Cross-Concept Insights, per-concept tabs, Methodology)
+6. Claude generates the final HTML report (tabbed: Overview as brief, Key Insights, per-concept tabs, Methodology)
 
 `expected_spec.json` here represents what step 4's output should converge to for this dataset. It's a worked example, not a contract — different runs may produce slightly different evidence quotes or aspect labels.
