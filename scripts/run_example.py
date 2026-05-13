@@ -12,8 +12,9 @@ Tests:
   2. aggregate — produces a distribution JSON byte-equivalent to the
      committed expected_distributions.json
   3. render-html — produces an HTML file containing all the expected
-     structural elements (verdict classes, gap section, emergent need,
-     glyphs, stripe pattern)
+     v4 structural elements (verdict classes, insight slides, concept
+     preview grid, headline section, recommended refinements, no ID
+     tokens in display)
 
 Usage:
     python3 scripts/run_example.py [--study <name>]
@@ -97,34 +98,53 @@ def step_render_html(spec_json):
 
 
 def step_content_checks(html, spec):
+    project_name = spec.get("project_name", "")
+
     expected_substrings = [
-        # Tabs
+        # Tabs — panel id "cross" stays for back-compat; button text is now "Insights"
         ("Overview tab button",          'data-target="overview"'),
-        ("Cross-Concept tab button",     'data-target="cross"'),
+        ("Insights tab button",          'data-target="cross"'),
         ("Methodology tab button",       'data-target="method"'),
         ("Overview panel",               'id="overview"'),
-        ("Cross panel",                  'id="cross"'),
+        ("Cross panel id (back-compat)", 'id="cross"'),
         ("Methodology panel",            'id="method"'),
+        ("Insights tab label",           '>Insights<'),
         # Harvey ball symbol defs
         ("ball-full symbol",             'id="ball-full"'),
         ("ball-half symbol",             'id="ball-half"'),
         ("ball-empty symbol",            'id="ball-empty"'),
         ("ball-warn symbol",             'id="ball-warn"'),
         ("ball-insuf symbol",            'id="ball-insuf"'),
-        # Verdict text classes (no apostrophes — matches new doesnt_address key)
+        # Verdict text classes
         ("vtext.addresses",              'vtext addresses'),
         ("vtext.partial",                'vtext partial'),
         ("vtext.doesnt_address",         'vtext doesnt_address'),
         ("vtext.creates_new_problem",    'vtext creates_new_problem'),
         ("vtext.insufficient_evidence",  'vtext insufficient_evidence'),
-        # Layout sections
-        ("Designed but missed",          'Designed but missed'),
-        ("Good surprises",               'Good surprises'),
-        ("designed-vs-actual gap heading", 'Designed-vs-actual gap'),
-        # Cross-concept content
-        ("coverage grid",                'class="coverage-grid"'),
-        ("recurring drivers heading",    'Recurring drivers'),
-        ("strategic implications heading", 'Strategic implications'),
+        # Overview-as-brief content
+        ("Concept × Need Matrix heading","Concept × Need Matrix"),
+        ("Key Insights section heading", '>Key Insights<'),
+        ("View all insights link",       'View all insights'),
+        ("View all concepts heading",    'View all concepts'),
+        ("Concept preview card class",   'class="concept-preview-card"'),
+        ("Point of contact card",        'class="poc-card"'),
+        ("POC eyebrow",                  'Point of contact'),
+        ("brief-takeaway",               'class="brief-takeaway"'),
+        ("brief-strip (3-col)",          'class="brief-strip"'),
+        ("Research question label",      'Research question'),
+        ("How to use these results",     'How to use these results'),
+        # Insights tab content — slide-like cards
+        ("insight slide class",          'class="insight-slide"'),
+        ("insight recommendation block", 'class="insight-recommendation"'),
+        # Concept tabs — headline section + needs deep dive + refinements
+        ("Top finding eyebrow",          '>Top finding<'),
+        ("Overall recommendation",       '>Overall recommendation<'),
+        ("Needs deep dive section",      'Needs deep dive'),
+        ("Recommended refinements",      'Recommended refinements'),
+        ("Confidence pips class",        'class="confidence-pips"'),
+        ("Confidence text label",        'confidence'),
+        # Methodology tab still hosts Study observations
+        ("Study observations heading",   'Study observations'),
         # Theme infrastructure
         ("CSS custom property: accent",  '--accent:'),
         ("CSS custom property: serif",   '--serif:'),
@@ -132,23 +152,69 @@ def step_content_checks(html, spec):
         # Tab JS
         ("tab-switching script",         "data-target"),
     ]
+    if project_name:
+        expected_substrings.append(("project_name h1", project_name))
+
     emergent_label = (spec.get("emergent_needs") or [{}])[0].get("label", "")
     if emergent_label:
-        expected_substrings.append(("emergent need label",
-                                    emergent_label))
+        expected_substrings.append(("emergent need label", emergent_label))
 
     missing = [name for name, sub in expected_substrings if sub not in html]
     if missing:
         fail("HTML missing expected content:\n  - " + "\n  - ".join(missing))
 
-    # Each concept must have a disposition badge
-    n_dispositions = html.count('class="value advance"') \
-        + html.count('class="value iterate"') \
-        + html.count('class="value kill"') \
-        + html.count('class="value park"')
+    # Forbidden text — v2/v3 artifacts that v4 has eliminated from display
+    forbidden = [
+        ("Disposition badge label",          '>Disposition<'),
+        ("Cross-Concept Insights heading",   'Cross-Concept Insights'),
+        ("Advance enum value class",         'class="value advance"'),
+        ("Iterate enum value class",         'class="value iterate"'),
+        ("Kill enum value class",            'class="value kill"'),
+        ("Park enum value class",            'class="value park"'),
+        ("Aspects section heading",          '>Aspects<'),
+        ("Designed-for tag",                 '>Designed for<'),
+        ("Past-use synthesis heading",       'Past-use synthesis'),
+        ("Recurring drivers heading",        'Recurring drivers'),
+        ("Matrix designed-for class",        'class="matrix-cell designed"'),
+        ("Top findings heading",             '>Top findings<'),
+        ("Top recommendations heading",      '>Top recommendations<'),
+        # Bare ID tokens in display contexts
+        ("Bare >N1< display",                '>N1<'),
+        ("Bare >N2< display",                '>N2<'),
+        ("Bare >N3< display",                '>N3<'),
+        ("Bare >C1< display",                '>C1<'),
+        ("Bare >C2< display",                '>C2<'),
+        ("Bare >C3< display",                '>C3<'),
+        ("Need 1 ID label",                  '>Need 1<'),
+        ("Need 2 ID label",                  '>Need 2<'),
+        ("Need 3 ID label",                  '>Need 3<'),
+    ]
+    found = [name for name, sub in forbidden if sub in html]
+    if found:
+        fail("HTML contains forbidden v2/v3 content:\n  - " + "\n  - ".join(found))
+
+    # Each concept must have both pip indicator AND text label in its
+    # overall-recommendation block (Headline section on concept tab).
     n_concepts = len(spec.get("concepts", []))
-    if n_dispositions < n_concepts:
-        fail(f"Expected {n_concepts} disposition badges, found {n_dispositions}")
+    n_confidence_pips = html.count('class="confidence-pips"')
+    # Concept-tab headlines contribute exactly one pip block per concept;
+    # finding cards contribute additional ones. Floor: at least n_concepts.
+    if n_confidence_pips < n_concepts:
+        fail(f"Expected ≥{n_concepts} confidence-pips blocks (one per concept "
+             f"headline section), found {n_confidence_pips}")
+
+    # Each concept has at least 2 recommended_refinements (count <li> under section)
+    for c in spec.get("concepts", []):
+        refs = c.get("recommended_refinements") or []
+        if len(refs) < 2:
+            fail(f"Concept {c.get('name', c.get('id', '?'))!r} has only "
+                 f"{len(refs)} recommended_refinements; expected ≥2")
+
+    # Insights consolidated list — author 7-10 per the plan
+    n_insights = len(spec.get("insights") or [])
+    if n_insights < 5 or n_insights > 12:
+        fail(f"insights count {n_insights} is outside 5–12 "
+             "(plan calls for 7–10)")
 
     # var(--*) usage — proof of theme-able structural CSS
     n_var = html.count('var(--')
@@ -193,8 +259,9 @@ def main():
     n_findings = len(spec.get("findings", []))
     n_emergent = len(spec.get("emergent_needs", []))
     n_concepts = len(spec.get("concepts", []))
-    print(f"OK (6 tabs, 5 ball symbols, {n_concepts} dispositions, "
-          f"{n_emergent} emergent need(s), CSS theme vars)")
+    n_insights = len(spec.get("insights") or [])
+    print(f"OK (Overview deck, Insights tab, {n_concepts} concept headlines, "
+          f"{n_insights} insights, {n_emergent} emergent need(s))")
 
     print(f"\nPASS: {args.study} verified — {n_findings} findings, "
           f"{n_emergent} emergent need(s), {len(html):,} bytes of HTML")

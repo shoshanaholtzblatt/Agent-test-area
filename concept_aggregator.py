@@ -9,9 +9,9 @@ Three subcommands:
                  metrics that feed Phase 4c-4e (study observations, cross-concept
                  synthesis, disposition).
   --render-html  Emit a self-contained HTML report from a spec JSON authored by
-                 Claude. Tabbed editorial layout — Overview, Cross-Concept Insights,
-                 one tab per concept, Methodology. Uses Harvey balls for verdicts
-                 and a CSS-custom-property theme system.
+                 Claude. Tabbed editorial layout — Overview, Insights, one tab
+                 per concept, Methodology. Uses Harvey balls for verdicts and a
+                 CSS-custom-property theme system.
 
 Stdlib only. Claude composes the qualitative spec; this helper handles
 deterministic CSV arithmetic and HTML/SVG/base64 assembly.
@@ -73,22 +73,14 @@ VERDICT_BALL_CLASS = {
 
 CONFIDENCES = ("high", "medium", "low")
 CONF_PIPS = {"high": 3, "medium": 2, "low": 1}
+CONFIDENCE_LABEL = {"high": "high confidence",
+                    "medium": "medium confidence",
+                    "low": "low confidence"}
 
-DISPOSITION_LABEL = {
-    "advance":               "Advance",
-    "advance_with_followup": "Advance — with follow-up",
-    "iterate":               "Iterate",
-    "kill":                  "Kill",
-    "park":                  "Park",
-}
 
-DISPOSITION_CLASS = {
-    "advance":               "advance",
-    "advance_with_followup": "advance",
-    "iterate":               "iterate",
-    "kill":                  "kill",
-    "park":                  "park",
-}
+# v4: ZERO IDs in display surfaces. Needs and concepts are referenced by name
+# in every rendered element. `need.label` is the short name, `need.statement`
+# is the longer prose form. The v3 `need_display()` helper has been removed.
 
 
 # ---------------------------------------------------------------------------
@@ -388,20 +380,14 @@ p.lead em { color: var(--accent); font-style: italic; }
                  letter-spacing: 0.12em; text-transform: uppercase; padding-bottom: 12px !important; }
 .matrix-col-head { font-family: var(--sans); font-size: 13px; font-weight: 600;
                    color: var(--ink); text-align: center; padding-bottom: 12px !important; }
-.matrix-col-head .col-id { display: block; font-family: var(--mono); font-size: 10px;
-                           color: var(--accent); letter-spacing: 0.1em; margin-bottom: 4px;
-                           font-weight: 500; }
+.matrix-col-head .col-statement { display: block; font-family: var(--mono); font-size: 9px;
+                                  color: var(--ink-mute); letter-spacing: 0.04em;
+                                  margin-top: 4px; font-weight: 400; text-transform: none;
+                                  line-height: 1.4; }
 .matrix-row-head { font-family: var(--sans); font-size: 14px; font-weight: 600;
                    color: var(--ink); display: flex; flex-direction: column;
                    justify-content: center; }
-.matrix-row-head .row-id { font-family: var(--mono); font-size: 10px;
-                           color: var(--accent); letter-spacing: 0.1em;
-                           margin-bottom: 2px; font-weight: 500; }
 .matrix-cell { text-align: center; position: relative; cursor: default; }
-.matrix-cell.designed::before {
-  content: ''; position: absolute; top: 8px; right: 8px;
-  width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
-}
 .ball-svg { width: 36px; height: 36px; color: var(--ink); margin: 4px auto 8px; display: block; }
 .ball-svg.warn { color: var(--neg); }
 .ball-svg.insuf { color: var(--ink-mute); }
@@ -427,8 +413,6 @@ p.lead em { color: var(--accent); font-style: italic; }
 .legend-item .pip-row span { width: 5px; height: 5px; border-radius: 50%;
                               background: var(--ink-mute); opacity: 0.25; }
 .legend-item .pip-row span.on { opacity: 1; }
-.legend-item .designed-marker { width: 6px; height: 6px; background: var(--accent);
-                                 border-radius: 50%; display: inline-block; }
 
 /* Cards */
 .card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
@@ -483,22 +467,9 @@ p.lead em { color: var(--accent); font-style: italic; }
 .concept-image .placeholder-name { font-family: var(--serif); font-style: italic;
                                     font-size: 18px; color: var(--ink-soft); z-index: 1;
                                     background: var(--paper); padding: 0 12px; text-align: center; }
-.concept-meta-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
-                   color: var(--accent); margin-bottom: 10px; text-transform: uppercase; }
 .concept-name { font-family: var(--serif); font-size: 34px; font-weight: 500;
                 line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 14px; }
 .concept-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 22px; max-width: 60ch; }
-.disposition { display: inline-flex; align-items: center; gap: 12px;
-               padding: 12px 18px; border-radius: 4px; background: var(--paper);
-               border: 1px solid var(--rule); margin-bottom: 14px; }
-.disposition .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
-                       text-transform: uppercase; color: var(--ink-mute); }
-.disposition .value { font-family: var(--serif); font-size: 17px; font-weight: 500; font-style: italic; }
-.disposition .value.advance { color: var(--pos); }
-.disposition .value.iterate { color: var(--mixed); }
-.disposition .value.kill { color: var(--neg); }
-.disposition .value.park { color: var(--ink-mute); }
-.disposition-rationale { font-size: 14px; color: var(--ink-soft); max-width: 60ch; font-style: italic; }
 
 /* Distribution bars */
 .dist-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
@@ -514,19 +485,6 @@ p.lead em { color: var(--accent); font-style: italic; }
 .dist-bar .seg.partially { background: var(--mixed); }
 .dist-bar .seg.not_at_all { background: var(--neg); }
 
-/* Aspects */
-.aspect-row { display: flex; align-items: center; gap: 14px; padding: 12px 0;
-              border-bottom: 1px solid var(--rule-soft); font-size: 14px; }
-.aspect-row:last-child { border: none; }
-.aspect-name { flex: 1; color: var(--ink); font-weight: 500; }
-.aspect-direction { font-family: var(--mono); font-size: 10px; padding: 3px 8px;
-                    border-radius: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
-.aspect-direction.up { background: rgba(47,95,58,0.12); color: var(--pos); }
-.aspect-direction.down { background: rgba(155,42,42,0.12); color: var(--neg); }
-.aspect-direction.mixed { background: rgba(138,110,26,0.14); color: var(--mixed); }
-.aspect-count { font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
-                min-width: 80px; text-align: right; }
-
 /* Findings */
 .finding-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
                 padding: 22px 26px; margin-bottom: 14px; box-shadow: var(--shadow); }
@@ -536,12 +494,10 @@ p.lead em { color: var(--accent); font-style: italic; }
 .finding-head h4 { margin: 0; color: var(--ink); text-transform: none;
                    letter-spacing: -0.005em; font-size: 16px; font-family: var(--serif);
                    font-weight: 500; flex: 1; }
-.finding-head .need-id { font-family: var(--mono); font-size: 10px;
-                          color: var(--accent); letter-spacing: 0.1em; margin-right: 6px; }
-.finding-head .targeted-tag { font-family: var(--mono); font-size: 10px;
-                               background: var(--accent); color: var(--paper);
-                               padding: 3px 8px; border-radius: 2px;
-                               letter-spacing: 0.08em; text-transform: uppercase; }
+.finding-head .need-statement { display: block; font-family: var(--mono);
+                                font-size: 10.5px; color: var(--ink-mute);
+                                letter-spacing: 0.04em; font-weight: 400;
+                                margin-top: 3px; text-transform: none; }
 .finding-verdict { display: flex; align-items: center; gap: 10px; }
 .finding-verdict svg { width: 24px; height: 24px; }
 .finding-verdict .vtext { font-family: var(--mono); font-size: 11px;
@@ -569,31 +525,162 @@ blockquote .attr { display: block; font-style: normal; font-family: var(--mono);
 .finding-notes { margin-top: 12px; font-size: 13.5px; color: var(--ink-soft);
                   padding: 10px 0 0; border-top: 1px dashed var(--rule); }
 
-/* Cross-concept insights */
+/* Insights tab — slide-like cards (v4) */
 .insight-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
                 padding: 26px 30px; margin-bottom: 18px; box-shadow: var(--shadow); }
 .insight-card h3 { margin-top: 0; display: flex; align-items: baseline; gap: 12px; }
 .insight-card h3 .insight-num { font-family: var(--mono); font-size: 11px;
                                  color: var(--accent); letter-spacing: 0.1em; font-weight: 500; }
 .insight-card p { font-size: 14.5px; }
-.coverage-grid { display: grid; gap: 16px; margin: 16px 0 8px; }
-.coverage-item { padding: 16px; background: var(--bg); border-radius: 4px;
-                  border: 1px solid var(--rule-soft); }
-.coverage-item .nid { font-family: var(--mono); font-size: 10px;
-                       color: var(--accent); letter-spacing: 0.1em; }
-.coverage-item .nname { font-family: var(--serif); font-size: 15px;
-                         font-weight: 500; margin: 4px 0 10px; }
-.coverage-balls { display: flex; gap: 14px; margin-bottom: 8px; }
-.coverage-balls > div { text-align: center; }
-.coverage-balls svg { width: 22px; height: 22px; display: block; margin: 0 auto 4px; }
-.coverage-balls .cid { font-family: var(--mono); font-size: 9px;
-                        color: var(--ink-mute); letter-spacing: 0.05em; }
-.coverage-verdict { font-size: 12px; color: var(--ink-soft); margin-top: 6px; line-height: 1.4; }
-.coverage-verdict strong { color: var(--ink); }
-.strategic-list { padding-left: 18px; color: var(--ink-soft); font-size: 14.5px; line-height: 1.65; }
-.strategic-list li { margin-bottom: 10px; }
-.strategic-list li strong { color: var(--ink); }
-.strategic-list li:last-child { margin-bottom: 0; }
+
+.insight-slide { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+                 padding: 30px 34px; margin-bottom: 22px; box-shadow: var(--shadow); }
+.insight-slide .si-eyebrow { font-family: var(--mono); font-size: 10.5px;
+                             letter-spacing: 0.18em; text-transform: uppercase;
+                             color: var(--accent); margin: 0 0 10px; font-weight: 500; }
+.insight-slide .si-finding { font-family: var(--serif); font-size: 24px;
+                             font-weight: 500; line-height: 1.25; letter-spacing: -0.005em;
+                             color: var(--ink); margin: 0 0 18px;
+                             font-variation-settings: "opsz" 32; max-width: 36ch; }
+.insight-slide .si-divider { width: 36px; height: 2px; background: var(--accent);
+                             margin: 4px 0 16px; }
+.insight-slide .si-section-eyebrow { font-family: var(--mono); font-size: 10px;
+                                     letter-spacing: 0.14em; text-transform: uppercase;
+                                     color: var(--ink-mute); margin: 18px 0 8px;
+                                     font-weight: 500; }
+.insight-slide .si-evidence { margin: 4px 0 8px; }
+.insight-slide .si-evidence .si-ev { font-size: 13.5px; color: var(--ink-soft);
+                                     margin: 6px 0; line-height: 1.55;
+                                     padding-left: 14px; border-left: 2px solid var(--rule); }
+.insight-slide .si-evidence .si-ev .si-ev-attr { font-family: var(--mono); font-size: 10.5px;
+                                                 color: var(--ink-mute); letter-spacing: 0.04em;
+                                                 margin-right: 6px; }
+.insight-slide .si-evidence .si-ev .si-snip { font-family: var(--serif); font-style: italic;
+                                              color: var(--ink); }
+.insight-slide .si-evidence .si-ev .si-metric { font-family: var(--mono); font-size: 11px;
+                                                color: var(--accent); letter-spacing: 0.04em; }
+.insight-slide .si-sowhat { font-size: 14.5px; color: var(--ink-soft);
+                            margin: 8px 0 18px; line-height: 1.6; }
+
+.insight-recommendation { background: var(--accent-soft); color: var(--paper);
+                          border-radius: 4px; padding: 18px 22px; margin-top: 8px; }
+.insight-recommendation .ir-eyebrow { font-family: var(--mono); font-size: 10px;
+                                      letter-spacing: 0.16em; text-transform: uppercase;
+                                      color: var(--paper); opacity: 0.85;
+                                      margin: 0 0 6px; font-weight: 500; }
+.insight-recommendation .ir-text { font-family: var(--serif); font-size: 15.5px;
+                                   line-height: 1.5; color: var(--paper); margin: 0;
+                                   font-style: italic; }
+
+/* Overview Key Insights compact cards (no evidence shown) */
+.key-insight-grid { display: grid; gap: 14px; margin: 0 0 16px; }
+.key-insight-compact { background: var(--paper); border: 1px solid var(--rule);
+                       border-radius: 4px; padding: 20px 24px; box-shadow: var(--shadow); }
+.key-insight-compact .ki-eyebrow { font-family: var(--mono); font-size: 10px;
+                                   letter-spacing: 0.16em; text-transform: uppercase;
+                                   color: var(--accent); margin: 0 0 6px; font-weight: 500; }
+.key-insight-compact .ki-finding { font-family: var(--serif); font-size: 17px;
+                                   font-weight: 500; line-height: 1.35; letter-spacing: -0.005em;
+                                   color: var(--ink); margin: 0 0 10px; }
+.key-insight-compact .ki-sowhat { font-size: 13.5px; color: var(--ink-soft);
+                                  margin: 0 0 10px; line-height: 1.55; }
+.key-insight-compact .ki-rec { background: var(--accent-soft); color: var(--paper);
+                               border-radius: 3px; padding: 10px 14px; margin-top: 6px; }
+.key-insight-compact .ki-rec .ki-rec-eyebrow { font-family: var(--mono); font-size: 9.5px;
+                                               letter-spacing: 0.14em; text-transform: uppercase;
+                                               color: var(--paper); opacity: 0.85;
+                                               margin: 0 0 4px; font-weight: 500; }
+.key-insight-compact .ki-rec .ki-rec-text { font-family: var(--serif); font-size: 14px;
+                                            line-height: 1.5; color: var(--paper); margin: 0;
+                                            font-style: italic; }
+.view-all-link { display: inline-block; margin-top: 6px; font-family: var(--mono);
+                 font-size: 12px; color: var(--accent); letter-spacing: 0.08em;
+                 text-decoration: none; padding: 6px 0;
+                 border-bottom: 1px solid var(--accent); }
+.view-all-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* Concept preview grid on Overview */
+.concept-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+                        margin: 4px 0 0; }
+.concept-preview-card { background: var(--paper); border: 1px solid var(--rule);
+                        border-radius: 4px; padding: 0; overflow: hidden;
+                        box-shadow: var(--shadow); display: flex; flex-direction: column; }
+.concept-preview-card .cpc-thumb { aspect-ratio: 4 / 3; background: var(--bg);
+                                   border-bottom: 1px solid var(--rule-soft);
+                                   display: flex; align-items: center; justify-content: center;
+                                   overflow: hidden; position: relative; }
+.concept-preview-card .cpc-thumb img { width: 100%; height: 100%; object-fit: cover;
+                                       display: block; }
+.concept-preview-card .cpc-thumb .cpc-placeholder { font-family: var(--serif);
+                                                    font-style: italic; font-size: 15px;
+                                                    color: var(--ink-mute); text-align: center;
+                                                    padding: 0 12px; }
+.concept-preview-card .cpc-body { padding: 18px 20px 20px; flex: 1;
+                                  display: flex; flex-direction: column; }
+.concept-preview-card .cpc-name { font-family: var(--serif); font-size: 18px;
+                                  font-weight: 500; color: var(--ink); margin: 0 0 8px;
+                                  letter-spacing: -0.005em; }
+.concept-preview-card .cpc-desc { font-size: 13.5px; color: var(--ink-soft);
+                                  margin: 0 0 14px; line-height: 1.55; flex: 1; }
+.concept-preview-card .cpc-link { font-family: var(--mono); font-size: 11.5px;
+                                  color: var(--accent); letter-spacing: 0.08em;
+                                  text-decoration: none; align-self: flex-start;
+                                  padding: 6px 0; border-bottom: 1px solid var(--accent); }
+.concept-preview-card .cpc-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* Concept-tab headline section (top finding + recommendation + confidence) */
+.headline-section { margin: 0 0 36px; padding: 24px 0 22px;
+                    border-top: 1px solid var(--rule-soft);
+                    border-bottom: 1px solid var(--rule-soft); }
+.headline-section .hl-eyebrow { font-family: var(--mono); font-size: 10px;
+                                letter-spacing: 0.16em; text-transform: uppercase;
+                                color: var(--ink-mute); margin: 0 0 6px; font-weight: 500; }
+.headline-section .hl-top-finding { font-family: var(--serif); font-style: italic;
+                                    font-size: 22px; line-height: 1.35; color: var(--accent);
+                                    margin: 0 0 22px; max-width: 50ch;
+                                    font-variation-settings: "opsz" 32; }
+.headline-section .hl-rec-text { font-family: var(--serif); font-size: 18px;
+                                 line-height: 1.45; color: var(--ink); margin: 0 0 10px;
+                                 max-width: 60ch; font-variation-settings: "opsz" 24; }
+.headline-section .hl-confidence { display: inline-flex; align-items: center; gap: 10px;
+                                   font-family: var(--mono); font-size: 11.5px;
+                                   color: var(--ink-mute); letter-spacing: 0.05em;
+                                   margin-top: 2px; }
+.confidence-pips { display: inline-flex; gap: 4px; }
+.confidence-pips span { width: 7px; height: 7px; border-radius: 50%;
+                        background: var(--ink-mute); opacity: 0.25; }
+.confidence-pips span.on { opacity: 1; background: var(--accent); }
+.confidence-text { color: var(--ink-soft); }
+
+/* Needs deep dive section */
+.needs-deep-dive { margin: 0 0 32px; }
+.needs-deep-dive h3 { margin-top: 0; }
+
+/* Recommended refinements */
+.recommended-refinements { margin: 0 0 28px; }
+.recommended-refinements h3 { margin-top: 0; }
+.recommended-refinements ul { margin: 0; padding: 0; list-style: none; }
+.recommended-refinements li { padding: 12px 16px; margin-bottom: 8px;
+                              background: var(--paper); border: 1px solid var(--rule-soft);
+                              border-left: 3px solid var(--accent); border-radius: 3px;
+                              font-size: 14.5px; color: var(--ink); line-height: 1.5; }
+
+/* Emergent need on concept tabs */
+.emergent-need-card { background: var(--paper); border-left: 3px solid var(--accent);
+                      border: 1px solid var(--rule-soft); border-left: 3px solid var(--accent);
+                      padding: 20px 24px; margin: 0 0 32px; border-radius: 3px; }
+.emergent-need-card.label-emergent .en-eyebrow { font-family: var(--mono); font-size: 10px;
+                                                  letter-spacing: 0.16em; text-transform: uppercase;
+                                                  color: var(--accent); margin: 0 0 6px;
+                                                  font-weight: 500; }
+.emergent-need-card .en-label { font-family: var(--serif); font-size: 18px;
+                                font-weight: 500; color: var(--ink); margin: 0 0 12px; }
+.emergent-need-card .en-quote { margin: 8px 0; padding: 8px 14px; border-left: 2px solid var(--rule);
+                                font-style: italic; color: var(--ink-soft); font-size: 14px; }
+.emergent-need-card .en-quote .en-attr { display: block; font-style: normal;
+                                          font-family: var(--mono); font-size: 11px;
+                                          color: var(--ink-mute); margin-top: 4px;
+                                          letter-spacing: 0.05em; }
 
 /* Methodology */
 .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -615,6 +702,75 @@ footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--rule);
          font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
          letter-spacing: 0.05em; display: flex; justify-content: space-between; }
 
+/* Overview-as-brief */
+.brief-takeaway { font-family: var(--serif); font-style: italic; font-weight: 400;
+                  font-size: clamp(22px, 2.6vw, 30px); line-height: 1.3;
+                  letter-spacing: -0.01em; color: var(--ink);
+                  margin: 4px 0 24px; max-width: 38ch;
+                  font-variation-settings: "opsz" 48; }
+.brief-takeaway em { color: var(--accent); font-style: italic; }
+
+.brief-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;
+               border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+               margin: 0 0 36px; }
+.brief-strip > div { padding: 18px 24px 18px 0; border-right: 1px solid var(--rule-soft); }
+.brief-strip > div:last-child { border-right: none; padding-right: 0; }
+.brief-strip h5 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+                  text-transform: uppercase; color: var(--ink-mute); margin: 0 0 8px;
+                  font-weight: 500; }
+.brief-strip p { font-family: var(--serif); font-size: 13.5px; line-height: 1.5;
+                 color: var(--ink); margin: 0; font-variation-settings: "opsz" 16; }
+
+/* Structured insight card (top findings, top recommendations, key insights additional) */
+.sicard { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+          padding: 22px 26px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.sicard .si-num { font-family: var(--mono); font-size: 11px; color: var(--accent);
+                  letter-spacing: 0.12em; font-weight: 500; margin-right: 10px; }
+.sicard .si-headline { font-family: var(--serif); font-size: 19px; font-weight: 500;
+                       line-height: 1.35; color: var(--ink); margin: 0 0 14px;
+                       letter-spacing: -0.005em; font-variation-settings: "opsz" 24;
+                       display: flex; align-items: baseline; }
+.sicard .si-headline > span.headtext { flex: 1; }
+.sicard .si-evidence { margin: 4px 0 14px; padding: 10px 0;
+                       border-top: 1px dashed var(--rule-soft);
+                       border-bottom: 1px dashed var(--rule-soft); }
+.sicard .si-evidence .si-ev { font-size: 13px; color: var(--ink-soft);
+                              margin: 6px 0; line-height: 1.5; }
+.sicard .si-evidence .si-ev .si-ev-attr { font-family: var(--mono); font-size: 10.5px;
+                                          color: var(--ink-mute); letter-spacing: 0.04em;
+                                          margin-right: 6px; }
+.sicard .si-evidence .si-ev .si-snip { font-family: var(--serif); font-style: italic;
+                                        color: var(--ink); }
+.sicard .si-evidence .si-ev .si-metric { font-family: var(--mono); font-size: 11px;
+                                          color: var(--accent); letter-spacing: 0.04em; }
+.sicard .si-so { font-size: 14px; color: var(--ink-soft); margin: 0 0 8px; line-height: 1.55; }
+.sicard .si-now { font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.55; }
+.sicard .si-so em, .sicard .si-now em { font-family: var(--serif); font-style: italic;
+                                         color: var(--accent); font-weight: 500;
+                                         margin-right: 8px; font-size: 13.5px; }
+
+/* POC card */
+.poc-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+            padding: 22px 26px; margin-top: 8px; box-shadow: var(--shadow); }
+.poc-card .poc-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+                         text-transform: uppercase; color: var(--ink-mute);
+                         margin: 0 0 10px; font-weight: 500; }
+.poc-card .poc-name { font-family: var(--serif); font-size: 17px; font-weight: 500;
+                      color: var(--ink); margin: 0; }
+.poc-card .poc-name .poc-role { color: var(--ink-soft); font-style: italic;
+                                font-size: 14px; margin-left: 8px; }
+.poc-card .poc-email { display: block; font-family: var(--mono); font-size: 12.5px;
+                       color: var(--accent); margin: 6px 0 0; text-decoration: none; }
+.poc-card .poc-email:hover { text-decoration: underline; }
+.poc-card .poc-links { margin: 8px 0 0; padding: 0; list-style: none;
+                       font-family: var(--mono); font-size: 11.5px; color: var(--ink-mute);
+                       display: flex; flex-wrap: wrap; gap: 14px; }
+.poc-card .poc-links a { color: var(--accent); text-decoration: none; }
+.poc-card .poc-links a:hover { text-decoration: underline; }
+
+/* Project-name h1 styling override on the masthead */
+.masthead h1.project-name { font-style: normal; }
+
 @media (max-width: 880px) {
   .page { padding: 24px 20px 60px; }
   .matrix-row-head { font-size: 12px; padding: 12px 8px !important; }
@@ -622,6 +778,11 @@ footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--rule);
   .legend { grid-template-columns: 1fr; }
   .method-grid { grid-template-columns: 1fr; }
   .card-grid-2 { grid-template-columns: 1fr; }
+  .brief-strip { grid-template-columns: 1fr; }
+  .brief-strip > div { border-right: none; border-bottom: 1px solid var(--rule-soft);
+                       padding: 14px 0; }
+  .brief-strip > div:last-child { border-bottom: none; }
+  .concept-preview-grid { grid-template-columns: 1fr; }
 }
 """.strip()
 
@@ -747,15 +908,22 @@ def render_doc_head(spec):
 
 def render_masthead(spec):
     eyebrow = spec.get("study_subtitle") or "Concept Testing Report"
-    title_html = spec.get("masthead_h1_html") or (
-        f'How <em>{len(spec.get("concepts", []))}</em> concepts address '
-        f'<em>{len(spec.get("needs", []))}</em> needs.'
-    )
+    project_name = spec.get("project_name")
+    if project_name:
+        eyebrow = "Project · " + project_name
+        title_html = f'<span class="project-name-text">{esc(project_name)}</span>'
+        h1_cls = ' class="project-name"'
+    else:
+        title_html = spec.get("masthead_h1_html") or (
+            f'How <em>{len(spec.get("concepts", []))}</em> concepts address '
+            f'<em>{len(spec.get("needs", []))}</em> needs.'
+        )
+        h1_cls = ''
     method_text = spec.get("method_description") or "Past-use stories + concept ratings"
     return (
         '<header class="masthead">'
         f'<p class="eyebrow">{esc(eyebrow)}</p>'
-        f'<h1>{title_html}</h1>'
+        f'<h1{h1_cls}>{title_html}</h1>'
         '<div class="meta">'
         f'<span>Date <strong>{esc(spec.get("date",""))}</strong></span>'
         f'<span>Participants <strong>{len(spec.get("participants",[]))}</strong></span>'
@@ -767,9 +935,11 @@ def render_masthead(spec):
 
 
 def render_tabnav(spec):
-    tabs = [("overview", "Overview"), ("cross", "Cross-Concept Insights")]
+    # Panel id "cross" is retained for back-compat (kept as DOM id); button label
+    # is "Insights" per v4 (was "Key Insights" in v3, "Cross-Concept Insights" in v2).
+    tabs = [("overview", "Overview"), ("cross", "Insights")]
     for c in spec.get("concepts", []):
-        tabs.append((c["id"].lower(), f'{esc(c["id"])}: {esc(c["name"])}'))
+        tabs.append((c["id"].lower(), esc(c["name"])))
     tabs.append(("method", "Methodology"))
     parts = ['<nav class="tabnav" role="tablist">']
     for i, (tid, label) in enumerate(tabs, start=1):
@@ -785,25 +955,29 @@ def render_tabnav(spec):
 def render_matrix(spec, find_index):
     needs = spec["needs"]
     concepts = spec["concepts"]
-    n_cols = 1 + len(needs)
     grid_cols = f'220px repeat({len(needs)}, 1fr)'
 
     parts = [f'<div class="matrix-wrap"><div class="matrix" style="grid-template-columns: {grid_cols}">']
 
-    # header row — 1 corner + N column heads, each marked .matrix-headrow
+    # header row — 1 corner + N column heads, each marked .matrix-headrow.
+    # v4: column header is the short label (primary) + longer statement
+    # (secondary mono line). No IDs.
     parts.append('<div class="matrix-corner matrix-headrow">Concept × Need</div>')
     for need in needs:
-        label = need.get("label") or need.get("statement") or need["id"]
+        label = need.get("label") or need.get("statement") or ""
+        statement = need.get("statement") or ""
+        sub_html = ""
+        if statement and statement != label:
+            sub_html = f'<span class="col-statement">{esc(statement)}</span>'
         parts.append(
             f'<div class="matrix-col-head matrix-headrow">'
-            f'<span class="col-id">{esc(need["id"])}</span>{esc(label)}</div>'
+            f'{esc(label)}{sub_html}</div>'
         )
 
-    # data rows
+    # data rows — concept name only (no ID)
     for concept in concepts:
         parts.append(
-            f'<div class="matrix-row-head">'
-            f'<span class="row-id">{esc(concept["id"])}</span>{esc(concept["name"])}</div>'
+            f'<div class="matrix-row-head">{esc(concept["name"])}</div>'
         )
         for need in needs:
             f = find_index.get((concept["id"], need["id"]))
@@ -813,9 +987,9 @@ def render_matrix(spec, find_index):
                 continue
             verdict = f["verdict"]
             confidence = f.get("confidence", "low")
-            designed_cls = " designed" if f.get("was_targeted") else ""
+            # v4: NO designed-for accent dot on matrix cells.
             parts.append(
-                f'<div class="matrix-cell{designed_cls}">'
+                f'<div class="matrix-cell">'
                 f'{render_ball(verdict)}'
                 f'{render_pips(confidence)}'
                 f'<span class="verdict-label">{esc(VERDICT_SHORT_LABEL.get(verdict, verdict))}</span>'
@@ -838,300 +1012,351 @@ def render_legend():
         f'<div class="legend-item">{render_ball_inline("creates_new_problem")}Creates new problem</div>'
         f'<div class="legend-item">{render_ball_inline("insufficient_evidence")}Insufficient evidence</div>'
         '</div>'
-        '<div class="legend-group"><h5>Confidence &amp; design intent</h5>'
-        f'<div class="legend-item">{render_pips("high", "pip-row")}High confidence (consistent signal across participants)</div>'
-        f'<div class="legend-item">{render_pips("medium", "pip-row")}Medium confidence</div>'
-        f'<div class="legend-item">{render_pips("low", "pip-row")}Low confidence (sparse or contradictory)</div>'
-        '<div class="legend-item"><span class="designed-marker"></span>Concept was designed for this need</div>'
+        '<div class="legend-group"><h5>Confidence</h5>'
+        f'<div class="legend-item">{render_pips("high", "pip-row")}High (consistent signal across participants)</div>'
+        f'<div class="legend-item">{render_pips("medium", "pip-row")}Medium</div>'
+        f'<div class="legend-item">{render_pips("low", "pip-row")}Low (sparse or contradictory)</div>'
         '</div>'
         '</div>'
     )
 
 
+def _insight_recommendation_text(item):
+    """v4 StructuredInsight uses `recommendation`; accept v3 `now_what` as fallback."""
+    return item.get("recommendation") or item.get("now_what") or ""
+
+
+def _render_insight_evidence_block(evidence):
+    """Render an evidence list (used inside the full slide on Insights tab)."""
+    if not evidence:
+        return ""
+    parts = ['<div class="si-evidence">']
+    for ev in evidence:
+        attr_bits = []
+        if ev.get("participant_id"):
+            attr_bits.append(esc(ev["participant_id"]))
+        if ev.get("source_ref"):
+            attr_bits.append(esc(ev["source_ref"]))
+        attr = " · ".join(attr_bits)
+        attr_html = f'<span class="si-ev-attr">{attr}</span>' if attr else ''
+        row_parts = []
+        if ev.get("snippet"):
+            row_parts.append(f'<span class="si-snip">"{esc(ev["snippet"])}"</span>')
+        if ev.get("metric"):
+            row_parts.append(f'<span class="si-metric">{esc(ev["metric"])}</span>')
+        if not row_parts:
+            continue
+        parts.append(
+            f'<div class="si-ev">{attr_html}'
+            f'{" — ".join(row_parts)}</div>'
+        )
+    parts.append('</div>')
+    return ''.join(parts)
+
+
+def _render_insight_slide(item, idx):
+    """One slide-like card on the Insights tab.
+
+    Shape:
+      insight: str (finding headline)
+      evidence: [{snippet?, participant_id?, metric?, source_ref?}]
+      so_what: str
+      recommendation: str   (v4; v3 specs may carry `now_what` instead)
+    """
+    parts = ['<div class="insight-slide">']
+    parts.append(f'<p class="si-eyebrow">Insight {idx:02d}</p>')
+    parts.append(f'<p class="si-finding">{esc(item.get("insight",""))}</p>')
+    parts.append('<div class="si-divider"></div>')
+
+    evidence = item.get("evidence") or []
+    if evidence:
+        parts.append('<p class="si-section-eyebrow">Supporting evidence</p>')
+        parts.append(_render_insight_evidence_block(evidence))
+
+    if item.get("so_what"):
+        parts.append('<p class="si-section-eyebrow">So what</p>')
+        parts.append(f'<p class="si-sowhat">{esc(item["so_what"])}</p>')
+
+    rec = _insight_recommendation_text(item)
+    if rec:
+        parts.append(
+            '<div class="insight-recommendation">'
+            '<p class="ir-eyebrow">Recommendation</p>'
+            f'<p class="ir-text">{esc(rec)}</p>'
+            '</div>'
+        )
+    parts.append('</div>')
+    return ''.join(parts)
+
+
+def _render_key_insight_compact(item, idx):
+    """Compact card for the Overview's Key Insights section — no evidence."""
+    parts = ['<div class="key-insight-compact">']
+    parts.append(f'<p class="ki-eyebrow">Insight {idx:02d}</p>')
+    parts.append(f'<p class="ki-finding">{esc(item.get("insight",""))}</p>')
+    if item.get("so_what"):
+        parts.append(f'<p class="ki-sowhat">{esc(item["so_what"])}</p>')
+    rec = _insight_recommendation_text(item)
+    if rec:
+        parts.append(
+            '<div class="ki-rec">'
+            '<p class="ki-rec-eyebrow">Recommendation</p>'
+            f'<p class="ki-rec-text">{esc(rec)}</p>'
+            '</div>'
+        )
+    parts.append('</div>')
+    return ''.join(parts)
+
+
+def _collect_insights(spec):
+    """Return spec['insights'] in v4 form. Back-compat: synthesize from v3 top_findings + top_recommendations + key_insights.additional_insights when absent."""
+    if spec.get("insights"):
+        return spec["insights"]
+    # v3 fallback: stitch together the legacy lists in priority order.
+    out = []
+    for it in spec.get("top_findings") or []:
+        out.append(it)
+    for it in spec.get("top_recommendations") or []:
+        out.append(it)
+    ki = spec.get("key_insights") or {}
+    for it in ki.get("additional_insights") or []:
+        out.append(it)
+    return out
+
+
+def _render_poc_card(poc):
+    if not poc:
+        return ""
+    name = esc(poc.get("name", ""))
+    role = esc(poc.get("role", ""))
+    email = poc.get("email", "")
+    parts = ['<div class="poc-card">',
+             '<p class="poc-eyebrow">Point of contact</p>']
+    role_html = f' <span class="poc-role">— {role}</span>' if role else ""
+    parts.append(f'<p class="poc-name">{name}{role_html}</p>')
+    if email:
+        parts.append(
+            f'<a class="poc-email" href="mailto:{esc(email)}">{esc(email)}</a>'
+        )
+    links = poc.get("links") or []
+    if links:
+        parts.append('<ul class="poc-links">')
+        for ln in links:
+            url = ln.get("url", "")
+            label = ln.get("label") or url
+            parts.append(f'<li><a href="{esc(url)}">{esc(label)}</a></li>')
+        parts.append('</ul>')
+    parts.append('</div>')
+    return ''.join(parts)
+
+
 def render_overview_panel(spec, find_index):
+    """v4 Overview order: masthead+takeaway → brief strip → matrix → Key Insights
+    section → View all concepts grid → POC."""
     parts = ['<section class="panel active" id="overview" role="tabpanel">']
 
-    # lead paragraph
-    cci = spec.get("cross_concept_insights") or {}
-    lead = cci.get("lead_paragraph") or spec.get("cross_cutting") or ""
-    if lead:
-        parts.append(f'<p class="lead">{lead}</p>')
+    # 1. Single-sentence takeaway
+    takeaway = spec.get("single_sentence_takeaway")
+    if takeaway:
+        parts.append(f'<p class="brief-takeaway">{takeaway}</p>')
 
-    # verdict matrix
+    # 2. 3-column strip: research question | method | how to use
+    rq = spec.get("research_question")
+    method = spec.get("method_description") or "Past-use stories + per-need usefulness ratings"
+    usage = spec.get("usage_guidance")
+    if rq or method or usage:
+        parts.append('<div class="brief-strip">')
+        parts.append(
+            '<div><h5>Research question</h5>'
+            f'<p>{esc(rq) if rq else "—"}</p></div>'
+        )
+        parts.append(
+            '<div><h5>Method</h5>'
+            f'<p>{esc(method)}</p></div>'
+        )
+        parts.append(
+            '<div><h5>How to use these results</h5>'
+            f'<p>{esc(usage) if usage else "—"}</p></div>'
+        )
+        parts.append('</div>')
+
+    # 3. Concept × Need Matrix — MOVED UP. No designed-for accent dot.
     parts.append('<div class="section">'
                  '<div class="section-head"><span class="section-num">§01</span>'
-                 '<h2>Verdict matrix</h2></div>')
+                 '<h2>Concept × Need Matrix</h2></div>')
     parts.append(render_matrix(spec, find_index))
     parts.append('</div>')
 
-    # gap section
-    missed, surprises = compute_gap(spec, find_index)
-    if missed or surprises:
+    # 4. Key Insights section — compact cards (first 5; no evidence).
+    insights = _collect_insights(spec)
+    if insights:
         parts.append('<div class="section">'
                      '<div class="section-head"><span class="section-num">§02</span>'
-                     '<h2>Designed-vs-actual gap</h2></div>'
-                     '<p>What the concepts were intended to do, versus what testing actually showed.</p>'
-                     '<div class="card-grid-2">')
-        # designed but missed
-        parts.append('<div class="card"><h4>Designed but missed</h4><ul class="gap-list">')
-        if missed:
-            for c, n, f in missed:
-                need_label = n.get("label") or n.get("statement") or n["id"]
-                verdict = f["verdict"]
-                parts.append(
-                    f'<li><span class="tag">{esc(c["id"])} → {esc(n["id"])}</span>'
-                    f'{esc(c["name"])} was designed to address <em>"{esc(need_label)}"</em>. '
-                    f'Verdict: {esc(VERDICT_SHORT_LABEL.get(verdict, verdict))}.</li>'
-                )
+                     '<h2>Key Insights</h2></div>')
+        parts.append('<div class="key-insight-grid">')
+        for i, it in enumerate(insights[:5], start=1):
+            parts.append(_render_key_insight_compact(it, i))
+        parts.append('</div>')
+        if len(insights) > 5:
+            parts.append(
+                '<a class="view-all-link" href="#" data-jump="cross">'
+                f'View all insights ({len(insights)}) →</a>'
+            )
         else:
-            parts.append('<li>No designed-but-missed cells.</li>')
-        parts.append('</ul></div>')
-        # good surprises
-        parts.append('<div class="card"><h4>Good surprises</h4><ul class="gap-list">')
-        if surprises:
-            for c, n, f in surprises:
-                need_label = n.get("label") or n.get("statement") or n["id"]
-                parts.append(
-                    f'<li><span class="tag surprise">{esc(c["id"])} → {esc(n["id"])}</span>'
-                    f'{esc(c["name"])} addresses <em>"{esc(need_label)}"</em> '
-                    f'even though it was not designed to.</li>'
-                )
-        else:
-            parts.append('<li>No good-surprise cells.</li>')
-        parts.append('</ul></div></div></div>')
+            parts.append(
+                '<a class="view-all-link" href="#" data-jump="cross">'
+                'View all insights →</a>'
+            )
+        parts.append('</div>')
 
-    # emergent need teaser
-    emergents = spec.get("emergent_needs") or []
-    if emergents:
+    # 5. View all concepts — preview card grid
+    concepts = spec.get("concepts", []) or []
+    if concepts:
         parts.append('<div class="section">'
                      '<div class="section-head"><span class="section-num">§03</span>'
-                     '<h2>Emergent need</h2></div>'
-                     '<p>One unmet need surfaced consistently in past-use stories that no concept addressed. '
-                     'See <a href="#" data-jump="cross" style="color:var(--accent)">Cross-Concept Insights</a> for full treatment.</p>')
-        em = emergents[0]
-        parts.append('<div class="emergent-card">')
-        parts.append(f'<h4>{esc(em["label"])}</h4>')
-        parts.append(
-            f'<p class="emergent-meta">Confidence: {esc(em.get("confidence","low"))} · '
-            f'{esc(em.get("confidence_note",""))}</p>'
-        )
-        for ev in (em.get("evidence") or [])[:1]:
-            parts.append(
-                f'<div class="emergent-quote">"{esc(ev["snippet"])}"'
-                f'<span class="attr">— {esc(ev["participant_id"])}</span></div>'
-            )
-        if em.get("missed_by"):
-            parts.append(
-                f'<p class="missed"><strong>Missed by:</strong> '
-                f'{", ".join(esc(c) for c in em["missed_by"])}.</p>'
-            )
-        parts.append('</div></div>')
+                     '<h2>View all concepts</h2></div>')
+        parts.append('<div class="concept-preview-grid">')
+        for c in concepts:
+            parts.append(_render_concept_preview_card(c))
+        parts.append('</div>')
+        parts.append('</div>')
+
+    # 6. POC card
+    poc = spec.get("poc")
+    if poc:
+        parts.append('<div class="section">'
+                     '<div class="section-head"><span class="section-num">§04</span>'
+                     '<h2>Point of contact</h2></div>')
+        parts.append(_render_poc_card(poc))
+        parts.append('</div>')
 
     parts.append('</section>')
     return ''.join(parts)
 
 
-def compute_gap(spec, find_index):
-    missed, surprises = [], []
-    for c in spec["concepts"]:
-        for n in spec["needs"]:
-            f = find_index.get((c["id"], n["id"]))
-            if not f:
-                continue
-            if f.get("was_targeted") and f["verdict"] in {"partial", "doesnt_address", "creates_new_problem"}:
-                missed.append((c, n, f))
-            if not f.get("was_targeted") and f["verdict"] == "addresses":
-                surprises.append((c, n, f))
-    return missed, surprises
+def _render_concept_preview_card(concept):
+    pid = concept["id"].lower()
+    si = concept.get("stimulus_image") or {}
+    thumb_path = si.get("path")
+    placeholder_name = si.get("name") or concept.get("name", "")
+
+    thumb_html = ""
+    if thumb_path:
+        asset = encode_asset(thumb_path)
+        if asset["type"] == "image":
+            thumb_html = (
+                f'<div class="cpc-thumb">'
+                f'<img src="{asset["data_uri"]}" alt="{esc(asset.get("alt", placeholder_name))}"/>'
+                f'</div>'
+            )
+    if not thumb_html:
+        thumb_html = (
+            '<div class="cpc-thumb">'
+            f'<span class="cpc-placeholder">{esc(placeholder_name)}</span>'
+            '</div>'
+        )
+
+    desc = concept.get("description", "") or ""
+    if len(desc) > 120:
+        desc = desc[:117].rstrip() + "…"
+
+    return (
+        '<div class="concept-preview-card">'
+        f'{thumb_html}'
+        '<div class="cpc-body">'
+        f'<p class="cpc-name">{esc(concept["name"])}</p>'
+        f'<p class="cpc-desc">{esc(desc)}</p>'
+        f'<a class="cpc-link" href="#" data-jump="{esc(pid)}">View concept →</a>'
+        '</div></div>'
+    )
 
 
 def render_cross_panel(spec, find_index):
+    """Render the v4 Insights tab as a stack of slide-like cards.
+
+    Panel id `cross` is preserved for back-compat with v2/v3 anchor links;
+    button text is now "Insights".
+    """
     parts = ['<section class="panel" id="cross" role="tabpanel">']
-    cci = spec.get("cross_concept_insights") or {}
-
-    if cci.get("lead_paragraph"):
-        parts.append(f'<p class="lead">{cci["lead_paragraph"]}</p>')
-
-    n = 1
-    # 01 — coverage
-    coverage = cci.get("coverage_by_need") or []
-    if coverage:
-        parts.append(f'<div class="insight-card">'
-                     f'<h3><span class="insight-num">{n:02d}</span>Need coverage across the portfolio</h3>')
-        n += 1
-        if cci.get("coverage_intro"):
-            parts.append(f'<p>{cci["coverage_intro"]}</p>')
-        n_cols = max(1, len(coverage))
-        parts.append(f'<div class="coverage-grid" style="grid-template-columns: repeat({n_cols}, 1fr)">')
-        for item in coverage:
-            need = next((nd for nd in spec["needs"] if nd["id"] == item["need_id"]), None)
-            need_label = (need.get("label") or need.get("statement") or item["need_id"]) if need else item["need_id"]
-            parts.append('<div class="coverage-item">')
-            parts.append(f'<span class="nid">{esc(item["need_id"])}</span>')
-            parts.append(f'<div class="nname">{esc(need_label)}</div>')
-            parts.append('<div class="coverage-balls">')
-            for owner in item.get("owners", []):
-                parts.append(
-                    f'<div>{render_ball_inline(owner["verdict"])}'
-                    f'<span class="cid">{esc(owner["concept_id"])}</span></div>'
-                )
-            parts.append('</div>')
-            parts.append(f'<div class="coverage-verdict">{item.get("summary","")}</div>')
-            parts.append('</div>')
-        parts.append('</div></div>')
-
-    # 02 — recurring drivers
-    drivers = cci.get("recurring_drivers") or []
-    if drivers:
-        parts.append(f'<div class="insight-card">'
-                     f'<h3><span class="insight-num">{n:02d}</span>Recurring drivers across concepts</h3>')
-        n += 1
-        if cci.get("drivers_intro"):
-            parts.append(f'<p>{cci["drivers_intro"]}</p>')
-        for d in drivers:
-            citations = ", ".join(
-                f'{esc(c["concept_id"])} ({c["count"]})' for c in d.get("citations", [])
-            )
-            note = f' · {esc(d["note"])}' if d.get("note") else ""
-            parts.append(
-                f'<div class="aspect-row">'
-                f'<div class="aspect-name">{esc(d["label"])}</div>'
-                f'<span class="aspect-direction {esc(d["direction"])}">driver-{esc(d["direction"])}</span>'
-                f'<span class="aspect-count">{citations}{note}</span>'
-                f'</div>'
-            )
-        if cci.get("drivers_outro"):
-            parts.append(f'<p style="margin-top:18px">{cci["drivers_outro"]}</p>')
-        parts.append('</div>')
-
-    # 03 — methodological observations
-    obs = spec.get("study_observations") or {}
-    if obs.get("halo_participants") or obs.get("sparse_coverage") or obs.get("contradictions"):
-        parts.append(f'<div class="insight-card">'
-                     f'<h3><span class="insight-num">{n:02d}</span>Methodological observations</h3>')
-        n += 1
-        if cci.get("methodology_intro"):
-            parts.append(f'<p>{cci["methodology_intro"]}</p>')
-        for h in obs.get("halo_participants", []) or []:
-            parts.append(f'<h4>{esc(h["participant_id"])} halo pattern</h4>')
-            parts.append(f'<p>{esc(h.get("rationale",""))}</p>')
-        for s in obs.get("sparse_coverage", []) or []:
-            parts.append(f'<h4>Sparse coverage on {esc(s["concept_id"])}</h4>')
-            parts.append(
-                f'<p>{esc(s["concept_id"])} was rated by only {s.get("n_raters","?")} '
-                f'participants. {esc(s.get("rationale",""))}</p>'
-            )
-        for ct in obs.get("contradictions", []) or []:
-            who = esc(ct["participant_id"])
-            scope = ct.get("concept_id", "")
-            if scope:
-                parts.append(f'<h4>{who} contradiction on {esc(scope)}</h4>')
-            else:
-                parts.append(f'<h4>{who} contradiction</h4>')
-            parts.append(f'<p>{esc(ct.get("rationale",""))}</p>')
-        parts.append('</div>')
-
-    # 04 — emergent needs (full treatment in cross tab)
-    emergents = spec.get("emergent_needs") or []
-    for em in emergents:
-        parts.append(f'<div class="insight-card">'
-                     f'<h3><span class="insight-num">{n:02d}</span>Emergent need: {esc(em["label"])}</h3>')
-        n += 1
-        parts.append('<div class="emergent-card" style="border-left:none;padding:0;background:transparent;margin-bottom:14px">')
+    insights = _collect_insights(spec)
+    if insights:
+        for i, item in enumerate(insights, start=1):
+            parts.append(_render_insight_slide(item, i))
+    else:
         parts.append(
-            f'<p class="emergent-meta">Confidence: {esc(em.get("confidence","low"))} · '
-            f'{esc(em.get("confidence_note",""))}</p>'
+            '<p class="lead">No insights authored for this study.</p>'
         )
-        for ev in em.get("evidence") or []:
-            parts.append(
-                f'<div class="emergent-quote">"{esc(ev["snippet"])}"'
-                f'<span class="attr">— {esc(ev["participant_id"])}</span></div>'
-            )
-        parts.append('</div>')
-        if em.get("commentary"):
-            parts.append(f'<p>{em["commentary"]}</p>')
-        if em.get("missed_by"):
-            parts.append(
-                f'<p><strong>Missed by:</strong> '
-                f'{", ".join(esc(c) for c in em["missed_by"])}</p>'
-            )
-        parts.append('</div>')
-
-    # 05 — strategic implications
-    impl = cci.get("strategic_implications") or []
-    if impl:
-        parts.append(f'<div class="insight-card">'
-                     f'<h3><span class="insight-num">{n:02d}</span>Strategic implications</h3>')
-        if cci.get("implications_intro"):
-            parts.append(f'<p>{cci["implications_intro"]}</p>')
-        parts.append('<ul class="strategic-list">')
-        for it in impl:
-            parts.append(
-                f'<li><strong>{esc(it["headline"])}</strong> {it["body"]}</li>'
-            )
-        parts.append('</ul></div>')
-
     parts.append('</section>')
     return ''.join(parts)
+
+
+def _concept_recommendation_v4(concept):
+    """Return v4-shape `{statement, confidence}` for a concept.
+
+    Back-compat: a v3-shape recommendation with a `verdict` key is reshaped on
+    read into `{statement: rationale or label, confidence: "medium"}`. Same
+    pattern as the v2→v3 disposition→recommendation transition.
+    """
+    rec = concept.get("recommendation") or concept.get("disposition")
+    if not rec:
+        return None
+    if "verdict" in rec:
+        # v3 shape (or older `disposition`) — coerce
+        statement = (rec.get("rationale")
+                     or rec.get("statement")
+                     or rec.get("label")
+                     or "")
+        print(
+            f"[concept_aggregator] warn: concept {concept.get('id','?')} uses v3 "
+            f"recommendation shape with verdict={rec.get('verdict')!r}; falling "
+            f"back to {{statement, confidence: 'medium'}} for v4 rendering.",
+            file=sys.stderr,
+        )
+        return {"statement": statement,
+                "confidence": rec.get("confidence", "medium")}
+    return {"statement": rec.get("statement", ""),
+            "confidence": rec.get("confidence", "medium")}
 
 
 def render_concept_panel(concept, spec, find_index):
     pid = concept["id"].lower()
     parts = [f'<section class="panel" id="{esc(pid)}" role="tabpanel">']
 
-    # hero (image + meta + disposition)
+    # 1. Hero (compact) — image + name + description ONLY. No badge, no eyebrow.
     parts.append('<div class="concept-hero">')
     parts.append(_render_concept_image(concept))
     parts.append('<div>')
-    parts.append(f'<p class="concept-meta-id">Concept {esc(concept["id"])}</p>')
     parts.append(f'<h2 class="concept-name">{esc(concept["name"])}</h2>')
     parts.append(f'<p class="concept-desc">{esc(concept.get("description",""))}</p>')
-
-    disp = concept.get("disposition")
-    if disp:
-        verdict = disp.get("verdict", "park")
-        label = disp.get("label") or DISPOSITION_LABEL.get(verdict, verdict)
-        cls = DISPOSITION_CLASS.get(verdict, "park")
-        parts.append('<div class="disposition">')
-        parts.append('<span class="label">Disposition</span>')
-        parts.append(f'<span class="value {esc(cls)}">{esc(label)}</span>')
-        parts.append('</div>')
-        if disp.get("rationale"):
-            parts.append(f'<p class="disposition-rationale">{esc(disp["rationale"])}</p>')
     parts.append('</div></div>')
 
-    # rating distribution
+    # 2. Headline section — top_finding + recommendation + confidence
+    top_finding = concept.get("top_finding") or concept.get("high_level_finding")
+    rec = _concept_recommendation_v4(concept)
+    if top_finding or rec:
+        parts.append('<div class="headline-section">')
+        if top_finding:
+            parts.append('<p class="hl-eyebrow">Top finding</p>')
+            parts.append(f'<p class="hl-top-finding">{esc(top_finding)}</p>')
+        if rec:
+            parts.append('<p class="hl-eyebrow">Overall recommendation</p>')
+            parts.append(f'<p class="hl-rec-text">{esc(rec["statement"])}</p>')
+            conf = rec.get("confidence", "medium")
+            parts.append(
+                '<div class="hl-confidence">'
+                f'{render_pips(conf, "confidence-pips")}'
+                f'<span class="confidence-text">· {esc(CONFIDENCE_LABEL.get(conf, conf + " confidence"))}</span>'
+                '</div>'
+            )
+        parts.append('</div>')
+
+    # 3. Rating distribution (kept from v3, displayed before needs deep dive)
     if concept.get("rating_distribution"):
         parts.append(_render_dist_section(concept, spec))
 
-    # past-use synthesis
-    if concept.get("past_use_synthesis"):
-        parts.append('<div class="section"><h3>Past-use story synthesis</h3>')
-        parts.append(f'<p>{esc(concept["past_use_synthesis"])}</p>')
-        for q in concept.get("past_use_quotes", []) or []:
-            cls = "pos" if q.get("polarity") == "positive" else ("neg" if q.get("polarity") == "negative" else "")
-            cls_attr = f' class="{cls}"' if cls else ""
-            parts.append(
-                f'<blockquote{cls_attr}>"{esc(q["snippet"])}"'
-                f'<span class="attr">— {esc(q["participant_id"])}</span></blockquote>'
-            )
-        parts.append('</div>')
-
-    # aspects
-    if concept.get("aspects"):
-        parts.append('<div class="section"><h3>Aspects</h3>')
-        for a in concept["aspects"]:
-            parts.append(
-                f'<div class="aspect-row">'
-                f'<div class="aspect-name">{esc(a["label"])}</div>'
-                f'<span class="aspect-direction {esc(a["direction"])}">driver-{esc(a["direction"])}</span>'
-                f'<span class="aspect-count">cited by {a.get("count","?")}</span>'
-                f'</div>'
-            )
-        parts.append('</div>')
-
-    # per-need findings
-    parts.append('<div class="section"><h3>Per-need findings</h3>')
+    # 4. Needs deep dive — per-need finding cards
+    parts.append('<div class="needs-deep-dive">'
+                 '<h3>Needs deep dive</h3>')
     for need in spec["needs"]:
         f = find_index.get((concept["id"], need["id"]))
         if not f:
@@ -1139,8 +1364,51 @@ def render_concept_panel(concept, spec, find_index):
         parts.append(_render_finding_card(f, need))
     parts.append('</div>')
 
+    # 5. Emergent need raised during THIS concept's sessions
+    this_emergents = _emergents_for_concept(concept, spec)
+    if this_emergents:
+        for em, evs in this_emergents:
+            parts.append('<div class="emergent-need-card label-emergent">')
+            parts.append('<p class="en-eyebrow">Emergent need</p>')
+            parts.append(f'<p class="en-label">{esc(em["label"])}</p>')
+            for ev in evs[:2]:
+                parts.append(
+                    f'<div class="en-quote">"{esc(ev["snippet"])}"'
+                    f'<span class="en-attr">— {esc(ev["participant_id"])}</span></div>'
+                )
+            parts.append('</div>')
+
+    # 6. Recommended refinements
+    refinements = concept.get("recommended_refinements") or []
+    if refinements:
+        parts.append('<div class="recommended-refinements">'
+                     '<h3>Recommended refinements</h3>'
+                     '<ul>')
+        for r in refinements:
+            parts.append(f'<li>{esc(r)}</li>')
+        parts.append('</ul></div>')
+
     parts.append('</section>')
     return ''.join(parts)
+
+
+def _emergents_for_concept(concept, spec):
+    """Return emergent needs that were surfaced during this concept's sessions.
+
+    Heuristic: evidence.source_id mentions this concept_id (e.g. "notes:P02:C1").
+    """
+    out = []
+    cid = concept["id"]
+    for em in spec.get("emergent_needs") or []:
+        matching = []
+        for ev in em.get("evidence") or []:
+            sid = ev.get("source_id") or ""
+            loc = ev.get("location") or ""
+            if cid in sid or cid in loc:
+                matching.append(ev)
+        if matching:
+            out.append((em, matching))
+    return out
 
 
 def _render_concept_image(concept):
@@ -1172,7 +1440,11 @@ def _render_dist_section(concept, spec):
     for row in concept["rating_distribution"]:
         n = row["n"] or 0
         need = nid_to_need.get(row["need_id"], {})
-        need_label = need.get("label") or need.get("statement") or row["need_id"]
+        label = need.get("label") or need.get("statement") or ""
+        statement = need.get("statement") or ""
+        sub = ""
+        if statement and statement != label:
+            sub = f' <span style="color:var(--ink-mute);font-size:12px">{esc(statement)}</span>'
         bar = '<div class="dist-bar">'
         for k in ("completely", "partially", "not_at_all"):
             count = row.get(k, 0)
@@ -1181,7 +1453,7 @@ def _render_dist_section(concept, spec):
                 bar += f'<div class="seg {k}" style="width:{pct}%">{count}</div>'
         bar += '</div>'
         parts.append(
-            f'<tr><td><strong>{esc(row["need_id"])}</strong> {esc(need_label)}</td>'
+            f'<tr><td><strong>{esc(label)}</strong>{sub}</td>'
             f'<td>{bar}</td>'
             f'<td>{n}</td></tr>'
         )
@@ -1200,16 +1472,18 @@ def _render_finding_card(finding, need):
     confidence = finding.get("confidence", "low")
     parts = ['<div class="finding-card">']
     parts.append('<div class="finding-head">')
-    need_label = need.get("label") or need.get("statement") or need["id"]
-    parts.append(
-        f'<h4><span class="need-id">{esc(need["id"])}</span>{esc(need_label)}</h4>'
-    )
-    if finding.get("was_targeted"):
-        parts.append('<span class="targeted-tag">Designed for</span>')
+    label = need.get("label") or need.get("statement") or ""
+    statement = need.get("statement") or ""
+    sub = ""
+    if statement and statement != label:
+        sub = f'<span class="need-statement">{esc(statement)}</span>'
+    parts.append(f'<h4>{esc(label)}{sub}</h4>')
     parts.append(
         f'<div class="finding-verdict">{render_ball_inline(verdict)}'
         f'<span class="vtext {esc(verdict)}">'
-        f'{esc(VERDICT_LONG_LABEL.get(verdict, verdict))} · {esc(confidence)} conf.</span></div>'
+        f'{esc(VERDICT_LONG_LABEL.get(verdict, verdict))} · {esc(confidence)} confidence</span>'
+        f'{render_pips(confidence, "confidence-pips")}'
+        f'</div>'
     )
     parts.append('</div>')
 
@@ -1309,6 +1583,32 @@ def render_method_panel(spec):
                  '<li><strong>Sparse-coverage threshold:</strong> Cells rated by fewer than 2 participants are '
                  'surfaced as <em>insufficient evidence</em>, not as a negative verdict.</li>'
                  '</ul></div>')
+
+    # 05 — Study observations (lifted from per-cell reconciliations).
+    obs = spec.get("study_observations") or {}
+    if obs.get("halo_participants") or obs.get("sparse_coverage") or obs.get("contradictions"):
+        parts.append('<div class="insight-card">'
+                     '<h3><span class="insight-num">05</span>Study observations</h3>'
+                     '<p>Patterns lifted once at study level rather than re-explained per cell. '
+                     'These shape how the matrix should be read.</p>')
+        for h in obs.get("halo_participants", []) or []:
+            parts.append(f'<h4>{esc(h["participant_id"])} halo pattern</h4>')
+            parts.append(f'<p>{h.get("rationale","")}</p>')
+        for s in obs.get("sparse_coverage", []) or []:
+            parts.append(f'<h4>Sparse coverage on {esc(s["concept_id"])}</h4>')
+            parts.append(
+                f'<p>{esc(s["concept_id"])} was rated by only '
+                f'{s.get("n_raters","?")} participants. {s.get("rationale","")}</p>'
+            )
+        for ct in obs.get("contradictions", []) or []:
+            who = esc(ct["participant_id"])
+            scope = ct.get("concept_id", "")
+            if scope:
+                parts.append(f'<h4>{who} contradiction on {esc(scope)}</h4>')
+            else:
+                parts.append(f'<h4>{who} contradiction</h4>')
+            parts.append(f'<p>{ct.get("rationale","")}</p>')
+        parts.append('</div>')
 
     parts.append('</div></section>')
     return ''.join(parts)

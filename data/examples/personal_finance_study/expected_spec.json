@@ -1,14 +1,111 @@
 {
+  "project_name": "Personal Finance MVP",
   "study_name": "Personal Finance Concept Study",
   "study_subtitle": "Concept Testing Report · Personal Finance MVP",
-  "masthead_h1_html": "How three concepts <em>address</em> three needs.",
-  "method_description": "Past-use stories + concept ratings",
+  "single_sentence_takeaway": "Pair real-time fraud alerts with shared partner tagging to cover the portfolio — but firm up fraud with a second round before committing the roadmap.",
+  "research_question": "Which concepts most credibly serve customer needs for tracking recurring expenses, catching fraud, and sharing financial state with a partner?",
+  "method_description": "Concept testing — past-use stories + per-need usefulness ratings",
+  "usage_guidance": "Use for the MVP-scope conversation with product, design, and engineering leads. Each recommendation maps to a roadmap decision; treat sparse-coverage flags as a sequencing risk, not an indictment.",
+  "poc": {
+    "name": "Sarah Chen",
+    "role": "Senior UX Researcher",
+    "email": "schen@example.com",
+    "links": [
+      {"label": "#ux-research", "url": "https://example.slack.com/channels/ux-research"}
+    ]
+  },
   "date": "2026-04-18",
   "participants": ["P01", "P02", "P03", "P04", "P05"],
   "needs": [
     {"id": "N1", "statement": "Track recurring expenses across all my accounts", "label": "Track recurring expenses"},
     {"id": "N2", "statement": "Catch fraudulent or anomalous charges quickly", "label": "Catch fraud quickly"},
     {"id": "N3", "statement": "Share day-to-day financial state with my partner", "label": "Share with partner"}
+  ],
+  "insights": [
+    {
+      "insight": "No single concept covers the full need set — the portfolio only works as a pair.",
+      "evidence": [
+        {"metric": "0 of 3 concepts address ≥2 of 3 needs at high confidence", "source_ref": "Concept × Need Matrix"},
+        {"snippet": "If you stick with the tagging it's the cleanest view possible.", "participant_id": "P04", "source_ref": "Manual transaction tagger"}
+      ],
+      "so_what": "Building any one of these alone leaves at least two of three needs underserved — the MVP framing has to be a set, not a single winner.",
+      "recommendation": "Plan the roadmap as a concept pair (most likely Smart spend alerts + Manual transaction tagger) and design the joint experience, not just the individual concepts."
+    },
+    {
+      "insight": "Smart spend alerts has the strongest fraud signal — but the evidence is sparse.",
+      "evidence": [
+        {"snippet": "Real-time alerts with context — that's exactly what fraud detection should feel like.", "participant_id": "P01", "source_ref": "Smart spend alerts × Catch fraud quickly"},
+        {"metric": "3/3 rated fraud-catching 'completely'", "source_ref": "Smart spend alerts × Catch fraud quickly"},
+        {"metric": "n=3 of 5 (study ran out of time)", "source_ref": "Smart spend alerts"}
+      ],
+      "so_what": "Smart spend alerts is the only concept that addresses fraud, and the same anomaly mechanism is a positive surprise on recurring-expense tracking — but the n is too thin to commit on alone.",
+      "recommendation": "Run a focused second round to bring Smart spend alerts to n=5 before locking it into the MVP."
+    },
+    {
+      "insight": "Manual transaction tagger owns partner sharing — but at a real adoption cost.",
+      "evidence": [
+        {"snippet": "Same tags, same view, finally a way to align on what counts as 'eating out'.", "participant_id": "P01", "source_ref": "Manual transaction tagger × Share with partner"},
+        {"snippet": "Tagging every transaction would stress me out, especially around money.", "participant_id": "P03", "source_ref": "Manual transaction tagger × Catch fraud quickly"},
+        {"metric": "3/5 said they wouldn't tag themselves", "source_ref": "Manual transaction tagger"}
+      ],
+      "so_what": "Manual transaction tagger is the only concept that resolves shared categorization disputes — but tagging-as-mechanism is adoption-fragile and, for at least one participant, anxiety-inducing.",
+      "recommendation": "Iterate Manual transaction tagger toward auto-suggested defaults with manual override, then re-test with anxiety-prone users specifically."
+    },
+    {
+      "insight": "Automation and low-effort concepts were preferred wherever they appeared.",
+      "evidence": [
+        {"snippet": "Auto-categorization is exactly what I want. I'm never going to do it myself.", "participant_id": "P03", "source_ref": "Weekly auto-digest"},
+        {"snippet": "If it knows your normal spending it knows your subscriptions, so why not.", "participant_id": "P02", "source_ref": "Smart spend alerts"},
+        {"metric": "Automation cited as the up-driver on Weekly auto-digest (4 of 5) and on Smart spend alerts (3 of 3)"}
+      ],
+      "so_what": "Across concepts, the no-effort affordance is what participants rated up — and it shows up regardless of the surface (email digest, push alert). This is the dominant axis underneath the matrix.",
+      "recommendation": "Make auto-behavior the default in every concept; reserve manual control for override, not for setup."
+    },
+    {
+      "insight": "Manual effort is claimed in theory and rejected in practice.",
+      "evidence": [
+        {"snippet": "Theoretically the cleanest. In practice I won't do it.", "participant_id": "P05", "source_ref": "Manual transaction tagger × Track recurring expenses"},
+        {"snippet": "Tagging every transaction would stress me out, especially around money.", "participant_id": "P03", "source_ref": "Manual transaction tagger × Catch fraud quickly"},
+        {"metric": "4 of 5 participants cited tagging burden as a down-driver on Manual transaction tagger"}
+      ],
+      "so_what": "Where the concept asked for input (Manual transaction tagger), most participants said they'd rate it generously in theory but wouldn't follow through. The aspirational-vs-actual gap is structural.",
+      "recommendation": "Don't ship any concept whose value is gated on per-transaction manual work — fold the value into an auto-suggest layer with one-tap override."
+    },
+    {
+      "insight": "Weekly auto-digest's cadence is structurally wrong for fraud.",
+      "evidence": [
+        {"snippet": "A weekly email is way too late. Fraud needs to be in seconds, not days.", "participant_id": "P02", "source_ref": "Weekly auto-digest × Catch fraud quickly"},
+        {"snippet": "If I see fraud on Monday, this email doesn't help me until Friday.", "participant_id": "P01", "source_ref": "Weekly auto-digest × Catch fraud quickly"}
+      ],
+      "so_what": "Weekly auto-digest owns its target need (tracking recurring expenses) at the lowest effort cost in the portfolio — but the weekly cadence makes it fundamentally wrong for the fraud framing it was given.",
+      "recommendation": "Drop Weekly auto-digest's fraud framing in copy and subject lines; pair it with Smart spend alerts (which absorbs the fraud signal in real time) in the MVP brief."
+    },
+    {
+      "insight": "Roommate-style sharing is an unmet need the portfolio doesn't see.",
+      "evidence": [
+        {"snippet": "Honestly the thing I really need is a way to split rent and groceries with my roommates without a shared spreadsheet.", "participant_id": "P02", "source_ref": "Weekly auto-digest session, spontaneous"},
+        {"snippet": "I want something for that — a way to set up shared recurring obligations with people who aren't my partner.", "participant_id": "P04", "source_ref": "Weekly auto-digest session, spontaneous"},
+        {"metric": "2 of 5 surfaced it unprompted; missed by Weekly auto-digest, Manual transaction tagger, and Smart spend alerts"}
+      ],
+      "so_what": "The sharing need as scoped assumes a romantic-partnership context; 40% of participants surfaced a non-romantic-cohabitant variant. The portfolio doesn't address it, and demographic trends suggest the gap is widening.",
+      "recommendation": "Scope a discovery study on roommate / non-romantic shared finance before the next concept round."
+    },
+    {
+      "insight": "Smart spend alerts + Manual transaction tagger is the smallest concept set that covers the full plan.",
+      "evidence": [
+        {"metric": "Smart spend alerts covers tracking + fraud; Manual transaction tagger covers sharing — together they cover all three plan needs"}
+      ],
+      "so_what": "Building Weekly auto-digest alone leaves fraud and sharing unsolved. Building Smart spend alerts alone leaves sharing unsolved. Only this pair has full plan coverage.",
+      "recommendation": "Frame the next leadership review as MVP = Smart spend alerts + Manual transaction tagger, with Weekly auto-digest as a candidate for a later release."
+    },
+    {
+      "insight": "Manual transaction tagger introduced money anxiety for one participant — small signal, big risk.",
+      "evidence": [
+        {"snippet": "Tagging every transaction would stress me out, especially around money — I'd be anxious about getting it wrong, missing one, mis-tagging it.", "participant_id": "P03", "source_ref": "Manual transaction tagger × Catch fraud quickly"}
+      ],
+      "so_what": "Tagging-as-mechanism, intended to give control, instead introduced money anxiety for an anxiety-prone participant. One strong signal of a concept making the user's relationship to the need worse is enough to surface for follow-up, regardless of majority verdict.",
+      "recommendation": "Recruit anxiety-prone participants explicitly for the Manual transaction tagger re-test; treat the auto-suggest iteration as a hypothesis that the anxiety dissolves once the per-transaction work goes away."
+    }
   ],
   "concepts": [
     {
@@ -24,15 +121,16 @@
         "label": "Stimulus image",
         "name": "Weekly auto-digest email mockup"
       },
-      "disposition": {
-        "verdict": "advance",
-        "label": "Advance",
-        "rationale": "Strong on its targeted need (recurring expenses) at the lowest effort cost in the portfolio. Re-scope away from fraud — pair with a real-time mechanism instead. Cadence is the structural cap."
+      "top_finding": "Low-effort pulse check on recurring spend, appreciated — but the wrong cadence for fraud.",
+      "recommendation": {
+        "statement": "Keep Weekly auto-digest as the low-effort recurring-expense surface; drop the fraud framing entirely and pair it with Smart spend alerts for real-time signal.",
+        "confidence": "high"
       },
-      "past_use_synthesis": "Across all participants, the weekly digest was framed as a low-effort way to notice spending creep — small recurring charges that would otherwise be invisible. Three participants explicitly said the appeal was not having to log into anything. P05 was an exception: rated everything positively but with vague, generic language, suggesting halo rather than considered judgment.",
-      "past_use_quotes": [
-        {"snippet": "I would have loved this last month — I would've seen the Spotify thing immediately.", "participant_id": "P01", "polarity": "positive"},
-        {"snippet": "Auto-categorization is exactly what I want. I'm never going to do it myself.", "participant_id": "P03", "polarity": "positive"}
+      "recommended_refinements": [
+        "Aggregate joint and personal accounts in the same digest so household recurring spend is in one place.",
+        "Surface week-over-week deltas more prominently than absolute totals — the change is the story.",
+        "Drop the 'fraud catch' framing from the email subject line and body copy.",
+        "Test Sunday-morning vs Monday-morning send times for engagement."
       ],
       "aspects": [
         {"label": "Automatic categorization", "direction": "up", "count": 4},
@@ -58,16 +156,16 @@
         "label": "Stimulus image",
         "name": "Manual transaction tagger UI"
       },
-      "disposition": {
-        "verdict": "iterate",
-        "label": "Iterate",
-        "rationale": "Owns partner-sharing — the only concept that does. But adoption fragility is real: 3/5 said they wouldn't tag, one experienced tagging as anxiety-inducing. Test whether shared tags can work with auto-suggested defaults and manual override."
+      "top_finding": "Owns partner sharing — at a real adoption cost.",
+      "recommendation": {
+        "statement": "Iterate toward auto-suggested category defaults with manual override; re-test with anxiety-prone recruits before any MVP commit.",
+        "confidence": "medium"
       },
-      "past_use_synthesis": "Participants split on whether the control was worth the burden. Sharing tags with a partner was the clear win — the only feature in the study that resolves shared-categorization disputes. But three of five participants explicitly said they wouldn't tag transactions themselves, and one described tagging as actively anxiety-inducing.",
-      "past_use_quotes": [
-        {"snippet": "Same tags, same view, finally a way to align on what counts as 'eating out'.", "participant_id": "P01", "polarity": "positive"},
-        {"snippet": "Tagging every transaction would stress me out, especially around money.", "participant_id": "P03", "polarity": "negative"},
-        {"snippet": "If you stick with the tagging it's the cleanest view possible.", "participant_id": "P04", "polarity": "neutral"}
+      "recommended_refinements": [
+        "Prototype auto-suggested tag defaults with one-tap override instead of tag-from-scratch.",
+        "Replace 'tag every transaction' framing with 'review weekly batches' to lower the perceived effort floor.",
+        "Seed each new account with a partner-shared category dictionary so day-one isn't blank.",
+        "Recruit anxiety-prone users explicitly for the next round; the P03 signal needs to be probed, not dismissed."
       ],
       "aspects": [
         {"label": "Shared tags with partner", "direction": "up", "count": 4},
@@ -92,14 +190,16 @@
         "label": "Stimulus image",
         "name": "Smart spend alert push notification"
       },
-      "disposition": {
-        "verdict": "advance_with_followup",
-        "label": "Advance — with follow-up",
-        "rationale": "Strongest single concept in the portfolio: only one to address fraud, and a positive surprise on tracking. But evidence is sparse (n=3) and one participant's automation-distrust comment warrants probing. A second round to bring this to n=5 is the highest-leverage next study."
+      "top_finding": "Best single bet on fraud — evidence-sparse, but uniformly positive.",
+      "recommendation": {
+        "statement": "Strongest single concept in the portfolio — run a focused second round to n=5 before locking it into the MVP.",
+        "confidence": "medium"
       },
-      "past_use_synthesis": "C3 was rated by only three of five participants (study ran out of time). Among those three the response was uniformly positive on fraud — the real-time, contextual framing was repeatedly cited as 'exactly what fraud detection should feel like'. P02 rated it `completely` on fraud but verbalized distrust of automated alerts in the same breath, a contradiction worth flagging.",
-      "past_use_quotes": [
-        {"snippet": "Real-time alerts with context — that's exactly what fraud detection should feel like.", "participant_id": "P01", "polarity": "positive"}
+      "recommended_refinements": [
+        "Add 'mark as expected' as a quick action on the alert itself to reduce alert fatigue for recurring-but-legit charges.",
+        "Probe explicitly in screening for the automation-distrust pattern P02 surfaced.",
+        "Test contextual depth — how much per-alert context is too much vs too little.",
+        "Run a second round to n=5 on the existing concept first; no design change before evidence is firm."
       ],
       "aspects": [
         {"label": "Real-time delivery", "direction": "up", "count": 3},
@@ -111,7 +211,7 @@
         {"need_id": "N2", "completely": 3, "partially": 0, "not_at_all": 0, "n": 3},
         {"need_id": "N3", "completely": 0, "partially": 0, "not_at_all": 1, "n": 1}
       ],
-      "dist_note": "Note: Sparse coverage (study ran out of time). All C3 verdicts carry medium-or-lower confidence as a result."
+      "dist_note": "Note: Sparse coverage (study ran out of time). All Smart spend alerts verdicts carry medium-or-lower confidence as a result."
     }
   ],
   "findings": [
@@ -125,7 +225,7 @@
         {"snippet": "I would have loved this last month — I would've seen the Spotify thing immediately.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C1", "location": "rating-row N1"},
         {"snippet": "Auto-categorization is exactly what I want. I'm never going to do it myself.", "participant_id": "P03", "polarity": "positive", "source_id": "notes:P03:C1", "location": "rating-row N1"}
       ],
-      "notes": "Strong consensus that auto-categorization is the key driver. P05 halo applied (see Cross-Concept Insights / Methodological observations) — does not undermine the verdict but does not strengthen it."
+      "notes": "Strong consensus that auto-categorization is the key driver. P05 halo applied (see Methodology · Study observations) — does not undermine the verdict but does not strengthen it."
     },
     {
       "concept_id": "C1", "need_id": "N2",
@@ -137,7 +237,7 @@
         {"snippet": "It might catch some stuff but if I see fraud on Monday, this email doesn't help me until Friday.", "participant_id": "P01", "polarity": "negative", "source_id": "notes:P01:C1", "location": "rating-row N2"},
         {"snippet": "A weekly email is way too late. Fraud needs to be in seconds, not days.", "participant_id": "P02", "polarity": "negative", "source_id": "notes:P02:C1", "location": "rating-row N2"}
       ],
-      "notes": "Cadence is the bottleneck. Concept was designed for fraud detection but the weekly delivery rhythm fundamentally limits effectiveness. Consider a real-time fallback for high-value anomalies."
+      "notes": "Cadence is the bottleneck. The concept was designed to surface anomalies but the weekly delivery rhythm fundamentally limits effectiveness. Consider a real-time fallback for high-value anomalies."
     },
     {
       "concept_id": "C1", "need_id": "N3",
@@ -156,12 +256,12 @@
       "was_targeted": true,
       "verdict": "partial",
       "confidence": "medium",
-      "reconciliation_note": "Designed-vs-actual gap on adoption likelihood: ratings (2 completely, 3 partially) reflect that participants understand tagging would give the cleanest view, but most explicitly state they wouldn't actually do the tagging. P03's explanation cell was empty — flagged but does not change verdict.",
+      "reconciliation_note": "Designed-vs-actual gap on adoption likelihood: ratings (2 completely, 3 partially) reflect that participants understand tagging would give the cleanest view, but most explicitly state they wouldn't actually do the tagging. P03's explanation cell was empty — flagged but does not change the verdict.",
       "evidence": [
         {"snippet": "If I'm tagging things anyway I'd put 'subscription' on the recurring ones — clearer than auto-categorization.", "participant_id": "P02", "polarity": "positive", "source_id": "notes:P02:C2", "location": "rating-row N1"},
         {"snippet": "Theoretically the cleanest. In practice I won't do it.", "participant_id": "P05", "polarity": "neutral", "source_id": "notes:P05:C2", "location": "rating-row N1"}
       ],
-      "notes": "The disconnect between theoretical and practical addressing is the dominant signal. C2 is designed for N1 but the manual-effort cost makes adoption fragile."
+      "notes": "The disconnect between theoretical and practical addressing is the dominant signal. Manual transaction tagger was designed for tracking recurring expenses but the manual-effort cost makes adoption fragile."
     },
     {
       "concept_id": "C2", "need_id": "N2",
@@ -185,7 +285,7 @@
         {"snippet": "If my roommate could see the same tags this would solve the entire shared-grocery argument.", "participant_id": "P02", "polarity": "positive", "source_id": "notes:P02:C2", "location": "rating-row N3"},
         {"snippet": "We'd both see the same tagged feed — that's the whole solution.", "participant_id": "P04", "polarity": "positive", "source_id": "notes:P04:C2", "location": "rating-row N3"}
       ],
-      "notes": "C2 delivers on its target. The shared-tags mechanism resolves an explicit pain (categorization disputes) that participants had concrete past-use stories about. Note that P02's quote drifts toward roommates — see emergent need in Cross-Concept Insights."
+      "notes": "Manual transaction tagger delivers on its target. The shared-tags mechanism resolves an explicit pain (categorization disputes) that participants had concrete past-use stories about. Note that P02's quote drifts toward roommates — see emergent-need card on the Weekly auto-digest tab."
     },
     {
       "concept_id": "C3", "need_id": "N1",
@@ -197,19 +297,19 @@
         {"snippet": "If you're catching every weird charge, you're also catching the recurring stuff that drifts.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C3", "location": "rating-row N1"},
         {"snippet": "If it knows your normal spending it knows your subscriptions, so why not.", "participant_id": "P02", "polarity": "positive", "source_id": "notes:P02:C3", "location": "rating-row N1"}
       ],
-      "notes": "Good surprise — C3 was designed only for fraud (N2) but the same anomaly-detection mechanism surfaces recurring-charge changes as a side effect."
+      "notes": "Good surprise — Smart spend alerts was designed only for fraud, but the same anomaly-detection mechanism surfaces recurring-charge changes as a side effect."
     },
     {
       "concept_id": "C3", "need_id": "N2",
       "was_targeted": true,
       "verdict": "addresses",
       "confidence": "medium",
-      "reconciliation_note": "All 3 raters said `completely` with consistent positive reasoning around real-time + contextual content. Confidence is medium rather than high due to small n. P02's contradictory explanation is logged at study level (see Methodological observations).",
+      "reconciliation_note": "All 3 raters said `completely` with consistent positive reasoning around real-time + contextual content. Confidence is medium rather than high due to small n. P02's contradictory explanation is logged at study level (see Methodology · Study observations).",
       "evidence": [
         {"snippet": "Real-time alerts with context — that's exactly what fraud detection should feel like.", "participant_id": "P01", "polarity": "positive", "source_id": "notes:P01:C3", "location": "rating-row N2"},
         {"snippet": "Real-time and contextual — that's exactly the right shape.", "participant_id": "P03", "polarity": "positive", "source_id": "notes:P03:C3", "location": "rating-row N2"}
       ],
-      "notes": "C3 delivers on its single targeted need. The contextual alert content (showing what the charge is) was consistently called out as the differentiator from generic bank alerts."
+      "notes": "Smart spend alerts delivers on its single targeted need. The contextual alert content (showing what the charge is) was consistently called out as the differentiator from generic bank alerts."
     },
     {
       "concept_id": "C3", "need_id": "N3",
@@ -234,74 +334,9 @@
       ],
       "addressed_by": [],
       "missed_by": ["C1", "C2", "C3"],
-      "commentary": "The \"share with partner\" need (N3) as scoped assumes a romantic-partnership context. 40% of participants surfaced a roommate / non-romantic-cohabitant need without prompting. The portfolio doesn't address it — and given the demographic shift toward later partnership, this gap may be larger than this study can size. Worth scoping a discovery study."
+      "commentary": "The \"share with partner\" need as scoped assumes a romantic-partnership context. 40% of participants surfaced a roommate / non-romantic-cohabitant need without prompting. The portfolio doesn't address it — and given the demographic shift toward later partnership, this gap may be larger than this study can size. Worth scoping a discovery study."
     }
   ],
-  "cross_concept_insights": {
-    "lead_paragraph": "Three concepts, read as a portfolio rather than as individuals — patterns of coverage, recurring drivers, methodological signals, and what the design space is missing.",
-    "coverage_intro": "Every need has at least one concept that addresses it, but each is owned by a single concept. There are no redundancies and one structural gap: <strong>no single concept</strong> handles fraud detection <em>and</em> partner sharing together.",
-    "coverage_by_need": [
-      {
-        "need_id": "N1",
-        "owners": [
-          {"concept_id": "C1", "verdict": "addresses"},
-          {"concept_id": "C2", "verdict": "partial"},
-          {"concept_id": "C3", "verdict": "addresses"}
-        ],
-        "is_single_point": false,
-        "summary": "<strong>Well-covered.</strong> C1 owns it; C3 is a good surprise via anomaly-detection."
-      },
-      {
-        "need_id": "N2",
-        "owners": [
-          {"concept_id": "C1", "verdict": "partial"},
-          {"concept_id": "C2", "verdict": "creates_new_problem"},
-          {"concept_id": "C3", "verdict": "addresses"}
-        ],
-        "is_single_point": true,
-        "summary": "<strong>Single point of coverage.</strong> Only C3 actually solves it. C1's cadence is the cap; C2 makes things worse."
-      },
-      {
-        "need_id": "N3",
-        "owners": [
-          {"concept_id": "C1", "verdict": "doesnt_address"},
-          {"concept_id": "C2", "verdict": "addresses"},
-          {"concept_id": "C3", "verdict": "insufficient_evidence"}
-        ],
-        "is_single_point": true,
-        "summary": "<strong>Single point of coverage.</strong> Only C2 — and its sharing value is yoked to a tagging behavior most users won't perform."
-      }
-    ],
-    "drivers_intro": "Aspects mentioned across multiple concepts reveal what the user population is actually responding to, beneath any single stimulus.",
-    "recurring_drivers": [
-      {"label": "Automation / no-effort affordances", "direction": "up", "citations": [{"concept_id": "C1", "count": 4}, {"concept_id": "C3", "count": 3}]},
-      {"label": "Manual effort & tagging burden", "direction": "down", "citations": [{"concept_id": "C2", "count": 4}]},
-      {"label": "Real-time / latency-sensitive delivery", "direction": "up", "citations": [{"concept_id": "C3", "count": 3}], "note": "inverse on C1 cadence"},
-      {"label": "Contextual content (what the charge is, not just that one happened)", "direction": "up", "citations": [{"concept_id": "C3", "count": 2}]},
-      {"label": "Distrust of automated judgment", "direction": "down", "citations": [{"concept_id": "C3", "count": 1}]}
-    ],
-    "drivers_outro": "The dominant signal is <strong>aversion to manual effort</strong>. Where automation worked, participants rated up; where the concept asked for input (C2), most said they'd rate it generously in theory but wouldn't follow through. This makes \"automation with override\" a strong design principle going forward.",
-    "methodology_intro": "Two patterns affect how the matrix above should be read.",
-    "implications_intro": "Four takeaways for the MVP roadmap conversation.",
-    "strategic_implications": [
-      {
-        "headline": "No concept is a complete solution.",
-        "body": "Building any one of these alone leaves at least two of three needs underserved. The MVP framing should be a <em>set</em>, not a single winner."
-      },
-      {
-        "headline": "C3 + C2 is the most addressable combination.",
-        "body": "C3 owns fraud and surprises positively on tracking. C2 owns sharing. Together they cover all three needs. C1's distinct value (low-effort weekly summary) is real but not unique — C3 absorbs much of it."
-      },
-      {
-        "headline": "\"Automation with override\" is the design principle the data is asking for.",
-        "body": "Across concepts, automation drove up-rating; manual control was claimed in theory and rejected in practice. The next iteration of C2 should test whether shared tagging can work with auto-suggestion as the default."
-      },
-      {
-        "headline": "Roommate-style sharing is an unmet need worth a discovery study.",
-        "body": "2 of 5 participants raised it unprompted; the concept set as designed doesn't see it."
-      }
-    ]
-  },
   "study_observations": {
     "halo_participants": [
       {
@@ -315,7 +350,7 @@
       {
         "concept_id": "C3",
         "n_raters": 3,
-        "rationale": "C3 was rated by only 3 of 5 participants because the study ran out of time. This is why every C3 verdict carries medium-or-lower confidence even when the signal is uniformly positive. A follow-up round bringing C3 to n=5 is the cheapest way to firm up the strongest single concept in the portfolio."
+        "rationale": "Smart spend alerts was rated by only 3 of 5 participants because the study ran out of time. This is why every Smart spend alerts verdict carries medium-or-lower confidence even when the signal is uniformly positive. A follow-up round bringing this concept to n=5 is the cheapest way to firm up the strongest single concept in the portfolio."
       }
     ],
     "contradictions": [
@@ -323,7 +358,7 @@
         "participant_id": "P02",
         "concept_id": "C3",
         "need_id": "N2",
-        "rationale": "P02 rated C3 <em>completely</em> on fraud while saying \"I don't really trust automated alerts\" in the same breath. Logged as a known contradiction worth probing, not as an undermining signal — the rating itself was for the concept's shape, the comment was about a category-level skepticism.",
+        "rationale": "P02 rated Smart spend alerts <em>completely</em> on fraud while saying \"I don't really trust automated alerts\" in the same breath. Logged as a known contradiction worth probing, not as an undermining signal — the rating itself was for the concept's shape, the comment was about a category-level skepticism.",
         "snippet": "I don't really trust automated alerts. I always second-guess them."
       }
     ]

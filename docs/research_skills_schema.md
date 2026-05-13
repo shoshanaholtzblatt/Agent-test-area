@@ -42,7 +42,11 @@ type Concept = {
     label: string                                         // placeholder caption
     name: string                                          // short stimulus description
   }
-  disposition?: Disposition                               // populated by the evaluating skill (Phase 4e)
+  top_finding?: string                                    // 5–15 word punchy fragment for the concept tab (renamed from high_level_finding in v4)
+  recommendation?: Recommendation                         // populated by the evaluating skill (Phase 4e)
+  recommended_refinements?: string[]                      // 2–5 actionable next steps for this concept (v4)
+  disposition?: Disposition                               // DEPRECATED alias of `recommendation` — see below
+  high_level_finding?: string                             // DEPRECATED alias of `top_finding`
 }
 ```
 
@@ -61,6 +65,57 @@ type ResearchPlan = {
   participants: string[]                             // optional roster
 }
 ```
+
+### `ConceptTestingSpec` (top-level v4 shape)
+
+The full spec the `/concept-testing` helper renders to HTML. Combines the plan, the per-cell findings, a single ordered insights list, and the per-concept leadership content.
+
+```ts
+type ConceptTestingSpec = {
+  // Project context (supplied by the researcher in Phase 1)
+  project_name: string                           // becomes the masthead h1
+  study_name: string                             // longer/internal name
+  research_question: string                      // verbatim on Overview
+  method_description: string                     // default: concept testing past-use stories + ratings
+  usage_guidance: string                         // "How to use these results" — 1–2 sentences
+  poc: POC
+
+  // Leadership brief (Claude-authored)
+  single_sentence_takeaway: string               // one sentence
+  insights: StructuredInsight[]                  // v4 — ordered, most decision-relevant first.
+                                                 // Overview shows first 5 (compact, no evidence);
+                                                 // Insights tab shows all (slide-like cards).
+
+  // Synthesis & evidence
+  study_observations: StudyObservations          // rendered on the Methodology tab
+  concepts: Concept[]                            // each carries top_finding + recommendation + recommended_refinements
+  findings: Finding[]
+  emergent_needs: EmergentNeed[]                 // rendered on the concept tab where they were raised
+}
+
+type POC = {
+  name: string
+  role: string
+  email: string
+  links?: { label: string; url: string }[]   // e.g. Slack handle, page
+}
+
+type StructuredInsight = {
+  insight: string                              // finding headline
+  evidence: {
+    snippet?: string                           // verbatim quote
+    participant_id?: string
+    metric?: string                            // e.g. "3/5 said wouldn't tag"
+    source_ref?: string                        // anchor or concept name reference
+  }[]
+  so_what: string                              // why this matters for business + customer
+  recommendation: string                       // v4: was `now_what` in v3
+}
+```
+
+The Overview tab renders, in order: takeaway → research-question/method/how-to-use strip → Concept × Need matrix → Key Insights section (first 5 insights, compact) → View all concepts preview grid → Point of contact card. The Insights tab renders every entry in `spec.insights[]` as a slide-like card (finding + evidence + so-what + accent-boxed recommendation). The Methodology tab renders `study_observations`. Per-concept tabs render a compact hero, a headline section (top_finding + recommendation with confidence pips + text), the rating distribution, a per-need finding deep dive, an emergent-need card if applicable, and a 2–5-item recommended-refinements list.
+
+**Removed in v4:** `top_findings`, `top_recommendations`, `key_insights` (all consolidated into `insights[]`); `cross_cutting`. The previous `concept.aspects` field is still accepted in the spec — the helper preserves the data but does not render it.
 
 The orchestrator emits `ResearchPlan` as a markdown file with conventional headings (`research_plan.md`); the skill parses headings into this typed shape internally. See `data/concept_research_plan_template.md` for the markdown layout used by `/concept-testing`.
 
@@ -175,27 +230,26 @@ Both surface high-leverage insights for the next design iteration.
 
 ---
 
-## Disposition (per concept)
+## Recommendation (per concept)
 
-Each concept gets a Disposition — the headline output for stakeholders making roadmap decisions.
+Each concept gets a Recommendation — the headline output for stakeholders making roadmap decisions. v4 uses free-form prose with a separate confidence indicator; the v2/v3 enum (`advance|iterate|kill|park|advance_with_followup`) is **deprecated**.
 
 ```ts
-type Disposition = {
-  verdict: "advance" | "advance_with_followup" | "iterate" | "kill" | "park"
-  label: string                  // human-friendly label e.g. "Advance — with follow-up"
-  rationale: string              // 1–2 sentences referencing specific cells/metrics
+type Recommendation = {
+  statement: string              // free-form prose (1–3 sentences) — what to do with this concept
+  confidence: "high" | "medium" | "low"   // strength of evidence across the concept's cells
 }
 ```
 
-| Disposition | When |
-|---|---|
-| `advance` | Addresses ≥ 50% of needs, no `creates_new_problem` verdicts, evidence is non-sparse, owns at least one need |
-| `advance_with_followup` | Strong-positive but evidence is sparse OR a logged contradiction warrants probing |
-| `iterate` | Owns a need but adoption-fragile, OR mixed verdicts that suggest re-scoping |
-| `kill` | Addresses no needs, OR widely creates_new_problem, OR clearly dominated by another concept |
-| `park` | `insufficient_evidence` dominant; can't decide yet |
+The statement should be specific and tied to data ("Strongest single concept — run a focused second round to n=5 before locking it into the MVP"), not generic ("recommend further testing"). Confidence summarizes evidence strength across the concept's cells; it visualizes in the report as pip dots (●●●/●●○/●○○) and an accompanying text label ("· high confidence").
 
-The rationale must reference specific data ("only concept to address fraud", "owns partner-sharing", "3/5 said they wouldn't tag") — not generic ("recommend further testing").
+### `Recommendation` *(v3 enum shape — deprecated)*
+
+The v3 shape carried `{verdict, label, rationale}` where `verdict` was one of `advance | advance_with_followup | iterate | kill | park`. The helper still accepts this shape for one minor-version transition: it coerces `{verdict, rationale}` into `{statement: rationale, confidence: "medium"}` and logs a warning. New specs should write the v4 shape directly.
+
+### `Disposition` *(deprecated — alias for the v3 `Recommendation` shape)*
+
+`Disposition` was the v2 name. The field name `concept.disposition` is still accepted by the helper but maps through the v3 fallback. New specs should write `concept.recommendation` in v4 form.
 
 ---
 
@@ -203,44 +257,25 @@ The rationale must reference specific data ("only concept to address fraud", "ow
 
 These are *single, study-wide* objects that the evaluating skill produces alongside the per-cell `Finding[]`.
 
-### `CrossConceptInsights`
+### `StructuredInsight` *(v4 — single ordered list)*
 
-Reads the findings as a portfolio rather than as individuals.
+In v4 the cross-concept synthesis collapses to a single ordered `spec.insights[]` list. Each entry is a `StructuredInsight` (see the top-level shape above). The first 5 render on the Overview as compact cards (no evidence); all entries render on the Insights tab as slide-like cards with finding + evidence + so-what + accent-boxed recommendation.
 
-```ts
-type CrossConceptInsights = {
-  lead_paragraph: string             // overview/cross-tab opener
-  coverage_intro?: string            // optional intro for the coverage section
-  coverage_by_need: CoverageByNeedItem[]
-  drivers_intro?: string
-  recurring_drivers: RecurringDriver[]
-  drivers_outro?: string
-  methodology_intro?: string
-  implications_intro?: string
-  strategic_implications: StrategicImplication[]
-}
+Author 7–10 insights, ordered by stakeholder impact. Source material includes:
 
-type CoverageByNeedItem = {
-  need_id: string
-  owners: { concept_id: string; verdict: string }[]   // every concept's verdict on this need
-  is_single_point: boolean                             // exactly one concept reaches `addresses`
-  summary: string                                      // 1-sentence; can include inline HTML
-}
+- Cross-concept patterns ("no single concept covers the full need set")
+- Individual concept results that change the strategic picture
+- Recurring-driver patterns rewritten as human-language insights ("Automation and low-effort concepts were preferred") — **not** as a separate drivers table
+- Emergent needs that are decision-relevant for the portfolio
+- Methodological cautions only when they shift a leadership decision (otherwise keep them on the Method tab)
 
-type RecurringDriver = {
-  label: string                      // 3–7 words, e.g. "Automation / no-effort affordances"
-  direction: "up" | "down" | "mixed"
-  citations: { concept_id: string; count: number }[]
-  note?: string                      // optional inversion / nuance note
-}
+### `KeyInsights` *(deprecated in v4)*
 
-type StrategicImplication = {
-  headline: string                   // bold lead
-  body: string                       // 1–2 supporting sentences; can include inline HTML
-}
-```
+The v3 `key_insights` object (with `coverage_by_need`, `recurring_drivers`, `additional_insights`, section-level so-what/now-what) is no longer rendered. The helper accepts v3 specs and stitches `top_findings + top_recommendations + key_insights.additional_insights` into the v4 `insights[]` list for one transitional minor version. Drivers and coverage tables are gone — rewrite that content as human-language insight cards.
 
-`recurring_drivers` aggregates aspects across concepts by **semantic equivalence**, not exact label match. A skill should cluster "automatic categorization" + "real-time delivery" if both are driving ratings via the same underlying property (no-effort affordance).
+**Methodological observations** (halo, sparse coverage, contradictions) continue to live in `study_observations` and render on the Methodology tab.
+
+**Emergent needs** are rendered on the concept tab where they were raised (matched by `evidence.source_id`/`location` containing the concept ID). The cross-concept rollup belongs in `insights[]` if it changes the leadership decision.
 
 ### `StudyObservations`
 
