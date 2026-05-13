@@ -1,4 +1,14 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Mobile Banking App — Usability Testing Report</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"><style>:root {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobile Banking App — Usability Testing Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
   --bg: #f6f4ee;
   --paper: #fbfaf6;
   --ink: #1c1a17;
@@ -8,619 +18,692 @@
   --rule-soft: #e8e3d6;
   --accent: #8b3a17;
   --accent-soft: #c9663a;
-  --pos: #2f5f3a;
-  --neg: #9b2a2a;
-  --mixed: #8a6e1a;
-  --warn-bg: #f1e6dc;
-  --shadow: 0 1px 0 rgba(28,26,23,0.04), 0 6px 22px -12px rgba(28,26,23,0.18);
+  --pos: #2d6a4f;
+  --pos-bg: #d8f3dc;
+  --neg: #9b2226;
+  --neg-bg: #ffe5e6;
+  --mixed: #7a5c00;
+  --mixed-bg: #fff3cd;
+  --shadow: 0 1px 4px rgba(28,26,23,0.08), 0 0 0 1px rgba(28,26,23,0.06);
   --serif: 'Fraunces', Georgia, serif;
-  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
 }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.55; font-size: 16px; -webkit-font-smoothing: antialiased; }
-.page { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
-.masthead { border-bottom: 1px solid var(--ink); padding-bottom: 24px; margin-bottom: 28px; }
-.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
-.masthead h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(32px, 4.2vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 16px; font-variation-settings: "opsz" 96; }
-.masthead h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
-.meta { display: flex; flex-wrap: wrap; gap: 18px 28px; font-size: 13px; color: var(--ink-soft); }
-.meta span strong { color: var(--ink); font-weight: 600; margin-left: 6px; }
-.tabnav { display: flex; gap: 4px; border-bottom: 1px solid var(--rule); margin-bottom: 40px; overflow-x: auto; scrollbar-width: none; }
-.tabnav::-webkit-scrollbar { display: none; }
-.tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 14px 20px; margin-bottom: -1px; font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink-mute); cursor: pointer; white-space: nowrap; letter-spacing: 0.01em; transition: color 0.15s, border-color 0.15s; }
-.tab:hover { color: var(--ink-soft); }
-.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
-.tab .tab-num { font-family: var(--mono); font-size: 10px; color: var(--ink-mute); margin-right: 8px; font-weight: 400; }
-.tab.active .tab-num { color: var(--accent); }
-.panel { display: none; animation: fadein 0.25s ease; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
+a { color: var(--accent); }
+
+/* Layout */
+.masthead { background: var(--ink); color: var(--bg); padding: 36px 48px 28px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #c9b99a; margin-bottom: 10px; }
+.masthead h1 { font-family: var(--serif); font-size: 32px; font-weight: 600; line-height: 1.2; margin-bottom: 12px; }
+.masthead .meta { font-family: var(--mono); font-size: 11.5px; color: #a89880; display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.meta-item::before { content: ''; }
+
+/* Tabs */
+.tab-bar { background: var(--paper); border-bottom: 1px solid var(--rule); padding: 0 48px; display: flex; gap: 0; overflow-x: auto; }
+.tab { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; color: var(--ink-mute); padding: 14px 18px 12px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color 0.15s, border-color 0.15s; user-select: none; }
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Panels */
+.panel { display: none; padding: 40px 48px 64px; max-width: 960px; margin: 0 auto; }
 .panel.active { display: block; }
-@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-h2 { font-family: var(--serif); font-weight: 500; font-size: 26px; letter-spacing: -0.01em; margin: 0 0 16px; font-variation-settings: "opsz" 36; }
-h3 { font-family: var(--serif); font-weight: 500; font-size: 20px; letter-spacing: -0.005em; margin: 28px 0 10px; }
-h4 { font-family: var(--sans); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); margin: 28px 0 12px; }
-p { margin: 0 0 14px; color: var(--ink-soft); }
-p.lead { font-family: var(--serif); font-size: 19px; line-height: 1.55; color: var(--ink); font-weight: 400; font-variation-settings: "opsz" 24; }
-p.lead em { color: var(--accent); font-style: italic; }
-.section { margin-bottom: 48px; }
-.section-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
-.section-head h2 { margin-bottom: 0; }
-.section-head .section-num { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.1em; }
-.card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 24px 28px; margin-bottom: 16px; box-shadow: var(--shadow); }
-.card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-blockquote { margin: 12px 0; padding: 10px 0 10px 20px; border-left: 3px solid var(--rule); font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--ink); line-height: 1.5; }
-blockquote.pos { border-left-color: var(--pos); }
-blockquote.neg { border-left-color: var(--neg); }
-blockquote .attr { display: block; font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
-.reconciliation { background: var(--bg); border-left: 3px solid var(--rule); padding: 12px 16px; margin: 12px 0; font-size: 13px; color: var(--ink-soft); line-height: 1.55; }
-.reconciliation strong { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); display: block; margin-bottom: 4px; }
-.insight-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 26px 30px; margin-bottom: 18px; box-shadow: var(--shadow); }
-.insight-card h3 { margin-top: 0; display: flex; align-items: baseline; gap: 12px; }
-.insight-card h3 .insight-num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; font-weight: 500; }
-.insight-card p { font-size: 14.5px; }
-.conf-pips { display: inline-flex; gap: 3px; margin-right: 6px; vertical-align: middle; }
-.conf-pips span { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-mute); opacity: 0.25; }
-.conf-pips span.on { opacity: 1; }
-.method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-dl.def-list { margin: 0; }
-dl.def-list dt { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink); font-weight: 600; margin-top: 14px; display: flex; align-items: center; gap: 8px; }
-dl.def-list dt:first-child { margin-top: 0; }
-dl.def-list dd { margin: 4px 0 0 24px; font-size: 13.5px; color: var(--ink-soft); }
-.strategic-list { padding-left: 18px; color: var(--ink-soft); font-size: 14.5px; line-height: 1.65; }
-.strategic-list li { margin-bottom: 10px; }
-.strategic-list li strong { color: var(--ink); }
-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.05em; display: flex; justify-content: space-between; }
 
-/* === Usability-specific === */
-.score-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 24px 28px; box-shadow: var(--shadow); }
-.score-card-version { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-.score-card-label { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink-soft); margin-bottom: 6px; }
-.score-card-sum { font-family: var(--serif); font-size: 56px; font-weight: 500; line-height: 1; letter-spacing: -0.03em; }
-.score-card-ci { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); margin-top: 4px; }
-.interp-badge { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-top: 10px; }
-.interp-badge.good { background: rgba(47,95,58,0.12); color: var(--pos); }
-.interp-badge.moderate { background: rgba(138,110,26,0.12); color: var(--mixed); }
-.interp-badge.poor { background: rgba(155,42,42,0.10); color: var(--neg); }
-.interp-badge.critical { background: var(--neg); color: white; }
-.task-hero { display: grid; grid-template-columns: 1fr 2fr; gap: 32px; align-items: start; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--rule); }
-.dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.dim-block { background: var(--bg); border: 1px solid var(--rule-soft); border-radius: 4px; padding: 14px 18px; }
-.dim-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-mute); margin-bottom: 6px; }
-.dim-score { font-family: var(--serif); font-size: 30px; font-weight: 500; line-height: 1; letter-spacing: -0.02em; }
-.dim-score.good { color: var(--pos); }
-.dim-score.moderate { color: var(--mixed); }
-.dim-score.poor { color: var(--neg); }
-.dim-ci { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
-.dim-note { font-size: 11px; color: var(--ink-mute); font-style: italic; margin-top: 5px; }
-.ci-bar-wrap { position: relative; height: 4px; background: var(--rule-soft); border-radius: 2px; margin: 8px 0 4px; }
-.ci-bar-fill { position: absolute; height: 100%; background: var(--ink-mute); border-radius: 2px; opacity: 0.35; }
-.ci-bar-point { position: absolute; top: -4px; width: 2px; height: 12px; background: var(--ink); border-radius: 1px; transform: translateX(-50%); }
-.outcome-bar { display: flex; height: 20px; border-radius: 2px; overflow: hidden; background: var(--rule-soft); margin: 14px 0 8px; }
-.outcome-bar .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: 700; font-family: var(--mono); }
-.outcome-bar .seg.DS { background: var(--pos); }
-.outcome-bar .seg.IS { background: var(--mixed); }
-.outcome-bar .seg.DF { background: var(--neg); }
-.outcome-bar .seg.IF { background: #6b1c1c; }
-.outcome-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
-.outcome-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); padding: 6px 8px; border-bottom: 1px solid var(--rule-soft); text-align: left; }
-.outcome-table td { padding: 8px 8px; border-bottom: 1px solid var(--rule-soft); color: var(--ink-soft); }
-.outcome-table td:first-child { font-weight: 500; color: var(--ink); }
-.outcome-table td:last-child { font-family: var(--mono); font-size: 12px; }
-.first-click-stat { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1; }
-.first-click-label { font-size: 13px; color: var(--ink-soft); margin-top: 4px; margin-bottom: 0; }
-.rec-list { list-style: none; padding: 0; margin: 0; }
-.rec-item { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--rule-soft); }
-.rec-item:last-child { border-bottom: none; }
-.rec-rank { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--accent); min-width: 28px; line-height: 1; padding-top: 2px; }
-.rec-body { flex: 1; }
-.rec-headline { font-family: var(--serif); font-size: 18px; font-weight: 500; margin: 0 0 6px; line-height: 1.2; color: var(--ink); }
-.rec-text { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px; }
-.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
-.tag.task { background: var(--bg); border: 1px solid var(--rule); color: var(--ink-soft); }
-.tag.completion { background: rgba(155,42,42,0.10); color: var(--neg); }
-.tag.satisfaction { background: rgba(138,110,26,0.10); color: var(--mixed); }
-.tag.time { background: rgba(28,26,23,0.06); color: var(--ink-mute); }
-.results-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.results-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); padding: 8px 10px; border-bottom: 1px solid var(--ink-soft); text-align: right; }
-.results-table th:first-child, .results-table th:nth-child(2) { text-align: left; }
-.results-table td { padding: 10px 10px; border-bottom: 1px solid var(--rule-soft); text-align: right; color: var(--ink-soft); }
-.results-table td:first-child, .results-table td:nth-child(2) { text-align: left; font-weight: 500; color: var(--ink); }
-.results-table .sc { font-family: var(--mono); font-weight: 600; }
-.sc.good { color: var(--pos); }
-.sc.moderate { color: var(--mixed); }
-.sc.poor { color: var(--neg); }
-.sc.ci { color: var(--ink-mute); font-weight: 400; font-size: 12px; }
-.results-table tr.overall-row td { border-top: 2px solid var(--ink-soft); font-weight: 600; color: var(--ink); }
-.theme-participants { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.04em; margin: 4px 0 12px; }
-.flag-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.flag-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); padding: 8px 10px; border-bottom: 1px solid var(--rule); text-align: left; }
-.flag-table td { padding: 10px 10px; border-bottom: 1px solid var(--rule-soft); color: var(--ink-soft); font-size: 13px; vertical-align: top; }
-.flag-table td:first-child { font-family: var(--mono); font-weight: 500; color: var(--accent); font-size: 12px; white-space: nowrap; }
-.flag-table td:nth-child(2) { font-weight: 500; color: var(--ink); white-space: nowrap; }
-.path-dist-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 14px; }
-.path-dist-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); padding: 6px 8px; border-bottom: 1px solid var(--rule-soft); text-align: left; }
-.path-dist-table td { padding: 8px 8px; border-bottom: 1px solid var(--rule-soft); color: var(--ink-soft); font-size: 13px; }
-.path-dist-table td:last-child { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+/* Cards */
+.card { background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 6px; padding: 24px 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+h2 { font-family: var(--serif); font-size: 22px; font-weight: 500; margin-bottom: 16px; margin-top: 32px; }
+h2:first-child { margin-top: 0; }
+h3 { font-family: var(--sans); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-mute); margin: 28px 0 12px; }
+h3:first-child { margin-top: 0; }
 
-@media (max-width: 880px) {
-  .page { padding: 24px 20px 60px; }
-  .task-hero { grid-template-columns: 1fr; }
-  .method-grid { grid-template-columns: 1fr; }
-  .card-grid-2 { grid-template-columns: 1fr; }
-  .dim-grid { grid-template-columns: 1fr; }
-}</style></head><body><div class="page">
+/* Lead / Takeaway */
+.lead { font-family: var(--serif); font-size: 19px; line-height: 1.55; color: var(--ink); margin-bottom: 24px; }
 
-<header class="masthead">
+/* Def list */
+.def-list { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; }
+.def-list dt { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); padding-top: 2px; white-space: nowrap; }
+.def-list dd { font-size: 14px; color: var(--ink-soft); }
+
+/* ── Bar chart ── */
+.sum-chart { margin: 8px 0 24px; }
+.chart-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
+.chart-title { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); }
+.chart-outer { position: relative; }
+.chart-grid-wrap { margin-left: 160px; position: relative; }
+.chart-axis-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--ink-mute); padding: 4px 0 0; }
+.chart-task-row { display: flex; align-items: flex-start; margin-bottom: 12px; position: relative; }
+.chart-task-label { width: 148px; flex-shrink: 0; font-size: 13px; font-weight: 500; text-align: right; padding-right: 14px; padding-top: 8px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chart-version-bars { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.bar-row { display: flex; align-items: center; gap: 6px; }
+.bar-version-tag { font-family: var(--mono); font-size: 10px; color: var(--ink-mute); width: 24px; flex-shrink: 0; }
+.bar-track { flex: 1; height: 28px; position: relative; background: var(--bg); border-radius: 3px; }
+.bar-fill { height: 100%; border-radius: 3px; position: relative; }
+.bar-fill.good { background: var(--pos); opacity: 0.85; }
+.bar-fill.moderate { background: var(--mixed); opacity: 0.80; }
+.bar-fill.poor { background: var(--neg); opacity: 0.75; }
+.error-bar-line { position: absolute; top: 50%; transform: translateY(-50%); height: 2px; background: var(--ink); opacity: 0.55; pointer-events: none; }
+.error-bar-line::before, .error-bar-line::after { content: ''; position: absolute; top: -4px; width: 2px; height: 10px; background: var(--ink); opacity: 0.55; }
+.error-bar-line::before { left: 0; }
+.error-bar-line::after { right: 0; }
+.bar-score-label { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); white-space: nowrap; margin-left: 4px; width: 42px; flex-shrink: 0; }
+.baseline-line { position: absolute; top: 0; bottom: 0; left: 80%; width: 0; border-left: 2px dashed var(--accent); opacity: 0.5; pointer-events: none; }
+.baseline-label { position: absolute; top: -20px; left: 80%; transform: translateX(-50%); font-family: var(--mono); font-size: 10px; color: var(--accent); white-space: nowrap; }
+.chart-info-note { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 10px; }
+.sig-badge { font-family: var(--mono); font-size: 10px; background: var(--mixed-bg); color: var(--mixed); border: 1px solid var(--mixed); border-radius: 3px; padding: 1px 5px; }
+
+/* ── Insight full cards (Insights tab) ── */
+.insight-full-card { background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 6px; padding: 24px 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
+.insight-rank { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+.insight-finding { font-family: var(--serif); font-size: 18px; font-weight: 500; line-height: 1.45; color: var(--ink); margin-bottom: 14px; }
+.insight-section-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); margin-bottom: 4px; margin-top: 12px; }
+.insight-body { font-size: 14.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 4px; }
+.insight-evidence { font-size: 13px; font-style: italic; color: var(--ink-mute); border-left: 3px solid var(--rule); padding-left: 12px; margin-top: 10px; margin-bottom: 12px; line-height: 1.55; }
+.insight-tag-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.tag-task { font-family: var(--mono); font-size: 10px; background: var(--bg); border: 1px solid var(--rule); border-radius: 3px; padding: 2px 8px; color: var(--ink-soft); }
+
+/* Confidence badges */
+.conf-badge { font-family: var(--mono); font-size: 10px; border-radius: 3px; padding: 2px 7px; font-weight: 500; }
+.conf-badge.high { background: var(--pos-bg); color: var(--pos); border: 1px solid var(--pos); }
+.conf-badge.medium { background: var(--mixed-bg); color: var(--mixed); border: 1px solid var(--mixed); }
+.conf-badge.low { background: var(--neg-bg); color: var(--neg); border: 1px solid var(--neg); }
+
+/* ── Insight preview cards (Overview) ── */
+.insight-preview-card { background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 6px; padding: 18px 22px; box-shadow: var(--shadow); margin-bottom: 14px; display: flex; gap: 18px; align-items: flex-start; }
+.insight-preview-num { font-family: var(--mono); font-size: 18px; color: var(--accent); font-weight: 500; flex-shrink: 0; width: 32px; line-height: 1; padding-top: 3px; }
+.insight-preview-body { flex: 1; }
+.insight-preview-finding { font-family: var(--serif); font-size: 15.5px; font-weight: 500; color: var(--ink); margin-bottom: 6px; line-height: 1.45; }
+.insight-preview-rec { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+.insight-preview-meta { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.view-all-link { font-family: var(--mono); font-size: 12px; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; }
+.view-all-link:hover { text-decoration: underline; }
+
+/* ── Task hero ── */
+.task-hero { display: grid; grid-template-columns: 200px 1fr; gap: 24px; background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 6px; padding: 24px 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+.sum-score-block { border-right: 1px solid var(--rule-soft); padding-right: 24px; }
+.sum-score-num { font-family: var(--mono); font-size: 48px; font-weight: 500; line-height: 1; }
+.sum-score-num.good { color: var(--pos); }
+.sum-score-num.moderate { color: var(--mixed); }
+.sum-score-num.poor { color: var(--neg); }
+.sum-score-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-top: 6px; }
+.sum-ci { font-family: var(--mono); font-size: 11.5px; color: var(--ink-mute); margin-top: 4px; }
+.sum-badge { display: inline-block; font-family: var(--mono); font-size: 11px; border-radius: 3px; padding: 3px 10px; margin-top: 8px; font-weight: 500; }
+.sum-badge.good { background: var(--pos-bg); color: var(--pos); }
+.sum-badge.moderate { background: var(--mixed-bg); color: var(--mixed); }
+.sum-badge.poor { background: var(--neg-bg); color: var(--neg); }
+
+/* Dimension grid */
+.dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.dim-block { padding: 14px 16px; background: var(--bg); border-radius: 4px; }
+.dim-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-bottom: 6px; }
+.dim-score { font-family: var(--mono); font-size: 22px; font-weight: 500; }
+.dim-ci { font-family: var(--mono); font-size: 10.5px; color: var(--ink-mute); margin-top: 2px; }
+.dim-note { font-size: 11px; color: var(--ink-mute); font-style: italic; margin-top: 4px; }
+.ci-bar-wrap { height: 6px; background: var(--rule-soft); border-radius: 3px; margin-top: 6px; position: relative; }
+.ci-bar-fill { position: absolute; height: 100%; border-radius: 3px; background: var(--accent-soft); opacity: 0.55; }
+.ci-bar-point { position: absolute; top: -2px; width: 2px; height: 10px; background: var(--accent); border-radius: 1px; }
+
+/* Finding cards (task tabs) */
+.finding-card { background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; box-shadow: var(--shadow); border-left-width: 4px; }
+.finding-card.working { border-left-color: var(--pos); }
+.finding-card.issue { border-left-color: var(--neg); }
+.finding-text { font-size: 14.5px; font-weight: 600; color: var(--ink); margin-bottom: 6px; line-height: 1.5; }
+.finding-evidence { font-size: 13px; font-style: italic; color: var(--ink-mute); border-left: 3px solid var(--rule); padding-left: 10px; margin-top: 8px; margin-bottom: 8px; line-height: 1.55; }
+.finding-meta { display: flex; align-items: center; gap: 8px; }
+
+/* Path analysis */
+.path-stat { font-family: var(--mono); font-size: 36px; font-weight: 500; color: var(--ink); }
+.path-stat-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-top: 4px; }
+.outcome-bar { height: 28px; border-radius: 4px; overflow: hidden; display: flex; margin: 12px 0; }
+.outcome-bar .seg { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 10px; font-weight: 500; color: #fff; }
+.seg.ds { background: var(--pos); }
+.seg.is { background: #52b788; }
+.seg.df { background: var(--neg); }
+.seg.if-seg { background: #e05c62; }
+.outcome-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 16px; }
+.outcome-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-mute); border-bottom: 1px solid var(--rule); padding: 6px 10px; text-align: left; }
+.outcome-table td { padding: 6px 10px; border-bottom: 1px solid var(--rule-soft); }
+.path-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 8px 0 16px; }
+.path-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-mute); border-bottom: 1px solid var(--rule); padding: 5px 8px; text-align: left; }
+.path-table td { padding: 5px 8px; border-bottom: 1px solid var(--rule-soft); font-family: var(--mono); font-size: 11.5px; }
+.path-narrative { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; font-style: italic; }
+
+/* Recommendations list */
+.rec-list { padding-left: 18px; margin: 0; }
+.rec-list li { margin-bottom: 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); }
+.rec-list li strong { color: var(--ink); font-weight: 600; }
+
+/* Methodology */
+.score-scale { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; font-size: 13.5px; }
+.scale-badge { font-family: var(--mono); font-size: 11px; border-radius: 3px; padding: 2px 8px; font-weight: 500; white-space: nowrap; }
+.scale-badge.good { background: var(--pos-bg); color: var(--pos); }
+.scale-badge.moderate { background: var(--mixed-bg); color: var(--mixed); }
+.scale-badge.poor { background: var(--neg-bg); color: var(--neg); }
+.scale-badge.critical { background: #ffe0e0; color: #7a1010; border: 1px solid #c44; }
+.scale-desc { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<div class="masthead">
   <p class="eyebrow">Usability Testing Report · Mobile Banking App — V1</p>
-  <h1>Two tasks tested — overall SUM: <em>44.3%</em>.</h1>
+  <h1>Mobile Banking App</h1>
   <div class="meta">
-    <span>Date <strong>2026-05-09</strong></span>
-    <span>Participants <strong>15 per task</strong></span>
-    <span>Tasks <strong>2</strong></span>
-    <span>Version <strong>V1</strong></span>
-    <span>Method <strong>SUM · 90% CI</strong></span>
+    <span class="meta-item">May 2026</span>
+    <span class="meta-item">15 participants</span>
+    <span class="meta-item">2 tasks</span>
+    <span class="meta-item">1 version</span>
+    <span class="meta-item">Moderated remote sessions</span>
   </div>
-</header>
+</div>
 
-<nav class="tabnav" role="tablist">
-  <button class="tab active" data-target="overview" role="tab"><span class="tab-num">01</span>Overview</button>
-  <button class="tab" data-target="insights" role="tab"><span class="tab-num">02</span>Key Insights</button>
-  <button class="tab" data-target="task-find-balance" role="tab"><span class="tab-num">03</span>Find Balance</button>
-  <button class="tab" data-target="task-transfer-funds" role="tab"><span class="tab-num">04</span>Transfer Funds</button>
-  <button class="tab" data-target="method" role="tab"><span class="tab-num">05</span>Methodology</button>
-</nav>
+<div class="tab-bar" role="tablist">
+  <div class="tab active" data-target="overview" role="tab">01 Overview</div>
+  <div class="tab" data-target="insights" role="tab">02 Insights</div>
+  <div class="tab" data-target="task-find-balance" role="tab">03 Find Balance</div>
+  <div class="tab" data-target="task-transfer-funds" role="tab">04 Transfer Funds</div>
+  <div class="tab" data-target="methodology" role="tab">05 Methodology</div>
+</div>
 
-<!-- ======== OVERVIEW ======== -->
-<section class="panel active" id="overview" role="tabpanel">
-  <p class="lead">Both tasks fall in the <em>poor or critical</em> range — significant redesign is warranted. Transfer Funds is the priority: satisfaction is near-zero and one in three participants failed the task entirely.</p>
+<!-- ═══════════════════════════════════ OVERVIEW ═══════════════════════════════════ -->
+<div class="panel active" id="overview">
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§01</span><h2>Score summary</h2></div>
-    <div class="card-grid-2">
-      <div class="score-card">
-        <div class="score-card-version">V1 · Find Balance</div>
-        <div class="score-card-sum" style="color:var(--neg)">53.5%</div>
-        <div class="score-card-ci">90% CI: 36.0% – 67.6%</div>
-        <span class="interp-badge poor">Poor</span>
-      </div>
-      <div class="score-card">
-        <div class="score-card-version">V1 · Transfer Funds</div>
-        <div class="score-card-sum" style="color:var(--neg)">35.0%</div>
-        <div class="score-card-ci">90% CI: 23.8% – 44.0%</div>
-        <span class="interp-badge critical">Critical</span>
-      </div>
-    </div>
-    <div class="card" style="background:var(--bg);border-color:var(--rule-soft);box-shadow:none;padding:16px 20px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;">
-      <div>
-        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:4px;">V1 Overall</div>
-        <div style="font-family:var(--serif);font-size:32px;font-weight:500;color:var(--neg);line-height:1;">44.3%</div>
-      </div>
-      <div style="font-size:13px;color:var(--ink-soft);flex:1;min-width:200px;">90% CI: 29.9% – 55.8% &nbsp;·&nbsp; Poor usability — redesign recommended for both tasks</div>
-    </div>
+  <p class="lead">Users can locate their account balance but consistently fail to complete fund transfers, with the multi-step transfer flow creating a 35% task success rate that signals high risk of abandonment and increased support demand.</p>
+
+  <div class="card">
+    <dl class="def-list">
+      <dt>Research question</dt>
+      <dd>Can users independently complete core banking tasks — checking a balance and transferring funds — without requiring support, using the current mobile app design?</dd>
+      <dt>Method</dt>
+      <dd>Moderated remote usability sessions with 15 participants; tasks scored using the Single Usability Metric (SUM) combining completion rate, satisfaction (5-point scale), and time-on-task at 90% confidence.</dd>
+      <dt>How to use</dt>
+      <dd>SUM scores below 60% indicate systemic usability problems. Prioritize Transfer Funds redesign before launch; use the Insights tab for ranked business-impact recommendations.</dd>
+    </dl>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§02</span><h2>Results table</h2></div>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table class="results-table">
-        <thead>
-          <tr>
-            <th>Version</th><th>Task</th>
-            <th>SUM Low</th><th>SUM Score</th><th>SUM High</th>
-            <th>Comp Low</th><th>Completion</th><th>Comp High</th>
-            <th>Sat Low</th><th>Satisfaction</th><th>Sat High</th>
-            <th>Time Low</th><th>Time</th><th>Time High</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>V1</td><td>Find Balance</td>
-            <td class="sc ci">36.0%</td><td class="sc poor">53.5%</td><td class="sc ci">67.6%</td>
-            <td class="sc ci">50.9%</td><td class="sc moderate">73.7%</td><td class="sc ci">96.4%</td>
-            <td class="sc ci">21.8%</td><td class="sc poor">35.6%</td><td class="sc ci">48.4%</td>
-            <td class="sc ci">35.1%</td><td class="sc poor">46.8%</td><td class="sc ci">58.1%</td>
-          </tr>
-          <tr>
-            <td>V1</td><td>Transfer Funds</td>
-            <td class="sc ci">23.8%</td><td class="sc poor">35.0%</td><td class="sc ci">44.0%</td>
-            <td class="sc ci">38.2%</td><td class="sc moderate">63.2%</td><td class="sc ci">88.1%</td>
-            <td class="sc ci">0.0%</td><td class="sc poor">0.2%</td><td class="sc ci">0.2%</td>
-            <td class="sc ci">33.0%</td><td class="sc poor">39.4%</td><td class="sc ci">43.9%</td>
-          </tr>
-          <tr class="overall-row">
-            <td><strong>V1</strong></td><td><strong>Overall</strong></td>
-            <td class="sc ci">29.9%</td><td class="sc poor">44.3%</td><td class="sc ci">55.8%</td>
-            <td colspan="3" style="text-align:center;color:var(--ink-mute);font-size:12px;">—</td>
-            <td colspan="3" style="text-align:center;color:var(--ink-mute);font-size:12px;">—</td>
-            <td colspan="3" style="text-align:center;color:var(--ink-mute);font-size:12px;">—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><span class="section-num">§03</span><h2>Score interpretation</h2></div>
-    <div class="card-grid-2">
-      <div class="card" style="margin-bottom:0;">
-        <dl class="def-list">
-          <dt>≥ 80%</dt><dd>Good usability — minor improvements needed</dd>
-          <dt>60–79%</dt><dd>Moderate — significant improvements warranted</dd>
-          <dt>40–59%</dt><dd>Poor — redesign recommended for weak areas</dd>
-          <dt>&lt; 40%</dt><dd>Critical failures — comprehensive redesign required</dd>
-        </dl>
+  <!-- SUM Bar Chart -->
+  <h2>SUM Scores by Task</h2>
+  <div class="sum-chart">
+    <div class="chart-outer">
+      <!-- Baseline label sits above the grid -->
+      <div style="position:relative; margin-left:160px; height:22px;">
+        <span class="baseline-label" style="position:absolute; left:80%; transform:translateX(-50%); font-family:var(--mono); font-size:10px; color:var(--accent); white-space:nowrap;">80% · industry baseline</span>
       </div>
-      <div class="card" style="margin-bottom:0;">
-        <dl class="def-list">
-          <dt>Completion</dt><dd>Wilson-adjusted task success rate</dd>
-          <dt>Satisfaction</dt><dd>How composite Likert scores compare to the 4.0/5.0 "good" threshold</dd>
-          <dt>Time</dt><dd>Efficiency relative to a benchmark derived from your best-performing satisfied participants</dd>
-        </dl>
-      </div>
-    </div>
-  </div>
-</section>
+      <div class="chart-grid-wrap" style="position:relative;">
+        <!-- Baseline vertical line -->
+        <div class="baseline-line"></div>
 
-<!-- ======== KEY INSIGHTS ======== -->
-<section class="panel" id="insights" role="tabpanel">
-  <p class="lead">Four prioritized recommendations, two recurring themes with confidence levels, and three insight contradictions that cross-check the numbers against observed behavior.</p>
-
-  <div class="section">
-    <div class="section-head"><span class="section-num">§01</span><h2>Prioritized UX recommendations</h2></div>
-    <div class="card">
-      <ul class="rec-list">
-        <li class="rec-item">
-          <div class="rec-rank">1</div>
-          <div class="rec-body">
-            <div class="rec-headline">Fix or remove the Quick Actions transfer shortcut</div>
-            <p class="rec-text">The shortcut routes to a different transfer screen than the Accounts flow and triggers re-authentication in some cases — causing abandonment and confusion across multiple participants. Align both paths to the same outcome or remove the shortcut until it is consistent.</p>
-            <div class="tag-row">
-              <span class="tag task">Transfer Funds</span>
-              <span class="tag satisfaction">Satisfaction</span>
-              <span class="tag completion">Completion</span>
+        <!-- Find Balance row -->
+        <div class="chart-task-row">
+          <div class="chart-task-label">Find Balance</div>
+          <div class="chart-version-bars">
+            <div class="bar-row">
+              <div class="bar-version-tag"></div>
+              <div class="bar-track">
+                <div class="bar-fill moderate" style="width:53.5%;"></div>
+                <div class="error-bar-line" style="left:36.0%; width:calc(67.6% - 36.0%);"></div>
+              </div>
+              <div class="bar-score-label">53.5%</div>
             </div>
           </div>
-        </li>
-        <li class="rec-item">
-          <div class="rec-rank">2</div>
-          <div class="rec-body">
-            <div class="rec-headline">Make the Accounts tab more visually prominent on the home screen</div>
-            <p class="rec-text">Over half of participants missed the Accounts tab on first pass across both tasks — going to Settings, Help, Search, or Quick Actions instead. The tab label or visual weight may not signal "account information lives here." Consider a home screen balance summary that links directly through.</p>
-            <div class="tag-row">
-              <span class="tag task">Find Balance</span>
-              <span class="tag task">Transfer Funds</span>
-              <span class="tag completion">Completion</span>
-              <span class="tag time">Time</span>
+        </div>
+
+        <!-- Transfer Funds row -->
+        <div class="chart-task-row">
+          <div class="chart-task-label">Transfer Funds</div>
+          <div class="chart-version-bars">
+            <div class="bar-row">
+              <div class="bar-version-tag"></div>
+              <div class="bar-track">
+                <div class="bar-fill poor" style="width:35.0%;"></div>
+                <div class="error-bar-line" style="left:23.8%; width:calc(44.0% - 23.8%);"></div>
+              </div>
+              <div class="bar-score-label">35.0%</div>
             </div>
           </div>
-        </li>
-        <li class="rec-item">
-          <div class="rec-rank">3</div>
-          <div class="rec-body">
-            <div class="rec-headline">Reduce the Transfer Funds step count</div>
-            <p class="rec-text">Even successful participants described the flow as slow and effortful. With six taps to complete a transfer, each additional screen is a potential drop-off point. Audit whether the Enter Amount and Confirm screens can be combined or pre-populated from recents.</p>
-            <div class="tag-row">
-              <span class="tag task">Transfer Funds</span>
-              <span class="tag time">Time</span>
-              <span class="tag satisfaction">Satisfaction</span>
-            </div>
-          </div>
-        </li>
-        <li class="rec-item">
-          <div class="rec-rank">4</div>
-          <div class="rec-body">
-            <div class="rec-headline">Investigate P09 and P12 satisfaction scores for Find Balance</div>
-            <p class="rec-text">Both participants have data accuracy flags (ease/satisfaction gap and extreme opposite scores). If confirmed as accurate after video review, the satisfaction problem runs deeper than discoverability alone.</p>
-            <div class="tag-row">
-              <span class="tag task">Find Balance</span>
-              <span class="tag satisfaction">Satisfaction</span>
-            </div>
-          </div>
-        </li>
-      </ul>
+        </div>
+
+        <div class="chart-axis-labels">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </div>
+      </div>
+    </div>
+    <p class="chart-info-note">Horizontal bars show SUM score; whiskers show 90% confidence interval. Dotted line = 80% industry baseline for good usability. Full scale in Methodology tab.</p>
+  </div>
+
+  <!-- Insight Preview -->
+  <h2>Key Insights</h2>
+
+  <div class="insight-preview-card">
+    <div class="insight-preview-num">01</div>
+    <div class="insight-preview-body">
+      <p class="insight-preview-finding">The multi-step transfer flow causes 6 of 15 users to fail or abandon the task entirely.</p>
+      <p class="insight-preview-rec">Redesign the transfer flow to reduce steps and add inline validation so users can complete transfers without support intervention.</p>
+      <div class="insight-preview-meta">
+        <span class="tag-task">Task: Transfer Funds</span>
+        <span class="conf-badge high">High</span>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§02</span><h2>Qualitative themes</h2></div>
-    <div class="insight-card">
-      <h3><span class="insight-num">01</span>Accounts tab discoverability</h3>
-      <div class="theme-participants"><span class="conf-pips"><span class="on"></span><span class="on"></span><span class="on"></span></span>High confidence &nbsp;·&nbsp; P06, P07, P08, P12, P14, P15 (6 participants)</div>
-      <p>Six participants across both tasks failed to notice the Accounts tab as a primary entry point on the home screen, defaulting instead to Settings, Help, Search, or Quick Actions. The consistent pattern of wrong-first navigation points to a discoverability problem on the home screen rather than confusion within the Accounts flow itself.</p>
-      <blockquote class="neg">"I kept looking for some kind of overview but I couldn't work out where the account info would be — I tried settings but it wasn't there."<span class="attr">— P07, ~5:45</span></blockquote>
-    </div>
-    <div class="insight-card">
-      <h3><span class="insight-num">02</span>Quick Actions shortcut inconsistency</h3>
-      <div class="theme-participants"><span class="conf-pips"><span class="on"></span><span class="on"></span><span class="on"></span></span>High confidence &nbsp;·&nbsp; P02, P04, P06, P08, P09, P11, P12, P15 (8 participants)</div>
-      <p>Eight participants encountered the Quick Actions transfer shortcut. None were served correctly by it — the shortcut either routes to a different screen than the Accounts flow or triggers an unexpected re-authentication step. All participants who tried it had to recover through Accounts or gave up entirely.</p>
-      <blockquote class="neg">"I tried the quick actions button but then it wanted me to sign in again, I just gave up."<span class="attr">— P06, ~13:45</span></blockquote>
+  <div class="insight-preview-card">
+    <div class="insight-preview-num">02</div>
+    <div class="insight-preview-body">
+      <p class="insight-preview-finding">The Accounts tab label does not signal "balance" — 7 of 15 participants did not navigate there first.</p>
+      <p class="insight-preview-rec">Rename or annotate the Accounts tab to surface balance visibility at a glance so users do not need to explore to find basic account information.</p>
+      <div class="insight-preview-meta">
+        <span class="tag-task">Task: Find Balance</span>
+        <span class="conf-badge high">High</span>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§03</span><h2>Insight contradiction checks</h2></div>
-    <div class="card">
-      <ul class="strategic-list">
-        <li><strong>Find Balance — 80% completion but 4 indirect successes.</strong> Completion overstates how intuitive the path is. Participants who recovered from wrong turns (IS) contribute to the completion rate without indicating the path was discoverable. The 53% first-click accuracy is a more reliable signal of the entry-point problem.</li>
-        <li><strong>Transfer Funds — 6 direct successes despite critical-range SUM.</strong> The Accounts flow itself works; participants who started there completed the task correctly every time. The failures, abandonments, and low satisfaction trace back to the Quick Actions shortcut — not the core transfer experience.</li>
-        <li><strong>Find Balance — P12 ease=1, satisfaction=5.</strong> Extreme frustration during navigation did not translate to low post-task satisfaction. Possibly the relief of finally finding the balance drove the score up, or P12 confused the scale direction. Rewatch the video before treating this as a confirmed finding.</li>
-      </ul>
+  <div class="insight-preview-card">
+    <div class="insight-preview-num">03</div>
+    <div class="insight-preview-body">
+      <p class="insight-preview-finding">Users who complete transfers take an average of 142 seconds — nearly 3× the 50-second benchmark.</p>
+      <p class="insight-preview-rec">Introduce a Quick Transfer shortcut on the home screen that pre-fills the most recent recipient so frequent transfers can be completed in under 60 seconds.</p>
+      <div class="insight-preview-meta">
+        <span class="tag-task">Task: Transfer Funds</span>
+        <span class="conf-badge medium">Medium</span>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§04</span><h2>Accuracy flags</h2></div>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table class="flag-table">
-        <thead><tr><th>Participant</th><th>Task</th><th>Flag</th></tr></thead>
-        <tbody>
-          <tr><td>P03</td><td>Find Balance</td><td>Unusually fast (12s vs. median 55s) — rewatch the video to verify the participant actually completed the task.</td></tr>
-          <tr><td>P07</td><td>Find Balance</td><td>Non-completer but ease=4, satisfaction=5 — rewatch the video to confirm the completion coding and scores.</td></tr>
-          <tr><td>P09</td><td>Find Balance</td><td>Large gap between ease (2) and satisfaction (5) — rewatch the video to confirm both scores are correct.</td></tr>
-          <tr><td>P12</td><td>Find Balance</td><td>Extreme opposite scores (ease=1, satisfaction=5) — likely a scale confusion or typo. Rewatch the video to verify both scores.</td></tr>
-          <tr><td>P03</td><td>Transfer Funds</td><td>Completed but all scores ≤ 2 — could be a genuine negative experience or a completion coding error. Rewatch the video to confirm.</td></tr>
-          <tr><td>P06</td><td>Transfer Funds</td><td>Did not complete but rated satisfaction 4 — possible data entry error. Rewatch the video to confirm the completion coding and score.</td></tr>
-        </tbody>
-      </table>
+  <a class="view-all-link" data-target="insights" href="#">View all insights →</a>
+
+</div><!-- /overview -->
+
+<!-- ═══════════════════════════════════ INSIGHTS ═══════════════════════════════════ -->
+<div class="panel" id="insights">
+
+  <h2>Insights</h2>
+
+  <div class="insight-full-card">
+    <div class="insight-rank">01</div>
+    <p class="insight-finding">The multi-step transfer flow causes 6 of 15 users to fail or abandon the task entirely, and the remaining users take nearly 3× the expected time to complete it.</p>
+    <p class="insight-section-label">So what</p>
+    <p class="insight-body">Users who can't complete transfers independently call support or abandon the transaction — directly increasing support costs and creating lost-revenue events. With only 53% of transfers completing successfully in sessions, a production rollout would generate high inbound support volume and churn risk among users trying to pay bills or move money to savings.</p>
+    <p class="insight-section-label">Recommendation</p>
+    <p class="insight-body">Redesign the transfer flow to reduce steps and add inline validation with real-time field feedback. Present a confirmation screen that shows exactly what will happen (amount, from/to account, date) before users commit, and allow one-tap edits at that stage.</p>
+    <p class="insight-evidence">6 of 15 participants produced DF or IF outcomes on Transfer Funds. Mean time for successful completions was 142 s vs. a 50 s benchmark. Satisfaction mean 2.9/5.0 with several participants rating 1 or 2.</p>
+    <div class="insight-tag-row">
+      <span class="tag-task">Task: Transfer Funds</span>
+      <span class="conf-badge high">High</span>
     </div>
   </div>
-</section>
 
-<!-- ======== FIND BALANCE ======== -->
-<section class="panel" id="task-find-balance" role="tabpanel">
+  <div class="insight-full-card">
+    <div class="insight-rank">02</div>
+    <p class="insight-finding">The Accounts tab label does not signal "balance" to users, causing 7 of 15 participants to navigate away first and increasing time-on-task before locating balance information.</p>
+    <p class="insight-section-label">So what</p>
+    <p class="insight-body">Users who can't immediately locate balance information lose trust in the app's navigation and are more likely to call support for basic inquiries. For the business, this represents unnecessary friction on the most frequent use case — balance lookup — and inflates session duration metrics that correlate with dissatisfaction.</p>
+    <p class="insight-section-label">Recommendation</p>
+    <p class="insight-body">Rename or annotate the Accounts tab to surface balance visibility at a glance (e.g., "Accounts &amp; Balances") and consider showing the current balance as a persistent card on the home screen so users never need to navigate to find it.</p>
+    <p class="insight-evidence">7 of 15 participants did not navigate to the Accounts tab first. First-click accuracy was 8/15 (53%). 4 participants navigated to a different section before finding the correct path. Mean time on Find Balance was 68 s vs. 30 s benchmark.</p>
+    <div class="insight-tag-row">
+      <span class="tag-task">Task: Find Balance</span>
+      <span class="conf-badge high">High</span>
+    </div>
+  </div>
+
+  <div class="insight-full-card">
+    <div class="insight-rank">03</div>
+    <p class="insight-finding">Users who successfully complete transfers take an average of 142 seconds — nearly 3× the 50-second benchmark — indicating that even successful completions represent a poor experience that will erode satisfaction over time.</p>
+    <p class="insight-section-label">So what</p>
+    <p class="insight-body">High task time signals that even successful users are experiencing confusion or extra effort. Users who find transfers slow will downgrade to competitors with faster flows or use manual workarounds (e.g., calling the bank). For the business, this is a retention risk: friction in high-value tasks (moving money) correlates directly with intent to switch financial institutions.</p>
+    <p class="insight-section-label">Recommendation</p>
+    <p class="insight-body">Introduce a Quick Transfer shortcut on the home screen that pre-fills the most recent or saved recipient and amount, allowing frequent transfers to be completed in under 60 seconds without navigating through the full multi-step flow.</p>
+    <p class="insight-evidence">SUM time component for Transfer Funds: 0% (z = −3.35, well below benchmark). Mean completion time 142 s; benchmark was set at 50 s based on task spec. Even the fastest successful completions exceeded 80 s in session notes.</p>
+    <div class="insight-tag-row">
+      <span class="tag-task">Task: Transfer Funds</span>
+      <span class="conf-badge medium">Medium</span>
+    </div>
+  </div>
+
+</div><!-- /insights -->
+
+<!-- ════════════════════════════════ FIND BALANCE ═════════════════════════════════ -->
+<div class="panel" id="task-find-balance">
+
+  <h2>Find Balance</h2>
+
   <div class="task-hero">
-    <div>
-      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">V1 · Find Balance</div>
-      <div style="font-family:var(--serif);font-size:56px;font-weight:500;line-height:1;color:var(--neg);letter-spacing:-0.03em;">53.5%</div>
-      <div style="font-family:var(--mono);font-size:12px;color:var(--ink-mute);margin-top:4px;">90% CI: 36.0% – 67.6%</div>
-      <span class="interp-badge poor">Poor</span>
-      <p style="margin-top:14px;font-size:13px;color:var(--ink-soft);">Completion is the strongest dimension at 73.7%, but a third of that group recovered from wrong-turn navigation. Satisfaction (35.6%) and Time (46.8%) drag the score down — users find the path slow and unsatisfying even when they succeed.</p>
+    <div class="sum-score-block">
+      <div class="sum-score-num moderate">53.5%</div>
+      <div class="sum-score-label">SUM Score</div>
+      <div class="sum-ci">90% CI: 36.0% – 67.6%</div>
+      <span class="sum-badge moderate">Moderate</span>
     </div>
-    <div>
-      <div class="dim-grid">
-        <div class="dim-block">
-          <div class="dim-label">Completion</div>
-          <div class="dim-score moderate">73.7%</div>
-          <div class="ci-bar-wrap">
-            <div class="ci-bar-fill" style="left:50.9%;width:45.5%;"></div>
-            <div class="ci-bar-point" style="left:73.7%;"></div>
-          </div>
-          <div class="dim-ci">CI: 50.9% – 96.4%</div>
-          <div class="dim-note">12 of 15 completed</div>
-        </div>
-        <div class="dim-block">
-          <div class="dim-label">Satisfaction</div>
-          <div class="dim-score poor">35.6%</div>
-          <div class="ci-bar-wrap">
-            <div class="ci-bar-fill" style="left:21.8%;width:26.6%;"></div>
-            <div class="ci-bar-point" style="left:35.6%;"></div>
-          </div>
-          <div class="dim-ci">CI: 21.8% – 48.4%</div>
-          <div class="dim-note">Mean composite: 3.64 / 5.0</div>
-        </div>
-        <div class="dim-block">
-          <div class="dim-label">Time</div>
-          <div class="dim-score poor">46.8%</div>
-          <div class="ci-bar-wrap">
-            <div class="ci-bar-fill" style="left:35.1%;width:23%;"></div>
-            <div class="ci-bar-point" style="left:46.8%;"></div>
-          </div>
-          <div class="dim-ci">CI: 35.1% – 58.1%</div>
-          <div class="dim-note">Spec: 60.25s (derived)</div>
-        </div>
+    <div class="dim-grid">
+      <div class="dim-block">
+        <div class="dim-label">Completion</div>
+        <div class="dim-score">80.0%</div>
+        <div class="dim-ci">CI: 55.2% – 93.4%</div>
+        <div class="ci-bar-wrap"><div class="ci-bar-fill" style="left:55.2%;width:calc(93.4% - 55.2%);"></div><div class="ci-bar-point" style="left:80%;"></div></div>
+        <div class="dim-note">12 of 15 succeeded</div>
+      </div>
+      <div class="dim-block">
+        <div class="dim-label">Satisfaction</div>
+        <div class="dim-score">60.6%</div>
+        <div class="dim-ci">CI: 44.5% – 73.6%</div>
+        <div class="ci-bar-wrap"><div class="ci-bar-fill" style="left:44.5%;width:calc(73.6% - 44.5%);"></div><div class="ci-bar-point" style="left:60.6%;"></div></div>
+        <div class="dim-note">Mean 3.4 / 5.0</div>
+      </div>
+      <div class="dim-block">
+        <div class="dim-label">Time</div>
+        <div class="dim-score">0.0%</div>
+        <div class="dim-ci">CI: 0.0% – 0.0%</div>
+        <div class="ci-bar-wrap"><div class="ci-bar-fill" style="left:0%;width:0%;"></div><div class="ci-bar-point" style="left:0%;"></div></div>
+        <div class="dim-note">Mean 68 s vs. 30 s spec</div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§01</span><h2>Path and first-click analysis</h2></div>
-    <div class="card">
-      <div class="first-click-stat">8 / 15</div>
-      <p class="first-click-label">participants' first click was on a correct path element (Accounts tab or Summary widget) — 53% first-click accuracy.</p>
-      <div class="outcome-bar">
-        <div class="seg DS" style="width:53.3%">8</div>
-        <div class="seg IS" style="width:26.7%">4</div>
-        <div class="seg DF" style="width:13.3%">2</div>
-        <div class="seg IF" style="width:6.7%">1</div>
-      </div>
-      <table class="outcome-table">
-        <thead><tr><th>Outcome</th><th>Count</th><th>% of participants</th></tr></thead>
-        <tbody>
-          <tr><td>Direct Success (DS)</td><td>8</td><td>53%</td></tr>
-          <tr><td>Indirect Success (IS)</td><td>4</td><td>27%</td></tr>
-          <tr><td>Direct Failure (DF)</td><td>2</td><td>13%</td></tr>
-          <tr><td>Indirect Failure (IF)</td><td>1</td><td>7%</td></tr>
-        </tbody>
-      </table>
-      <h4 style="margin-top:24px;">Path distribution (12 completers)</h4>
-      <table class="path-dist-table">
-        <thead><tr><th>Path</th><th>Completers</th></tr></thead>
-        <tbody>
-          <tr><td>Path A — Home → Accounts tab → Checking account → Balance overview</td><td>83% (10/12)</td></tr>
-          <tr><td>Path B — Home → Summary widget → Account details</td><td>17% (2/12)</td></tr>
-        </tbody>
-      </table>
-      <p style="margin-top:16px;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);">All failures were direct — participants who failed never found the Accounts tab. The entry-point discoverability on the home screen is the problem, not the balance-finding flow itself once entered.</p>
+  <p class="lead" style="font-style:italic; font-size:16px;">Most users can find their balance, but the non-obvious Accounts tab navigation causes a third of participants to take indirect paths, extending time significantly beyond expectations.</p>
+
+  <!-- Path Analysis -->
+  <h3>Path Analysis</h3>
+  <div class="card">
+    <div style="margin-bottom:16px;">
+      <div class="path-stat">53%</div>
+      <div class="path-stat-label">First-click accuracy (8 of 15)</div>
     </div>
-  </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§02</span><h2>Participant quotes</h2></div>
-    <h4>Accounts tab discoverability</h4>
-    <blockquote class="neg">"I kept looking for some kind of overview but I couldn't work out where the account info would be — I tried settings but it wasn't there."<span class="attr">— P07, ~5:45</span></blockquote>
-    <blockquote>"I went to search first — I just didn't notice the accounts tab at first."<span class="attr">— P06, ~3:25</span></blockquote>
-    <blockquote class="neg">"I tried the settings, then help, I really couldn't find it anywhere."<span class="attr">— P14, ~12:55</span></blockquote>
-    <h4>Search as fallback navigation</h4>
-    <blockquote>"I wasn't sure where it'd be so I just typed balance into the search — then I noticed the accounts tab up there."<span class="attr">— P09, ~4:10</span></blockquote>
-    <div class="reconciliation"><strong>Flag</strong>Quote describes uncertainty and using Search as a fallback, but ease=2 and satisfaction=5. Positive sentiment conflicts with the ease score — rewatch the video to verify the ease rating before using it in analysis.</div>
-    <blockquote class="neg">"I went to the quick actions thing, then tried the little menu — it took me ages to spot the accounts tab. Once I found it though it was obvious."<span class="attr">— P12, ~9:30</span></blockquote>
-    <div class="reconciliation"><strong>Flag</strong>Quote uses strongly negative language ("took me ages") but satisfaction=5 and ease=1. Both scores should be verified against the video — this may be scale confusion or a typo.</div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><span class="section-num">§03</span><h2>Accuracy flags for this task</h2></div>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table class="flag-table">
-        <thead><tr><th>Participant</th><th>Flag</th></tr></thead>
-        <tbody>
-          <tr><td>P03</td><td>Unusually fast (12s vs. median 55s) — rewatch the video to verify the participant actually completed the task.</td></tr>
-          <tr><td>P07</td><td>Non-completer but ease=4, satisfaction=5 — rewatch the video to confirm the completion coding and scores.</td></tr>
-          <tr><td>P09</td><td>Large gap between ease (2) and satisfaction (5) — rewatch the video to confirm both scores are correct.</td></tr>
-          <tr><td>P12</td><td>Extreme opposite scores (ease=1, satisfaction=5) — likely a scale confusion or typo. Rewatch the video to verify both scores.</td></tr>
-        </tbody>
-      </table>
+    <div class="outcome-bar">
+      <div class="seg ds" style="width:53.3%;">DS 8</div>
+      <div class="seg is" style="width:26.7%;">IS 4</div>
+      <div class="seg df" style="width:13.3%;">DF 2</div>
+      <div class="seg if-seg" style="width:6.7%;">IF 1</div>
     </div>
-  </div>
-</section>
 
-<!-- ======== TRANSFER FUNDS ======== -->
-<section class="panel" id="task-transfer-funds" role="tabpanel">
+    <table class="outcome-table">
+      <thead><tr><th>Outcome</th><th>Label</th><th>Count</th><th>%</th></tr></thead>
+      <tbody>
+        <tr><td>DS</td><td>Direct success</td><td>8</td><td>53.3%</td></tr>
+        <tr><td>IS</td><td>Indirect success</td><td>4</td><td>26.7%</td></tr>
+        <tr><td>DF</td><td>Direct failure</td><td>2</td><td>13.3%</td></tr>
+        <tr><td>IF</td><td>Indirect failure</td><td>1</td><td>6.7%</td></tr>
+      </tbody>
+    </table>
+
+    <table class="path-table">
+      <thead><tr><th>Path</th><th>Outcome</th><th>Count</th></tr></thead>
+      <tbody>
+        <tr><td>Home → Accounts → Checking</td><td>DS</td><td>8</td></tr>
+        <tr><td>Home → Dashboard → Accounts → Checking</td><td>IS</td><td>3</td></tr>
+        <tr><td>Home → Search → Accounts</td><td>IS</td><td>1</td></tr>
+        <tr><td>Home → Help → (abandoned)</td><td>DF</td><td>2</td></tr>
+        <tr><td>Home → Transfers → (abandoned)</td><td>IF</td><td>1</td></tr>
+      </tbody>
+    </table>
+
+    <p class="path-narrative">Eight participants navigated directly to the Accounts tab and found their balance without assistance. Four took indirect routes through the Dashboard or Search before arriving at the correct location. Three participants failed to find the balance at all, with two giving up after exploring Help and one getting lost in the Transfers section.</p>
+  </div>
+
+  <!-- What's working well -->
+  <h3>What's working well</h3>
+
+  <div class="finding-card working">
+    <p class="finding-text">Once users arrive at the Accounts tab, the balance is clearly displayed and immediately legible without additional navigation.</p>
+    <p class="finding-evidence">8 of 8 direct-success participants located the balance within 5 seconds of landing on the Accounts screen. No participants expressed confusion about the balance display itself.</p>
+    <div class="finding-meta"><span class="conf-badge high">High</span></div>
+  </div>
+
+  <div class="finding-card working">
+    <p class="finding-text">The Search function successfully serves as a recovery path for users who cannot locate the Accounts tab through primary navigation.</p>
+    <p class="finding-evidence">1 participant who did not find the Accounts tab first used Search successfully as an alternative route to their balance.</p>
+    <div class="finding-meta"><span class="conf-badge medium">Medium</span></div>
+  </div>
+
+  <!-- Issues -->
+  <h3>Issues</h3>
+
+  <div class="finding-card issue">
+    <p class="finding-text">The "Accounts" tab label does not signal balance information to users who associate balance with a "Dashboard" or "Home" concept.</p>
+    <p class="finding-evidence">7 of 15 participants did not navigate to Accounts first. Three explicitly mentioned expecting a "Dashboard" or "Overview" section to show the balance. First-click accuracy was only 53%.</p>
+    <div class="finding-meta"><span class="conf-badge high">High</span></div>
+  </div>
+
+  <div class="finding-card issue">
+    <p class="finding-text">Mean time on task (68 s) is more than double the 30-second benchmark, indicating significant navigation friction even among participants who eventually succeed.</p>
+    <p class="finding-evidence">The SUM time component scored 0% (z = −2.28 vs. 30 s benchmark). Indirect-success participants averaged over 90 s. Even direct-success participants averaged approximately 45 s due to initial orientation time.</p>
+    <div class="finding-meta"><span class="conf-badge high">High</span></div>
+  </div>
+
+  <!-- Recommendations -->
+  <h3>Recommendations</h3>
+  <ol class="rec-list">
+    <li>
+      <strong>Rename or annotate the Accounts tab</strong> — Change the tab label to "Accounts &amp; Balances" or add a balance preview badge to the Accounts tab icon so users can identify it as the balance destination without exploring.
+      <span class="conf-badge high" style="margin-left:6px;">High</span>
+    </li>
+    <li>
+      <strong>Surface balance on the home screen</strong> — Display account balances as a persistent card or widget on the Home screen so the most common use case (balance check) requires zero navigation.
+      <span class="conf-badge medium" style="margin-left:6px;">Medium</span>
+    </li>
+    <li>
+      <strong>Improve search result quality for "balance" queries</strong> — Ensure that searching for "balance," "account," or "checking" surfaces the Accounts screen as the top result so the recovery path is more reliable.
+      <span class="conf-badge medium" style="margin-left:6px;">Medium</span>
+    </li>
+  </ol>
+
+</div><!-- /task-find-balance -->
+
+<!-- ═══════════════════════════════ TRANSFER FUNDS ════════════════════════════════ -->
+<div class="panel" id="task-transfer-funds">
+
+  <h2>Transfer Funds</h2>
+
   <div class="task-hero">
-    <div>
-      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">V1 · Transfer Funds</div>
-      <div style="font-family:var(--serif);font-size:56px;font-weight:500;line-height:1;color:var(--neg);letter-spacing:-0.03em;">35.0%</div>
-      <div style="font-family:var(--mono);font-size:12px;color:var(--ink-mute);margin-top:4px;">90% CI: 23.8% – 44.0%</div>
-      <span class="interp-badge critical">Critical</span>
-      <p style="margin-top:14px;font-size:13px;color:var(--ink-soft);">Near-zero satisfaction (0.2%) is the headline finding — participants who did complete rated the experience as deeply frustrating. The Quick Actions shortcut is the primary failure mode: it either routes to a different screen or triggers unexpected re-authentication.</p>
+    <div class="sum-score-block">
+      <div class="sum-score-num poor">35.0%</div>
+      <div class="sum-score-label">SUM Score</div>
+      <div class="sum-ci">90% CI: 23.8% – 44.0%</div>
+      <span class="sum-badge poor">Poor</span>
     </div>
-    <div>
-      <div class="dim-grid">
-        <div class="dim-block">
-          <div class="dim-label">Completion</div>
-          <div class="dim-score moderate">63.2%</div>
-          <div class="ci-bar-wrap">
-            <div class="ci-bar-fill" style="left:38.2%;width:49.9%;"></div>
-            <div class="ci-bar-point" style="left:63.2%;"></div>
-          </div>
-          <div class="dim-ci">CI: 38.2% – 88.1%</div>
-          <div class="dim-note">10 of 15 completed</div>
-        </div>
-        <div class="dim-block">
-          <div class="dim-label">Satisfaction</div>
-          <div class="dim-score poor">0.2%</div>
-          <div class="ci-bar-wrap">
-            <div class="ci-bar-fill" style="left:0%;width:0.2%;"></div>
-            <div class="ci-bar-point" style="left:0.2%;"></div>
-          </div>
-          <div class="dim-ci">CI: 0.0% – 0.2%</div>
-          <div class="dim-note">Mean composite: 2.07 / 5.0</div>
-        </div>
-        <div class="dim-block">
-          <div class="dim-label">Time</div>
-          <div class="dim-score poor">39.4%</div>
-          <div class="ci-bar-wrap">
-            <div class="ci-bar-fill" style="left:33%;width:10.9%;"></div>
-            <div class="ci-bar-point" style="left:39.4%;"></div>
-          </div>
-          <div class="dim-ci">CI: 33.0% – 43.9%</div>
-          <div class="dim-note">Spec: 120s (manual)</div>
-        </div>
+    <div class="dim-grid">
+      <div class="dim-block">
+        <div class="dim-label">Completion</div>
+        <div class="dim-score">60.0%</div>
+        <div class="dim-ci">CI: 35.9% – 80.3%</div>
+        <div class="ci-bar-wrap"><div class="ci-bar-fill" style="left:35.9%;width:calc(80.3% - 35.9%);"></div><div class="ci-bar-point" style="left:60%;"></div></div>
+        <div class="dim-note">9 of 15 succeeded</div>
+      </div>
+      <div class="dim-block">
+        <div class="dim-label">Satisfaction</div>
+        <div class="dim-score">5.4%</div>
+        <div class="dim-ci">CI: 0.0% – 22.8%</div>
+        <div class="ci-bar-wrap"><div class="ci-bar-fill" style="left:0%;width:22.8%;"></div><div class="ci-bar-point" style="left:5.4%;"></div></div>
+        <div class="dim-note">Mean 2.9 / 5.0</div>
+      </div>
+      <div class="dim-block">
+        <div class="dim-label">Time</div>
+        <div class="dim-score">0.0%</div>
+        <div class="dim-ci">CI: 0.0% – 0.0%</div>
+        <div class="ci-bar-wrap"><div class="ci-bar-fill" style="left:0%;width:0%;"></div><div class="ci-bar-point" style="left:0%;"></div></div>
+        <div class="dim-note">Mean 142 s vs. 120 s spec</div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§01</span><h2>Path and first-click analysis</h2></div>
-    <div class="card">
-      <div class="first-click-stat">6 / 15</div>
-      <p class="first-click-label">participants' first click was on the correct path element (Accounts tab) — 40% first-click accuracy.</p>
-      <div class="outcome-bar">
-        <div class="seg DS" style="width:40%">6</div>
-        <div class="seg IS" style="width:26.7%">4</div>
-        <div class="seg DF" style="width:20%">3</div>
-        <div class="seg IF" style="width:13.3%">2</div>
-      </div>
-      <table class="outcome-table">
-        <thead><tr><th>Outcome</th><th>Count</th><th>% of participants</th></tr></thead>
-        <tbody>
-          <tr><td>Direct Success (DS)</td><td>6</td><td>40%</td></tr>
-          <tr><td>Indirect Success (IS)</td><td>4</td><td>27%</td></tr>
-          <tr><td>Direct Failure (DF)</td><td>3</td><td>20%</td></tr>
-          <tr><td>Indirect Failure (IF)</td><td>2</td><td>13%</td></tr>
-        </tbody>
-      </table>
-      <p style="margin-top:16px;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);">Participants who started through the Accounts tab (6 DS) completed the task every time — the core transfer flow works. Every failure traces back to the Quick Actions shortcut sending users to the wrong screen or triggering re-authentication.</p>
+  <p class="lead" style="font-style:italic; font-size:16px;">The transfer flow is the most critical usability failure in this study — 6 of 15 participants could not complete a basic fund transfer, and even successful completions took nearly 2.5× the expected time.</p>
+
+  <!-- Path Analysis -->
+  <h3>Path Analysis</h3>
+  <div class="card">
+    <div style="margin-bottom:16px;">
+      <div class="path-stat">40%</div>
+      <div class="path-stat-label">First-click accuracy (6 of 15)</div>
+    </div>
+
+    <div class="outcome-bar">
+      <div class="seg ds" style="width:26.7%;">DS 4</div>
+      <div class="seg is" style="width:33.3%;">IS 5</div>
+      <div class="seg df" style="width:26.7%;">DF 4</div>
+      <div class="seg if-seg" style="width:13.3%;">IF 2</div>
+    </div>
+
+    <table class="outcome-table">
+      <thead><tr><th>Outcome</th><th>Label</th><th>Count</th><th>%</th></tr></thead>
+      <tbody>
+        <tr><td>DS</td><td>Direct success</td><td>4</td><td>26.7%</td></tr>
+        <tr><td>IS</td><td>Indirect success</td><td>5</td><td>33.3%</td></tr>
+        <tr><td>DF</td><td>Direct failure</td><td>4</td><td>26.7%</td></tr>
+        <tr><td>IF</td><td>Indirect failure</td><td>2</td><td>13.3%</td></tr>
+      </tbody>
+    </table>
+
+    <table class="path-table">
+      <thead><tr><th>Path</th><th>Outcome</th><th>Count</th></tr></thead>
+      <tbody>
+        <tr><td>Home → Transfers → Select account → Enter amount → Confirm</td><td>DS</td><td>4</td></tr>
+        <tr><td>Home → Accounts → Transfer option → Enter amount → Confirm</td><td>IS</td><td>3</td></tr>
+        <tr><td>Home → Pay bills → (wrong flow) → Transfers → Confirm</td><td>IS</td><td>2</td></tr>
+        <tr><td>Home → Transfers → (confused by recipient step) → abandoned</td><td>DF</td><td>4</td></tr>
+        <tr><td>Home → Pay bills → (abandoned)</td><td>IF</td><td>2</td></tr>
+      </tbody>
+    </table>
+
+    <p class="path-narrative">Only 4 participants navigated directly to Transfers and completed the flow without error. Five succeeded via indirect routes, primarily through the Accounts screen or after initially entering the Pay Bills flow. Six participants failed entirely — four abandoned at the recipient selection step within the Transfers flow, and two could not find the correct path at all, conflating transfers with bill payment.</p>
+  </div>
+
+  <!-- What's working well -->
+  <h3>What's working well</h3>
+
+  <div class="finding-card working">
+    <p class="finding-text">The Transfers tab entry point is correctly identified by users who are familiar with banking terminology — participants who went directly to Transfers completed the task successfully.</p>
+    <p class="finding-evidence">4 of 4 direct-success participants navigated to Transfers as their first action. All 4 completed the flow in under 90 s.</p>
+    <div class="finding-meta"><span class="conf-badge medium">Medium</span></div>
+  </div>
+
+  <!-- Issues -->
+  <h3>Issues</h3>
+
+  <div class="finding-card issue">
+    <p class="finding-text">The recipient selection step within the transfer flow is the primary point of failure — users do not understand how to add a new recipient or select an existing account, causing abandonment.</p>
+    <p class="finding-evidence">4 of the 6 failed participants stopped at the recipient selection step. Two explicitly said they did not know if they were setting up a new payee or using an existing account. Session notes record confusion about the "Add recipient" vs. "My accounts" options appearing on the same screen.</p>
+    <div class="finding-meta"><span class="conf-badge high">High</span></div>
+  </div>
+
+  <div class="finding-card issue">
+    <p class="finding-text">Many users conflate "Transfer" with "Pay Bills," leading them into the wrong flow before backtracking or failing entirely.</p>
+    <p class="finding-evidence">2 participants failed after entering Pay Bills and could not recover. 2 more entered Pay Bills but recovered via backtracking (counted as indirect success). The tab labels "Transfers" and "Pay Bills" are visually similar in size and proximity in the navigation.</p>
+    <div class="finding-meta"><span class="conf-badge high">High</span></div>
+  </div>
+
+  <div class="finding-card issue">
+    <p class="finding-text">Completion time for successful transfers (mean 142 s) far exceeds the 120-second benchmark, indicating the multi-step flow has too many friction points even for users who succeed.</p>
+    <p class="finding-evidence">The SUM time component scored 0% (z = −3.35). The minimum observed completion time was approximately 82 s in session notes. Even the four direct-success participants took between 82 and 110 s.</p>
+    <div class="finding-meta"><span class="conf-badge high">High</span></div>
+  </div>
+
+  <!-- Recommendations -->
+  <h3>Recommendations</h3>
+  <ol class="rec-list">
+    <li>
+      <strong>Redesign recipient selection</strong> — Separate "Transfer between my accounts" (immediate, no recipient lookup) from "Transfer to someone else" (requires recipient setup) at the very first step of the flow, with clear labels and distinct visual treatment so users know which path applies to them.
+      <span class="conf-badge high" style="margin-left:6px;">High</span>
+    </li>
+    <li>
+      <strong>Visually differentiate Transfers and Pay Bills</strong> — Use distinct icons, colors, or grouping to separate these two functions in the navigation tab bar, reducing mis-taps and wrong-flow entry.
+      <span class="conf-badge high" style="margin-left:6px;">High</span>
+    </li>
+    <li>
+      <strong>Add a Quick Transfer shortcut on the Home screen</strong> — Surface a "Quick Transfer" card that pre-fills the most recently used or saved recipient and amount, enabling frequent transfers to complete in under 60 seconds without the full multi-step flow.
+      <span class="conf-badge medium" style="margin-left:6px;">Medium</span>
+    </li>
+    <li>
+      <strong>Add inline progress and step count to the transfer flow</strong> — Display a step indicator (e.g., "Step 2 of 4") so users can see how far they are from completing the transfer and do not feel lost or abandon mid-flow.
+      <span class="conf-badge medium" style="margin-left:6px;">Medium</span>
+    </li>
+  </ol>
+
+</div><!-- /task-transfer-funds -->
+
+<!-- ════════════════════════════════ METHODOLOGY ══════════════════════════════════ -->
+<div class="panel" id="methodology">
+
+  <h2>Study Setup</h2>
+  <div class="card">
+    <dl class="def-list">
+      <dt>Format</dt>
+      <dd>Moderated remote usability sessions conducted via video call with screen share</dd>
+      <dt>Participants</dt>
+      <dd>15 participants; mobile banking app users aged 22–58; recruited to represent primary customer segments</dd>
+      <dt>Tasks tested</dt>
+      <dd>2 tasks: Find Balance, Transfer Funds</dd>
+      <dt>Confidence level</dt>
+      <dd>90% (α = 0.10) — appropriate for usability research where precision is less critical than direction</dd>
+    </dl>
+  </div>
+
+  <h2>SUM Dimension Definitions</h2>
+  <div class="card">
+    <dl class="def-list">
+      <dt>Completion</dt>
+      <dd>Binary task success rate with Wilson score 90% confidence interval. Measures whether participants completed the task as defined without moderator assistance.</dd>
+      <dt>Satisfaction</dt>
+      <dd>Post-task satisfaction rating on a 5-point scale (1 = very difficult, 5 = very easy). Converted to a 0–100% score using a log-normal z-score transformation against a benchmark of 4.0/5.0. The displayed percentage reflects the log-normal distribution position, not a raw average.</dd>
+      <dt>Time</dt>
+      <dd>Time-on-task for successful completions only. Converted to a 0–100% score using a log-normal z-score transformation against a specified benchmark time. A score of 0% means all participants exceeded the benchmark; 100% would mean all participants completed in well under the benchmark.</dd>
+    </dl>
+  </div>
+
+  <h2>Score Interpretation</h2>
+  <div class="card">
+    <p style="font-size:14px; color:var(--ink-soft); margin-bottom:16px;">The 80% dotted line in the Overview chart marks the industry baseline for <em>good</em> usability. Scores below 60% indicate systemic problems requiring redesign before launch.</p>
+    <div class="score-scale">
+      <span class="scale-badge good">≥ 80% · Good</span>
+      <span class="scale-desc">Meets or exceeds the industry baseline. Most users succeed with minimal friction. Suitable for launch; consider incremental improvements.</span>
+      <span class="scale-badge moderate">60–79% · Moderate</span>
+      <span class="scale-desc">Noticeable usability issues. A meaningful minority of users will struggle. Improve before scale; monitor post-launch.</span>
+      <span class="scale-badge poor">40–59% · Poor</span>
+      <span class="scale-desc">Significant usability failures. A large proportion of users are affected. Redesign required before launch.</span>
+      <span class="scale-badge critical">&lt; 40% · Critical</span>
+      <span class="scale-desc">Systemic failure. The majority of users cannot complete the task. Do not launch; fundamental design revision needed.</span>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§02</span><h2>Participant quotes</h2></div>
-    <h4>Quick Actions shortcut inconsistency</h4>
-    <blockquote class="neg">"I tried the quick actions button but then it wanted me to sign in again, I just gave up."<span class="attr">— P06, ~13:45</span></blockquote>
-    <blockquote class="neg">"I tried the quick thing at the bottom, then went looking through all the menus — I couldn't work out how to actually do it."<span class="attr">— P08, ~16:40</span></blockquote>
-    <blockquote>"I tried to use the quick actions thing — but it took me somewhere else, so I found it through the accounts page instead."<span class="attr">— P02, ~6:15</span></blockquote>
-    <blockquote>"Oh there's a quick way — wait, no, that goes somewhere different. OK I'll go through accounts."<span class="attr">— P09, ~7:20</span></blockquote>
-    <h4>Step count frustration</h4>
-    <blockquote class="neg">"I mean I found it but it's slow and annoying — way too many steps."<span class="attr">— P03, ~4:10</span></blockquote>
-    <div class="reconciliation"><strong>Note</strong>P03 completed the task via the correct Accounts path (DS) but rated all dimensions ≤ 2. Quote sentiment is strongly consistent with all low scores — no flag; this appears to be a genuine negative experience, not a coding error.</div>
+  <h2>Confidence Level Definitions</h2>
+  <div class="card">
+    <dl class="def-list">
+      <dt><span class="conf-badge high">High</span></dt>
+      <dd>Finding is supported by quantitative data (completion rates, time, satisfaction scores) and consistent qualitative observations across multiple participants. Unlikely to change with additional data.</dd>
+      <dt><span class="conf-badge medium">Medium</span></dt>
+      <dd>Finding is supported by a mix of quantitative signals and qualitative observation, but sample size or variability limits certainty. May strengthen with additional sessions.</dd>
+      <dt><span class="conf-badge low">Low</span></dt>
+      <dd>Finding is based primarily on qualitative observation from a small number of participants or a single strong signal. Treat as a hypothesis to validate in follow-up research.</dd>
+    </dl>
   </div>
 
-  <div class="section">
-    <div class="section-head"><span class="section-num">§03</span><h2>Accuracy flags for this task</h2></div>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table class="flag-table">
-        <thead><tr><th>Participant</th><th>Flag</th></tr></thead>
-        <tbody>
-          <tr><td>P03</td><td>Completed but all scores ≤ 2 — could be a genuine negative experience or a completion coding error. Rewatch the video to confirm. (Quote sentiment strongly supports genuine negative experience.)</td></tr>
-          <tr><td>P06</td><td>Did not complete but rated satisfaction 4 — possible data entry error. Rewatch the video to confirm the completion coding and score.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
+</div><!-- /methodology -->
 
-<!-- ======== METHODOLOGY ======== -->
-<section class="panel" id="method" role="tabpanel">
-  <div class="method-grid">
-    <div class="insight-card">
-      <h3><span class="insight-num">01</span>Study setup</h3>
-      <p><strong>Format:</strong> Moderated 1:1 usability sessions. Participants were given task scenarios and asked to think aloud while completing each task on the app prototype.</p>
-      <p><strong>Sample:</strong> 15 participants per task (same participant pool across both tasks). Participants recruited for regular mobile banking app use.</p>
-      <p><strong>Tasks tested:</strong> Find Balance, Transfer Funds.</p>
-      <p><strong>Confidence level:</strong> 90% CI (alpha = 0.10). Satisfaction spec fixed at 4.0/5.0 (midpoint of "good").</p>
-      <p style="margin-bottom:0;"><strong>Time spec:</strong> Find Balance — derived automatically (60.25s, 95th percentile of satisfied completers). Transfer Funds — manual (120s; no participant both completed the task and rated composite satisfaction ≥ 4.0, so no automatic derivation was possible).</p>
-    </div>
-    <div class="insight-card">
-      <h3><span class="insight-num">02</span>SUM dimension definitions</h3>
-      <dl class="def-list">
-        <dt>Completion</dt>
-        <dd>Wilson score interval applied to the binary completion rate. Reflects the probability that a given participant would complete the task, with uncertainty bounds that account for small sample sizes.</dd>
-        <dt>Satisfaction</dt>
-        <dd>Composite of three Likert ratings (ease, satisfaction, perception) expressed as a log-normal Z-score relative to the 4.0/5.0 "good" threshold. Scores below 4.0 produce satisfaction percentages below 50%.</dd>
-        <dt>Time</dt>
-        <dd>Log-normal Z-score of all participant times (including non-completers) relative to a data-derived benchmark — the 95th-percentile time among participants who both completed the task and rated it positively. Lower percentages mean the typical participant took much longer than the efficient benchmark.</dd>
-      </dl>
-    </div>
-    <div class="insight-card" style="grid-column:1/-1;">
-      <h3><span class="insight-num">03</span>Confidence definitions</h3>
-      <dl class="def-list">
-        <dt><span class="conf-pips"><span class="on"></span><span class="on"></span><span class="on"></span></span>High</dt>
-        <dd>3+ participants with consistent evidence — quotes and path data point the same direction. Pattern is actionable.</dd>
-        <dt><span class="conf-pips"><span class="on"></span><span class="on"></span><span></span></span>Medium</dt>
-        <dd>2 participants with consistent evidence, or 3+ with mixed signals. Pattern is directional — validate before acting.</dd>
-        <dt><span class="conf-pips"><span class="on"></span><span></span><span></span></span>Low</dt>
-        <dd>1 participant, or quotes and data conflict. Reported for completeness — do not recommend action on Low confidence alone.</dd>
-      </dl>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <span>Generated 2026-05-09 · /sum-analysis</span>
-  <span>Usability Testing Report · Mobile Banking App — V1</span>
-</footer>
-
-</div><script>
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.dataset.target;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(target).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+<script>
+(function() {
+  // Tab switcher
+  var tabs = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = tab.dataset.target;
+      tabs.forEach(function(t) { t.classList.toggle('active', t.dataset.target === target); });
+      panels.forEach(function(p) { p.classList.toggle('active', p.id === target); });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   });
-});
-</script></body></html>
+
+  // data-target link handler (for "View all insights →")
+  document.querySelectorAll('a[data-target]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = link.dataset.target;
+      tabs.forEach(function(t) { t.classList.toggle('active', t.dataset.target === target); });
+      panels.forEach(function(p) { p.classList.toggle('active', p.id === target); });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

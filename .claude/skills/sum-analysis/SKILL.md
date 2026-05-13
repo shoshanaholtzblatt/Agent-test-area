@@ -44,6 +44,18 @@ When the user invokes `/sum-analysis`, say:
 >
 > You can paste CSV rows directly, share a file path, or use the template at `data/sum_template.csv`.
 
+Then ask:
+
+> Before we begin, I'd like some context so I can write sharper findings and recommendations.
+>
+> 1. **Project name** — a short label for this study (e.g. "Mobile Banking App — Checkout Redesign")
+> 2. **Research question** — what the team most wanted to learn (e.g. "Can users complete transfers without calling support?")
+> 3. **Background** — anything helpful: what product or feature was tested, what the team already knows or suspects, what design decisions are under evaluation, or concerns going in
+>
+> You can answer all three, just the ones you have, or skip this — the calculations run regardless. The more context you provide, the more specific the insights and recommendations in the final report will be.
+
+Wait for a response (or explicit skip) before proceeding to Phase 3.
+
 ---
 
 <!-- ## Phase 2 — Session config (commented out — always uses 90% CI)
@@ -284,15 +296,27 @@ Write 2–4 sentences interpreting the overall SUM score(s):
 
 If multiple versions are present, highlight the direction and magnitude of change between versions (e.g. "V2 improved overall SUM by X points"). Highlight which task(s) scored lowest and which dimension(s) drove the low score.
 
-### Prioritized UX recommendations
+### Insights
 
-Provide **3–5 specific, actionable recommendations** ranked by impact, based on the dimension scores:
+Produce **3–5 prioritized insights** based on the SUM scores, path analysis, background context, and notes. Structure each insight as:
 
-- **Low Completion** (< 70%): Users are failing the task — investigate where they get stuck. Recommend task flow analysis, error recovery improvements, or clearer affordances.
-- **Low Satisfaction** (< 60%): Users find the experience frustrating or confusing. Recommend UI clarity improvements, reduced cognitive load, or onboarding changes.
-- **Low Time score** (< 60%): Users are taking much longer than efficient users. Recommend streamlining steps, improving discoverability, or reducing navigation depth.
+**Finding** — a clear statement of what was observed: what happened, who was affected, and how often.
 
-Frame each recommendation around the specific task(s) and dimension(s) affected.
+**So what** — why this matters. Address two audiences:
+- *For customers:* experience impact (frustration, failure, wasted time, confusion, eroded trust)
+- *For the business:* outcome impact (support costs, abandonment, churn, missed transactions, competitive risk)
+
+**Recommendation** — one specific, actionable directive. Name what to change, not just that something should improve.
+
+Tag each insight: `Task: [task name]`. Assign a confidence level (High / Medium / Low):
+
+| Level | Criteria |
+|-------|----------|
+| **High** | 3+ participants with consistent evidence pointing the same direction |
+| **Medium** | 2 participants with consistent evidence, or 3+ with mixed signals |
+| **Low** | 1 participant, or evidence conflicts; directional only — do not recommend action on Low alone |
+
+Rank insights by business impact — lead with the finding most likely to cause failure, abandonment, or measurable cost.
 
 ### Path and first-click analysis *(include only if notes were collected in Phase 3c)*
 
@@ -313,49 +337,14 @@ For each task, analyze the Path Taken and Outcome columns from the notes documen
 
 **Narrative (1–2 sentences):** Interpret the pattern. Examples: "All failures were direct — participants never found the entry point — suggesting a discoverability problem rather than a flow problem." Or: "High indirect success rate means participants recovered from wrong turns, so the error recovery is working but the initial affordance needs improvement."
 
----
+### Task-level findings *(include only if notes were collected)*
 
-### Quote presentation and data accuracy check *(include only if notes were collected)*
+For each task, write:
+- **Headline finding** — one sentence capturing the most important thing about this task's usability
+- **What's working well** — one or more findings with supporting evidence and confidence level
+- **Issues** — one or more findings with supporting evidence and confidence level
 
-Present each quote exactly as it appears in the notes — never paraphrase, condense, or rephrase. Format each as:
-
-> "[verbatim quote]" — [P-ID, ~timestamp]
-
-For every quote, cross-check its sentiment against that participant's actual Likert scores and path outcome. Flag any mismatch:
-
-- **Sentiment vs. scores:** Positive quote (e.g., "That was really easy to find!") paired with `ease ≤ 2`, or negative quote paired with `ease ≥ 4` → "Quote sentiment conflicts with [dimension] score of [X] — rewatch the video to verify the score before including this in the report."
-- **Quote vs. path:** Quote describes confusion or searching but outcome is DS (Direct Success) → "Quote suggests struggle but outcome is Direct Success — rewatch the video to confirm the outcome coding."
-
-Researchers should go back to the **video** (not their notes) to resolve any flag. Do not remove flagged quotes from the report — present them with the flag attached so the researcher can decide.
-
-Group quotes by theme where 2+ participants reference the same screen or moment — these are the strongest signals in the data.
-
----
-
-### Insight contradiction checks *(include only if notes were collected)*
-
-Cross-reference the path and quote findings against the SUM dimension scores and flag any of the following:
-
-- **High Time score + many Indirect Successes (IS):** Participants were fast but got lost along the way. The Time score flatters the experience — efficiency is masking navigational confusion.
-- **High Completion + many IS:** People finished, but not cleanly. The completion rate overstates how intuitive the path is.
-- **Low Satisfaction + predominantly positive quotes:** Possible Likert scale confusion — participants may have inverted the scale. Recommend a follow-up probe.
-- **Direct Failures (DF) clustered at the same path step:** The failure is localized. Name the specific step (e.g., "all DF participants stopped at 'Quick actions' — the entry point is the problem, not the downstream flow").
-- **Accuracy flags confirmed by notes:** If a flagged participant's quote or path explains the anomaly (e.g., P07's quote mentions a phone call mid-task), resolve the flag and note it.
-
----
-
-### Finding confidence levels *(apply to all qualitative findings — themes, insight contradictions, and path patterns)*
-
-For every finding that uses qualitative evidence, assign a confidence level:
-
-| Level | Criteria |
-|-------|----------|
-| **High** | 3+ participants with consistent evidence (quotes and data point the same direction) |
-| **Medium** | 2 participants, or 3+ with mixed or partial signals |
-| **Low** | 1 participant, or quotes and data conflict; present as directional only — do not recommend action on Low confidence alone |
-
-Display confidence inline with each finding, e.g.:
-> "Participants struggled to locate the entry point for Task 1." *(Confidence: High — 4 of 5 DF participants stopped at the home screen)*
+**Accuracy flags** *(for researcher review only — do not include in HTML output):* List any data anomalies (non-completers with high scores, speed outliers, ease/satisfaction gaps) so the researcher can verify before approving the report.
 
 ---
 
@@ -364,7 +353,7 @@ Display confidence inline with each finding, e.g.:
 Ask:
 > Would you like me to save this report to `reports/sum_report_YYYY-MM-DD.md`?
 
-If yes, write the full report (table + narrative + recommendations + all qualitative sections if present) to that path with today's date.
+If yes, write the full report (table + narrative + insights + path analysis + task findings + accuracy flags) to that path with today's date. Accuracy flags are included in the saved markdown but will not appear in the HTML report.
 
 ---
 
@@ -372,7 +361,7 @@ If yes, write the full report (table + narrative + recommendations + all qualita
 
 After presenting the full Phase 6 report, ask the researcher:
 
-> Please review the results and findings above. Flag any cells where you'd like me to adjust a score interpretation, swap a quote, correct a path outcome, or revise a recommendation. Once you approve, I'll generate the HTML report.
+> Please review the results and findings above. Flag anything you'd like me to adjust — score interpretations, insight wording, path outcomes, task findings, or recommendations. Once you approve, I'll generate the HTML report. (Note: accuracy flags are for your video review only and will not appear in the HTML.)
 
 **Wait for explicit approval.** Make any requested corrections and re-present the affected sections before proceeding. Do not generate HTML before approval.
 
@@ -388,7 +377,12 @@ Build a spec JSON from the approved report content and the Phase 5 JSON output. 
 
 ```json
 {
-  "study_name": "...",
+  "project_name": "Mobile Banking App",
+  "study_name": "Mobile Banking App — V1",
+  "takeaway": "Both tasks fall in the poor or critical range — Transfer Funds is the priority due to near-zero satisfaction and a broken Quick Actions shortcut causing one-in-three failures.",
+  "research_question": "Can users check their balance and initiate transfers independently, without guidance, in a single session?",
+  "method_description": "Moderated 1:1 usability sessions, 15 participants per task, scored using SUM at 90% confidence.",
+  "how_to_use": "Scores below 60% indicate tasks requiring redesign. Use the Insights tab for prioritized recommendations. Task tabs show where users succeed and where they break down.",
   "date": "YYYY-MM-DD",
   "alpha": 0.10,
   "versions": ["V1"],
@@ -398,258 +392,458 @@ Build a spec JSON from the approved report content and the Phase 5 JSON output. 
     {
       "id": "find-balance",
       "name": "Find Balance",
+      "headline_finding": "Users can find their balance but over half take a wrong path first, relying on Search or Settings before discovering the Accounts tab.",
       "sum_by_version": {
         "V1": {
-          "sum": 0.595, "ci_low": 0.423, "ci_high": 0.717,
-          "completion": {"pct": 0.789, "ci_low": 0.579, "ci_high": 1.0},
-          "satisfaction": {"displayed_pct": 0.48, "ci_low": 0.348, "ci_high": 0.609},
-          "time": {"displayed_pct": 0.446, "ci_low": 0.341, "ci_high": 0.543,
-                   "time_spec": 90.0, "time_spec_source": "derived"}
+          "sum": 0.535, "ci_low": 0.36, "ci_high": 0.676,
+          "completion": {"pct": 0.737, "ci_low": 0.509, "ci_high": 0.964},
+          "satisfaction": {"displayed_pct": 0.356, "ci_low": 0.218, "ci_high": 0.484},
+          "time": {"displayed_pct": 0.468, "ci_low": 0.351, "ci_high": 0.581,
+                   "time_spec": 60.25, "time_spec_source": "derived"}
         }
       },
       "path_analysis": {
-        "first_click_accuracy_n": 10, "first_click_accuracy_total": 15,
-        "outcomes": {"DS": 10, "IS": 3, "DF": 2, "IF": 0},
-        "correct_paths": ["Home → Accounts tab → Checking account → Balance overview"],
-        "path_distribution": [{"label": "Path A (Accounts tab)", "pct": 0.85}],
-        "narrative": "All failures were direct — participants never found the entry point..."
+        "first_click_accuracy_n": 8, "first_click_accuracy_total": 15,
+        "outcomes": {"DS": 8, "IS": 4, "DF": 2, "IF": 1},
+        "correct_paths": [
+          "Home → Accounts tab → Checking account → Balance overview",
+          "Home → Summary widget → Account details"
+        ],
+        "path_distribution": [
+          {"label": "Path A — Accounts tab", "pct": 0.83},
+          {"label": "Path B — Summary widget", "pct": 0.17}
+        ],
+        "narrative": "All failures were direct — participants who failed never found the Accounts tab. The entry-point on the home screen is the problem, not the flow once entered."
       },
-      "quotes": [
-        {"text": "I kept looking for some kind of overview page...", "participant_id": "P07",
-         "timestamp": "~8:40", "polarity": "negative", "flag": null},
-        {"text": "I found it but it's pretty buried.", "participant_id": "P12",
-         "timestamp": "~4:55", "polarity": "negative",
-         "flag": "Quote sentiment conflicts with satisfaction=5 — rewatch the video to verify."}
+      "working_well": [
+        {
+          "finding": "Once users reach the Accounts tab, the balance is immediately visible and clearly formatted.",
+          "supporting_evidence": "All 12 completers read the balance with no hesitation after reaching the tab. P03 completed in 12 seconds via the Summary widget path.",
+          "confidence": "high"
+        }
       ],
-      "themes": [
-        {"label": "Accounts tab discoverability", "participants": ["P07","P09","P14","P15"],
-         "confidence": "high", "representative_quote_idx": 0}
+      "issues": [
+        {
+          "finding": "The Accounts tab is not discovered first — most users try Search, Settings, or Quick Actions instead.",
+          "supporting_evidence": "7 of 15 participants took an incorrect first step; P07 and P15 failed the task entirely without ever finding the Accounts tab.",
+          "confidence": "high"
+        },
+        {
+          "finding": "Search is used as a navigation fallback, suggesting the home screen hierarchy doesn't match users' mental model.",
+          "supporting_evidence": "P06 and P09 both typed into the search bar before discovering the Accounts tab organically.",
+          "confidence": "medium"
+        }
       ],
-      "accuracy_flags": [
-        {"participant_id": "P09", "flag": "Score inconsistency (ease=2, satisfaction=5, perception=4)"}
+      "task_recommendations": [
+        {
+          "headline": "Add a home screen balance summary widget linking directly to the Accounts tab.",
+          "body": "A persistent balance widget reduces wrong-turn navigation and increases first-click accuracy without requiring navigation restructuring.",
+          "confidence": "high"
+        },
+        {
+          "headline": "Increase visual prominence of the Accounts tab label or icon.",
+          "body": "Test a more descriptive label or a visible balance teaser — the current tab doesn't signal 'account information lives here.'",
+          "confidence": "medium"
+        }
       ]
     }
   ],
   "overall_by_version": {
-    "V1": {"sum": 0.532, "ci_low": 0.383, "ci_high": 0.643}
+    "V1": {"sum": 0.443, "ci_low": 0.299, "ci_high": 0.558}
   },
-  "recommendations": [
+  "insights": [
     {
       "rank": 1,
-      "headline": "Resolve the Quick Actions / Transfer inconsistency",
-      "body": "The Quick Actions transfer shortcut sends users to a different screen than the Accounts flow...",
-      "tasks": ["Transfer Funds"],
-      "dimensions": ["satisfaction", "completion"]
+      "finding": "The Quick Actions transfer shortcut routes users to a different screen or triggers re-authentication, causing abandonment.",
+      "so_what": "For customers: a broken shortcut on a primary financial action creates distrust in the app. For the business: failed transfers mean lost transactions and elevated churn risk.",
+      "recommendation": "Fix or remove the Quick Actions transfer shortcut — align both transfer paths to the same destination or remove the shortcut until it is consistent.",
+      "task": "Transfer Funds",
+      "supporting_evidence": "8 of 15 participants tried the shortcut; 3 gave up entirely (DF/IF). All 4 IS recoveries required restarting through the Accounts tab.",
+      "confidence": "high"
     }
   ],
-  "contradiction_checks": [
-    {"label": "Find Balance — High Completion + 3 Indirect Successes",
-     "explanation": "The completion rate overstates how intuitive the path is..."}
-  ],
   "methodology": {
-    "format": "Moderated 1:1 usability sessions",
-    "participants": "15 per task",
+    "format": "Moderated 1:1 usability sessions with think-aloud protocol.",
+    "participants": "15 participants per task (same pool). Recruited for regular mobile banking use.",
     "tasks_tested": "Find Balance, Transfer Funds",
-    "sum_method": "Completion (Wilson CI), Satisfaction (log-normal Z-score vs 4.0/5.0 spec), Time (log-normal Z-score vs data-derived benchmark). 90% CI (alpha = 0.10).",
-    "manual_time_specs": ["V1 / Transfer Funds — 120s (no participant met the automatic derivation threshold)"]
+    "confidence_level": "90% CI (alpha = 0.10). Satisfaction spec: 4.0 / 5.0.",
+    "time_spec_notes": [
+      "Find Balance — derived automatically (60.25s, 95th percentile of satisfied completers)",
+      "Transfer Funds — manual (120s; no participant both completed and rated composite satisfaction ≥ 4.0)"
+    ]
   }
+}
+```
+
+**Multi-version note:** When `versions` has 2–3 entries, show bars grouped by task in the Overview chart. For each task, if one version's `ci_high < other_version's ci_low`, mark with a `.sig-badge` "Sig." — non-overlapping CIs at the chosen alpha indicate a statistically significant difference.
+
+---
+
+### CSS additions
+
+Reuse the concept-testing CSS verbatim (design tokens, fonts, tab system, card patterns) from `data/examples/personal_finance_study/example_report.html`. Append:
+
+```css
+/* === SUM bar chart (Overview) === */
+.sum-chart { margin: 24px 0 32px; }
+.chart-grid-wrap { position: relative; padding-left: 160px; margin-right: 60px; }
+.chart-task-row { display: flex; align-items: center; margin-bottom: 28px; position: relative; }
+.chart-task-label { position: absolute; left: -160px; width: 148px; text-align: right;
+  font-size: 13px; font-weight: 500; color: var(--ink); padding-right: 12px; line-height: 1.3; }
+.chart-version-bars { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-version-tag { font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+  width: 22px; flex-shrink: 0; }
+.bar-track { flex: 1; height: 28px; background: var(--rule-soft); border-radius: 3px;
+  position: relative; overflow: visible; }
+.bar-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 3px; min-width: 2px; }
+.bar-fill.good { background: var(--pos); }
+.bar-fill.moderate { background: var(--mixed); }
+.bar-fill.poor { background: var(--neg); }
+.error-bar-line { position: absolute; top: 50%; transform: translateY(-50%);
+  height: 2px; background: var(--ink); opacity: 0.5; border-radius: 1px; pointer-events: none; }
+.error-bar-line::before, .error-bar-line::after { content: ''; position: absolute;
+  top: -4px; width: 0; height: 10px; border-left: 2px solid var(--ink); opacity: 0.7; }
+.error-bar-line::before { left: 0; }
+.error-bar-line::after { right: -2px; }
+.bar-score-label { position: absolute; left: calc(100% + 8px); top: 50%;
+  transform: translateY(-50%); font-family: var(--mono); font-size: 12px;
+  font-weight: 600; color: var(--ink); white-space: nowrap; }
+.baseline-line { position: absolute; top: 0; bottom: 0; left: 80%;
+  border-left: 2px dashed var(--mixed); opacity: 0.55; pointer-events: none; }
+.baseline-label { position: absolute; top: -22px; left: 80%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 10px; color: var(--mixed);
+  white-space: nowrap; letter-spacing: 0.05em; }
+.chart-axis-labels { display: flex; justify-content: space-between; padding: 6px 0 0;
+  font-family: var(--mono); font-size: 10px; color: var(--ink-mute); }
+.sig-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-left: 6px;
+  background: rgba(47,95,58,0.12); color: var(--pos); white-space: nowrap; }
+.chart-info-note { font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+  margin-top: 8px; }
+
+/* === Dimension blocks (task hero) === */
+.task-hero { display: grid; grid-template-columns: 1fr 2fr; gap: 32px;
+  align-items: start; margin-bottom: 40px; padding-bottom: 32px;
+  border-bottom: 1px solid var(--rule); }
+.dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.dim-block { background: var(--bg); border: 1px solid var(--rule-soft);
+  border-radius: 4px; padding: 14px 18px; }
+.dim-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-mute); margin-bottom: 6px; }
+.dim-score { font-family: var(--serif); font-size: 30px; font-weight: 500;
+  line-height: 1; letter-spacing: -0.02em; }
+.dim-score.good { color: var(--pos); }
+.dim-score.moderate { color: var(--mixed); }
+.dim-score.poor { color: var(--neg); }
+.dim-ci { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
+.dim-note { font-size: 11px; color: var(--ink-mute); font-style: italic; margin-top: 5px; }
+.ci-bar-wrap { position: relative; height: 4px; background: var(--rule-soft);
+  border-radius: 2px; margin: 8px 0 4px; }
+.ci-bar-fill { position: absolute; height: 100%; background: var(--ink-mute);
+  border-radius: 2px; opacity: 0.35; }
+.ci-bar-point { position: absolute; top: -4px; width: 2px; height: 12px;
+  background: var(--ink); border-radius: 1px; transform: translateX(-50%); }
+.interp-badge { display: inline-block; font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px;
+  border-radius: 2px; margin-top: 10px; }
+.interp-badge.good { background: rgba(47,95,58,0.12); color: var(--pos); }
+.interp-badge.moderate { background: rgba(138,110,26,0.12); color: var(--mixed); }
+.interp-badge.poor { background: rgba(155,42,42,0.10); color: var(--neg); }
+.interp-badge.critical { background: var(--neg); color: white; }
+
+/* === Outcome bar === */
+.outcome-bar { display: flex; height: 20px; border-radius: 2px; overflow: hidden;
+  background: var(--rule-soft); margin: 14px 0 8px; }
+.outcome-bar .seg { height: 100%; display: flex; align-items: center;
+  justify-content: center; font-size: 10px; color: white;
+  font-weight: 700; font-family: var(--mono); }
+.outcome-bar .seg.DS { background: var(--pos); }
+.outcome-bar .seg.IS { background: var(--mixed); }
+.outcome-bar .seg.DF { background: var(--neg); }
+.outcome-bar .seg.IF { background: #6b1c1c; }
+.outcome-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.outcome-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--ink-mute); padding: 6px 8px;
+  border-bottom: 1px solid var(--rule-soft); text-align: left; }
+.outcome-table td { padding: 8px 8px; border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink-soft); }
+.outcome-table td:first-child { font-weight: 500; color: var(--ink); }
+.path-dist-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 14px; }
+.path-dist-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--ink-mute); padding: 6px 8px;
+  border-bottom: 1px solid var(--rule-soft); text-align: left; }
+.path-dist-table td { padding: 8px 8px; border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink-soft); font-size: 13px; }
+.path-dist-table td:last-child { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+.first-click-stat { font-family: var(--mono); font-size: 28px; font-weight: 500;
+  color: var(--ink); line-height: 1; }
+.first-click-label { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+
+/* === Insight cards (Insights tab — full with evidence) === */
+.insight-full-card { background: var(--paper); border: 1px solid var(--rule);
+  border-radius: 4px; padding: 26px 30px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.insight-rank { font-family: var(--mono); font-size: 22px; font-weight: 500;
+  color: var(--accent); line-height: 1; margin-bottom: 12px; }
+.insight-finding { font-family: var(--serif); font-size: 18px; font-weight: 500;
+  line-height: 1.35; margin: 0 0 14px; color: var(--ink); }
+.insight-section-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-mute); margin: 16px 0 6px; }
+.insight-body { font-size: 14.5px; color: var(--ink-soft); margin: 0 0 8px; line-height: 1.6; }
+.insight-evidence { font-size: 13px; color: var(--ink-soft); font-style: italic;
+  border-left: 3px solid var(--rule); padding-left: 12px; margin: 10px 0 6px;
+  line-height: 1.55; }
+.insight-tag-row { display: flex; align-items: center; gap: 8px; margin-top: 14px;
+  flex-wrap: wrap; }
+.tag-task { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 2px;
+  background: var(--bg); border: 1px solid var(--rule); color: var(--ink-soft); }
+.conf-badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+.conf-badge.high { background: rgba(47,95,58,0.12); color: var(--pos); }
+.conf-badge.medium { background: rgba(138,110,26,0.10); color: var(--mixed); }
+.conf-badge.low { background: rgba(28,26,23,0.06); color: var(--ink-mute); }
+
+/* === Insight preview cards (Overview) === */
+.insight-preview-card { background: var(--paper); border: 1px solid var(--rule);
+  border-radius: 4px; padding: 20px 24px; margin-bottom: 12px; box-shadow: var(--shadow); }
+.insight-preview-num { font-family: var(--mono); font-size: 10px; color: var(--accent);
+  letter-spacing: 0.1em; margin-bottom: 8px; }
+.insight-preview-finding { font-family: var(--serif); font-size: 16px; font-weight: 500;
+  line-height: 1.35; margin: 0 0 8px; color: var(--ink); }
+.insight-preview-rec { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 10px;
+  line-height: 1.55; }
+.view-all-link { display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent); text-decoration: none; margin-top: 16px; border-bottom: 1px solid transparent; }
+.view-all-link:hover { border-bottom-color: var(--accent); }
+
+/* === Finding cards (task tabs) === */
+.finding-card { background: var(--paper); border: 1px solid var(--rule-soft);
+  border-radius: 4px; padding: 16px 20px; margin-bottom: 12px; }
+.finding-card.working { border-left: 3px solid var(--pos); }
+.finding-card.issue { border-left: 3px solid var(--neg); }
+.finding-text { font-size: 14.5px; font-weight: 500; color: var(--ink); margin: 0 0 8px; }
+.finding-evidence { font-size: 13px; color: var(--ink-soft); border-left: 2px solid var(--rule);
+  padding-left: 10px; margin: 6px 0 10px; line-height: 1.55; }
+.finding-meta { display: flex; align-items: center; gap: 8px; }
+
+@media (max-width: 880px) {
+  .task-hero { grid-template-columns: 1fr; }
+  .dim-grid { grid-template-columns: 1fr; }
+  .chart-grid-wrap { padding-left: 0; margin-right: 0; }
+  .chart-task-label { position: static; width: auto; text-align: left;
+    padding: 0 0 6px; font-size: 13px; }
+  .chart-task-row { flex-direction: column; align-items: stretch; }
 }
 ```
 
 ---
 
-### HTML structure
+### Tab and section structure
 
-The report is a self-contained single HTML file. Reuse the concept-testing CSS verbatim (same design tokens, fonts, tab system, card patterns, blockquote styles) from `data/examples/personal_finance_study/example_report.html`. Add the following usability-specific CSS after the shared styles:
+**Tabs:** `01 Overview` · `02 Insights` · `03–12 [Task Name]` (one per task, up to 10) · `N Methodology`
 
-```css
-/* Dimension score display */
-.dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
-.dim-block { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
-             padding: 16px 20px; }
-.dim-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-             letter-spacing: 0.12em; color: var(--ink-mute); margin-bottom: 6px; }
-.dim-score { font-family: var(--serif); font-size: 32px; font-weight: 500;
-             line-height: 1; letter-spacing: -0.02em; }
-.dim-score.good { color: var(--pos); }
-.dim-score.moderate { color: var(--mixed); }
-.dim-score.poor { color: var(--neg); }
-.dim-ci { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
-.dim-note { font-size: 12px; color: var(--ink-mute); font-style: italic; margin-top: 6px; }
-
-/* CI bar */
-.ci-bar-wrap { position: relative; height: 4px; background: var(--rule-soft);
-               border-radius: 2px; margin: 10px 0 4px; }
-.ci-bar-fill { position: absolute; height: 100%; background: var(--ink-mute);
-               border-radius: 2px; opacity: 0.4; }
-.ci-bar-point { position: absolute; top: -4px; width: 2px; height: 12px;
-                background: var(--ink); border-radius: 1px; transform: translateX(-50%); }
-
-/* SUM score card */
-.score-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
-              padding: 24px 28px; box-shadow: var(--shadow); }
-.score-card-version { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
-                      text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-.score-card-sum { font-family: var(--serif); font-size: 56px; font-weight: 500;
-                  line-height: 1; letter-spacing: -0.03em; }
-.score-card-ci { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); margin-top: 4px; }
-.interp-badge { display: inline-block; font-family: var(--mono); font-size: 10px;
-                letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px;
-                border-radius: 2px; margin-top: 10px; }
-.interp-badge.good { background: rgba(47,95,58,0.12); color: var(--pos); }
-.interp-badge.moderate { background: rgba(138,110,26,0.12); color: var(--mixed); }
-.interp-badge.poor { background: rgba(155,42,42,0.12); color: var(--neg); }
-.interp-badge.critical { background: var(--neg); color: white; }
-.delta-badge { font-family: var(--mono); font-size: 13px; font-weight: 600; margin-left: 12px; }
-.delta-badge.up { color: var(--pos); }
-.delta-badge.down { color: var(--neg); }
-
-/* Outcome bar */
-.outcome-bar { display: flex; height: 20px; border-radius: 2px; overflow: hidden;
-               background: var(--rule-soft); margin: 12px 0 8px; }
-.outcome-bar .seg { height: 100%; display: flex; align-items: center; justify-content: center;
-                    font-size: 11px; color: white; font-weight: 600; }
-.outcome-bar .seg.DS { background: var(--pos); }
-.outcome-bar .seg.IS { background: var(--mixed); }
-.outcome-bar .seg.DF { background: var(--neg); }
-.outcome-bar .seg.IF { background: #6b1c1c; }
-
-/* Recommendation item */
-.rec-item { display: flex; gap: 18px; padding: 18px 0;
-            border-bottom: 1px solid var(--rule-soft); }
-.rec-item:last-child { border-bottom: none; }
-.rec-rank { font-family: var(--mono); font-size: 22px; font-weight: 500;
-            color: var(--accent); min-width: 32px; line-height: 1; }
-.rec-body { flex: 1; }
-.rec-headline { font-family: var(--serif); font-size: 18px; font-weight: 500;
-                margin: 0 0 6px; line-height: 1.2; }
-.rec-text { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px; }
-.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
-       text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
-.tag.task { background: var(--bg); border: 1px solid var(--rule); color: var(--ink-soft); }
-.tag.completion { background: rgba(155,42,42,0.10); color: var(--neg); }
-.tag.satisfaction { background: rgba(138,110,26,0.10); color: var(--mixed); }
-.tag.time { background: rgba(28,26,23,0.06); color: var(--ink-mute); }
-
-/* Results table */
-.results-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.results-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-                    letter-spacing: 0.1em; color: var(--ink-mute); padding: 8px 10px;
-                    border-bottom: 1px solid var(--ink-soft); text-align: right; }
-.results-table th:first-child, .results-table th:nth-child(2) { text-align: left; }
-.results-table td { padding: 10px 10px; border-bottom: 1px solid var(--rule-soft);
-                    text-align: right; color: var(--ink-soft); }
-.results-table td:first-child, .results-table td:nth-child(2) { text-align: left; font-weight: 500; color: var(--ink); }
-.results-table .score-cell { font-family: var(--mono); font-weight: 600; }
-.score-cell.good { color: var(--pos); }
-.score-cell.moderate { color: var(--mixed); }
-.score-cell.poor { color: var(--neg); }
-.score-cell.ci { color: var(--ink-mute); font-weight: 400; }
-.results-table tr.overall-row td { border-top: 1px solid var(--ink-soft);
-                                    font-weight: 600; color: var(--ink); }
-```
+Use the `.tabnav` / `.tab` / `.panel` system from the concept-testing example. Tab `data-target` values: `overview`, `insights`, `task-[id]` (hyphenated task name), `method`.
 
 ---
-
-### Tab and content structure
 
 **Masthead:**
 ```html
 <p class="eyebrow">Usability Testing Report · [study_name]</p>
-<h1>[N] tasks tested. Overall SUM: <em>[X%]</em>.</h1>
-<!-- If two versions: <h1>V2 improved overall SUM by <em>+Xpp</em> across [N] tasks.</h1> -->
+<h1>[project_name]</h1>
 <div class="meta">
   <span>Date <strong>[date]</strong></span>
   <span>Participants <strong>[N] per task</strong></span>
   <span>Tasks <strong>[N]</strong></span>
-  <span>Version(s) <strong>[V1 / V2]</strong></span>
+  <span>Version(s) <strong>[V1] [/ V2]</strong></span>
   <span>Method <strong>SUM · 90% CI</strong></span>
 </div>
 ```
 
-**Tabs:** `01 Overview` · `02 Key Insights` · `03 [Task Name]` (one per task) · `N Methodology`
-
 ---
 
-**Overview tab (§01–§03):**
+**Overview tab (`id="overview"`):**
 
-*§01 — Score cards:* `.card-grid-2` (or single card if one version). Each `.score-card`:
-- Version label (`.score-card-version`, mono, accent)
-- Overall SUM % (`.score-card-sum`, colored: `--pos` ≥ 80%, `--mixed` 60–79%, `--neg` < 60%)
-- CI range (`.score-card-ci`)
-- Interpretation badge (`.interp-badge.good/moderate/poor/critical`)
-- If two versions: delta badge (`.delta-badge.up/down`) on the V2 card
-
-*§02 — Results table:* `<table class="results-table">`. Score cells use `.score-cell.good/moderate/poor/ci`. Overall rows use `.overall-row`. CI columns use `.score-cell.ci` (muted).
-
-*§03 — Score interpretation:* `.def-list` with four entries (Good / Moderate / Poor / Critical) and three dimension rows (Completion / Satisfaction / Time).
-
----
-
-**Key Insights tab (§01–§04):**
-
-*§01 — UX recommendations:* `.card` containing `.rec-item` list. Each item: rank (`.rec-rank`), headline (`.rec-headline`), body (`.rec-text`), tag row (`.tag-row`) with task tags (`.tag.task`) and dimension tags (`.tag.completion/satisfaction/time`).
-
-*§02 — Qualitative themes* *(omit if `has_notes: false`):* One `.insight-card` per theme. Include:
-- Theme label (h3, serif)
-- Confidence pips (same `.conf-pips` pattern from concept-testing) + level text
-- Participant list (mono, small, muted)
-- Representative quote from `quotes[representative_quote_idx]` as a blockquote
-
-*§03 — Insight contradiction checks* *(omit if `has_notes: false`):* `.card` with bulleted list. Each: `<strong>` label + sentence explanation.
-
-*§04 — Accuracy flags* *(omit if no flags across any task):* Table inside `.card`: Participant | Task | Flag | Status.
-
----
-
-**Per-task tab (`task-[id]`, one per task):**
-
-*Task hero:* Two-column grid (`grid-template-columns: 1fr 2fr`):
-- Left: Task name (h2, serif), SUM score (`.score-card-sum`, colored), CI range (`.score-card-ci`), interpretation badge
-- Right: `.dim-grid` with three `.dim-block` entries (Completion / Satisfaction / Time). Each block:
-  - Label (`.dim-label`, mono uppercase)
-  - Score (`.dim-score.good/moderate/poor`, serif large)
-  - CI bar (`.ci-bar-wrap` → `.ci-bar-fill` + `.ci-bar-point` positioned at `pct * 100%`)
-  - CI range text (`.dim-ci`)
-  - For Time only: `.dim-note` showing "time spec: Xs (derived)" or "(manual)"
-
-*§01 — Path and first-click analysis* *(omit if `has_notes: false` or `path_analysis: null`):*
-- First-click accuracy: large mono readout + label ("X of N participants started on a correct path element")
-- Outcome bar (`.outcome-bar`): segments sized by count (DS=`--pos`, IS=`--mixed`, DF=`--neg`, IF=`#6b1c1c`), each labeled with count if segment is wide enough
-- Outcome table: DS / IS / DF / IF with count and %
-- Path distribution table (omit if single path)
-- Narrative: `<p class="lead" style="font-style:italic">` (serif, 1–2 sentences)
-
-*§02 — Participant quotes* *(omit if `has_notes: false`):*
-Grouped under `<h4>` theme headings where `themes` exist; ungrouped otherwise.
-Each quote:
+*§01 — Takeaway and study context:*
 ```html
-<blockquote class="pos|neg|[none]">
-  "[verbatim text]"
-  <span class="attr">— P07, ~8:40</span>
-</blockquote>
-<!-- If quote.flag is non-null: -->
-<div class="reconciliation">
-  <strong>Flag</strong>[flag text]
+<p class="lead">[takeaway]</p>
+<div class="card">
+  <dl class="def-list">
+    <dt>Research question</dt><dd>[research_question]</dd>
+    <dt>Method</dt><dd>[method_description]</dd>
+    <dt>How to use</dt><dd>[how_to_use]</dd>
+  </dl>
 </div>
 ```
 
-*§03 — Accuracy flags for this task* *(omit if `accuracy_flags` is empty):*
-`.card` with compact list: each entry as `<span class="concept-meta-id">[P-ID]</span> [flag message]`.
+*§02 — SUM score chart:*
+
+Pure HTML/CSS horizontal bar chart. One row per task, one bar per version.
+
+```html
+<div class="sum-chart">
+  <div class="chart-grid-wrap">
+    <!-- baseline at 80% -->
+    <div class="baseline-line"></div>
+    <span class="baseline-label">80% · industry baseline</span>
+
+    <!-- one .chart-task-row per task -->
+    <div class="chart-task-row">
+      <span class="chart-task-label">[task name]</span>
+      <div class="chart-version-bars">
+        <!-- one .bar-row per version -->
+        <div class="bar-row">
+          <span class="bar-version-tag">V1</span>
+          <div class="bar-track">
+            <div class="bar-fill [good|moderate|poor]" style="width:[sum*100]%"></div>
+            <div class="error-bar-line"
+                 style="left:[ci_low*100]%;width:calc([ci_high*100]% - [ci_low*100]%)"></div>
+            <span class="bar-score-label">[sum_pct]%</span>
+          </div>
+          <!-- Only if 2+ versions AND this task is statistically significant: -->
+          <span class="sig-badge">Sig.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-axis-labels">
+      <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+    </div>
+  </div>
+  <p class="chart-info-note">Error bars show 90% CI. Dotted line = 80% industry baseline.
+    <a href="#" data-target="method" style="color:var(--accent)">Score scale in Methodology →</a></p>
+</div>
+```
+
+Color the bar fill: `good` (≥ 80%), `moderate` (60–79%), `poor` (< 60%).
+
+*§03 — Insights preview:*
+
+Show the top 3 insights (or all if fewer). Each as `.insight-preview-card`:
+```html
+<div class="insight-preview-card">
+  <div class="insight-preview-num">0[n]</div>
+  <p class="insight-preview-finding">[finding]</p>
+  <p class="insight-preview-rec">→ [recommendation]</p>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="tag-task">Task: [task]</span>
+    <span class="conf-badge [high|medium|low]">[confidence]</span>
+  </div>
+</div>
+```
+
+No supporting evidence in preview cards.
+
+After the last card:
+```html
+<a href="#" class="view-all-link" data-target="insights">View all insights →</a>
+```
 
 ---
 
-**Methodology tab (§01–§03):**
+**Insights tab (`id="insights"`):**
 
-*§01 Study setup:* `.insight-card` with `<p>` blocks for format, participants, tasks, CI level, satisfaction spec.
+One `.insight-full-card` per insight in `insights[]`:
+```html
+<div class="insight-full-card">
+  <div class="insight-rank">0[rank]</div>
+  <p class="insight-finding">[finding]</p>
+  <div class="insight-section-label">So what</div>
+  <p class="insight-body">[so_what]</p>
+  <div class="insight-section-label">Recommendation</div>
+  <p class="insight-body">[recommendation]</p>
+  <p class="insight-evidence">[supporting_evidence]</p>
+  <div class="insight-tag-row">
+    <span class="tag-task">Task: [task]</span>
+    <span class="conf-badge [high|medium|low]">[confidence]</span>
+  </div>
+</div>
+```
 
-*§02 SUM dimension definitions:* `.insight-card` with `.def-list`:
-- Completion — Wilson score interval; reflects task success rate
-- Satisfaction — log-normal Z-score vs 4.0/5.0 fixed spec; reflects perceived ease and satisfaction
-- Time — log-normal Z-score vs data-derived benchmark (85th-percentile time of satisfied completers); reflects efficiency. If `manual_time_specs` is non-empty, list affected tasks.
+No accuracy flags. No contradiction checks.
 
-*§03 Confidence definitions:* `.insight-card` with `.def-list`, same 3-pip icons as concept-testing (High / Medium / Low with criteria text).
+---
+
+**Per-task tab (`id="task-[id]"`):**
+
+*Task hero:* Two-column grid:
+- Left: task name (serif), SUM % (colored), CI range, interpretation badge
+- Right: `.dim-grid` — three `.dim-block` entries (Completion / Satisfaction / Time). Each:
+  - `.dim-label`, `.dim-score.[good|moderate|poor]`, `.ci-bar-wrap` → `.ci-bar-fill` + `.ci-bar-point`, `.dim-ci`, `.dim-note` (completers count; time spec for Time)
+
+*Headline finding:* `<p class="lead" style="font-style:italic">[headline_finding]</p>`
+
+*Path analysis* *(omit if `has_notes: false` or `path_analysis: null`):*
+```html
+<div class="first-click-stat">[n] / [total]</div>
+<p class="first-click-label">participants' first click was on a correct path element — [pct]% first-click accuracy.</p>
+<div class="outcome-bar">
+  <div class="seg DS" style="width:[DS/total*100]%">[DS]</div>
+  <div class="seg IS" style="width:[IS/total*100]%">[IS]</div>
+  <div class="seg DF" style="width:[DF/total*100]%">[DF]</div>
+  <div class="seg IF" style="width:[IF/total*100]%">[IF]</div>
+</div>
+<!-- outcome table, path distribution table, narrative <p> -->
+```
+
+*"What's working well" section* *(omit if `working_well` is empty):*
+```html
+<h3>What's working well</h3>
+<div class="finding-card working">
+  <p class="finding-text">[finding]</p>
+  <p class="finding-evidence">[supporting_evidence]</p>
+  <div class="finding-meta"><span class="conf-badge [level]">[confidence]</span></div>
+</div>
+```
+
+*"Issues" section* *(omit if `issues` is empty):*
+```html
+<h3>Issues</h3>
+<div class="finding-card issue">
+  <p class="finding-text">[finding]</p>
+  <p class="finding-evidence">[supporting_evidence]</p>
+  <div class="finding-meta"><span class="conf-badge [level]">[confidence]</span></div>
+</div>
+```
+
+*"Recommendations" section:*
+```html
+<h3>Recommendations</h3>
+<ol style="padding-left:20px;color:var(--ink-soft);font-size:14.5px;line-height:1.7;">
+  <li style="margin-bottom:14px;">
+    <strong style="color:var(--ink);">[headline]</strong> — [body]
+    <span class="conf-badge [level]" style="margin-left:8px;">[confidence]</span>
+  </li>
+</ol>
+```
+
+No quotes section. No accuracy flags.
+
+---
+
+**Methodology tab (`id="method"`):**
+
+`method-grid` layout (two columns, insight cards):
+
+*§01 — Study setup:* Format, participants, tasks tested, confidence level, time spec notes.
+
+*§02 — SUM dimension definitions:* Completion (Wilson CI), Satisfaction (log-normal Z-score vs 4.0/5.0), Time (log-normal Z-score vs benchmark).
+
+*§03 — Score interpretation* `(grid-column: 1/-1)`:
+```html
+<dl class="def-list">
+  <dt>≥ 80%</dt><dd>Good usability — minor improvements needed. This is the industry baseline shown in the Overview chart.</dd>
+  <dt>60–79%</dt><dd>Moderate — significant improvements warranted</dd>
+  <dt>40–59%</dt><dd>Poor — redesign recommended for weak areas</dd>
+  <dt>&lt; 40%</dt><dd>Critical failures — comprehensive redesign required</dd>
+</dl>
+```
+
+*§04 — Confidence definitions:* High / Medium / Low with criteria (same `.conf-pips` pattern from concept-testing).
+
+*§05 — Statistical significance* *(only if `versions` has 2+ entries):*
+> At 90% confidence (alpha = 0.10), two versions are considered statistically significantly different for a given task when their SUM confidence intervals do not overlap. "Sig." badges in the Overview chart mark tasks where this threshold is met.
 
 ---
 
@@ -663,7 +857,31 @@ Each quote:
 
 ---
 
-**JavaScript:** Copy the tab-switching script from `data/examples/personal_finance_study/example_report.html` verbatim (14 lines).
+**JavaScript:**
+
+Tab switcher (same 14-line script from the concept-testing example), plus a handler for `a[data-target]` links so the "View all insights →" link and the Methodology link in the chart work:
+
+```javascript
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.target;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+document.querySelectorAll('a[data-target]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = link.dataset.target;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.target === target));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === target));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+```
 
 ---
 
@@ -671,7 +889,7 @@ Each quote:
 
 Tell the researcher:
 
-> HTML report saved to `reports/sum_report_YYYY-MM-DD.html`. Open in any browser. Tabs: Overview, Key Insights, one tab per task, Methodology.
+> HTML report saved to `reports/sum_report_YYYY-MM-DD.html`. Open in any browser. Tabs: Overview (takeaway, SUM chart, insights preview) · Insights (all findings with supporting evidence) · one tab per task · Methodology.
 
 ---
 
